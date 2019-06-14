@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Bowling Score Calculator</string>
+
+    <string name="action_clear">CLEAR</string>
+    <string name="action_play">THROW</string>
+    <string name="action_save">SAVE</string>
+    <string name="max_possible">Max possible</string>
+    <string name="total_score">Total score</string>
+    <string name="current_frame">Frame</string>
+    <string name="action_settings">settings</string>
+</resources>

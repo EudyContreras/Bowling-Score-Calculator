@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <FrameLayout
+        android:id="@+id/roundMarkContainer"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/shape_marker"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+    <TextView
+            android:id="@+id/roundMarkText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textAlignment="gravity"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:alpha="0"
+            tools:text="0"/>
+    <View
+            android:id="@+id/roundMarkIcon"
+            android:alpha="0"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_margin="6dp"
+            android:background="@drawable/ic_result_strike"
+            android:backgroundTint="@color/white"
+            android:elevation="6dp"
+            tools:text="0"/>
+</FrameLayout>

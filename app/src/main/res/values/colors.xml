@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#212121</color>
+    <color name="colorPrimaryDark">#212121</color>
+    <color name="colorAccent">#B71C1C</color>
+    <color name="colorAccentLight">#C62828</color>
+    <color name="colorAccentDark">#8D0E0E</color>
+
+    <color name="white">#FFF</color>
+    <color name="gray">#D6D6D6</color>
+
+    <color name="shadow">#40000000</color>
+
+    <color name="background">#EFEFEF</color>
+
+    <color name="colorAction">#303030</color>
+
+    <color name="frameMark">#D0D0D0</color>
+    <color name="frameMarkSelected">#B2B2B2</color>
+    <color name="frameMarkSelectedBorder">#AAAAAA</color>
+    <color name="frameMarkInactive">#DEDEDE</color>
+
+    <color name="colorActionButton">#212121</color>
+</resources>
