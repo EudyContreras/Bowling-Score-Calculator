@@ -42,7 +42,7 @@ class Application : Application() {
         rollRepo = RollRepositoryImpl(this, appDatabase.roll)
     }
 
-    fun saveBowler(bowler: Bowler, toDb: Boolean) {
+    fun saveBowler(bowler: Bowler, toDb: Boolean = false) {
         storage.bowler = bowler
         if (toDb) {
             bowlerRepo.saveBowler(bowler)
