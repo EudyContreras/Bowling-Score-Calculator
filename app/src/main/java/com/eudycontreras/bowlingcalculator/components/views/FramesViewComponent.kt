@@ -59,6 +59,10 @@ class FramesViewComponent(
         frameAdapter.resetAllFrames()
     }
 
+    fun revealFrames() {
+        frameAdapter.revealAllFrames()
+    }
+
     fun updateFrames(bowler: Bowler, current: Frame) {
         frameAdapter.currentIndex = bowler.currentFrameIndex
         frameAdapter.adjustViewPort(current.index)

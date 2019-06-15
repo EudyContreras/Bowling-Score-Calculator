@@ -9,13 +9,11 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.children
-import com.eudycontreras.bowlingcalculator.DEFAULT_PIN_COUNT
-import com.eudycontreras.bowlingcalculator.R
-import com.eudycontreras.bowlingcalculator.SHOW_SAVE_BUTTON
+import com.eudycontreras.bowlingcalculator.*
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.components.controllers.ActionViewController
 import com.eudycontreras.bowlingcalculator.extensions.addTouchAnimation
-import com.eudycontreras.bowlingcalculator.toString
+import com.eudycontreras.bowlingcalculator.extensions.clamp
 import com.eudycontreras.bowlingcalculatorchallenge.view_components.ViewComponent
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -24,9 +22,11 @@ import kotlinx.android.synthetic.main.activity_main.*
  */
 
 class ActionsViewComponent(
-    context: MainActivity,
+    private val context: MainActivity,
     private val controller: ActionViewController
 ) : ViewComponent {
+
+    private var remainingPins: Int = DEFAULT_PIN_COUNT
 
     private val parentView: View? = context.actionArea
 
@@ -37,7 +37,10 @@ class ActionsViewComponent(
 
     private val strikeAction: View? = parentView?.findViewById(R.id.actionStrike)
     private val resetAction: View? = parentView?.findViewById(R.id.actionClearScore)
-    private val saveAction: View? = parentView?.findViewById(R.id.actionSaveScore)
+    private val loadSaveAction: View? = parentView?.findViewById(R.id.actionLoadSaveScore)
+
+    private val loadAction: View? = loadSaveAction?.findViewById(R.id.actionLoadScore)
+    private val saveAction: View? = loadSaveAction?.findViewById(R.id.actionSaveScore)
 
     init {
         setDefaultValues()
@@ -45,11 +48,12 @@ class ActionsViewComponent(
 
         assignInteraction(strikeAction)
         assignInteraction(resetAction)
+        assignInteraction(loadAction)
         assignInteraction(saveAction)
     }
 
     override fun setDefaultValues() {
-        saveAction?.visibility = if (SHOW_SAVE_BUTTON) {
+        loadSaveAction?.visibility = if (SHOW_SAVE_BUTTON) {
             View.VISIBLE
         } else {
             View.INVISIBLE
@@ -59,6 +63,9 @@ class ActionsViewComponent(
             parent.children.forEachIndexed { index, view ->
                 val input: FrameLayout = view.findViewById(R.id.throwInput) as FrameLayout
                 val text: TextView = input.findViewById(R.id.throwInputText)
+
+                view.scaleY = 0f
+                view.scaleX = 0f
                 text.text = toString(index)
 
                 input.addTouchAnimation(
@@ -88,6 +95,10 @@ class ActionsViewComponent(
             controller.handleResetAction()
         }
 
+        loadAction?.setOnClickListener {
+            controller.handleLoadAction()
+        }
+
         saveAction?.setOnClickListener {
             controller.handleSaveAction()
         }
@@ -102,7 +113,39 @@ class ActionsViewComponent(
         )
     }
 
+    fun revealAvailablePins() {
+        val delay: Long = 80
+
+        throwAction?.let { parent ->
+            var leftIndex = (parent.childCount / 2) - 1
+            var rightIndex = parent.childCount / 2
+            runSequential(delay, parent.childCount - 1) {
+                context.runOnUiThread {
+                    parent.getChildAt(leftIndex).animate()
+                        .alpha(1f)
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .setInterpolator(OvershootInterpolator())
+                        .setDuration(250)
+                        .start()
+                    leftIndex = (leftIndex - 1).clamp(0,4)
+                }
+                context.runOnUiThread {
+                    parent.getChildAt(rightIndex).animate()
+                        .alpha(1f)
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .setInterpolator(OvershootInterpolator())
+                        .setDuration(250)
+                        .start()
+                    rightIndex = (rightIndex + 1).clamp(5,9)
+                }
+            }
+        }
+    }
+
     fun setAvailablePins(remainingPins: Int) {
+        this.remainingPins = remainingPins
         if (remainingPins < DEFAULT_PIN_COUNT) {
             deactivateStrike(strikeAction)
         } else {

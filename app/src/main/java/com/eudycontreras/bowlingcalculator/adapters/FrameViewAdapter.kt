@@ -7,7 +7,8 @@ import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.LinearInterpolator
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -57,6 +58,7 @@ class FrameViewAdapter(
     internal var lastSelected: Int? = null
 
     private var resetFlipSpeed: Long = 500
+    private var revealSpeed: Long = 200
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FrameViewHolder {
         return FrameViewHolder(LayoutInflater.from(context).inflate(com.eudycontreras.bowlingcalculator.R.layout.frame_item_view, parent, false))
@@ -77,10 +79,12 @@ class FrameViewAdapter(
     }
 
     internal fun adjustViewPort(index: Int) {
-        if (index == this.currentIndex) {
-            if ((index > (this.itemCount / 2)) || index == DEFAULT_START_INDEX) {
-                this.viewComponent.scrollToIndex(index)
-            }
+        if (index != currentIndex) {
+            return
+        }
+
+        if ((index > (itemCount / 2)) || index == DEFAULT_START_INDEX) {
+            this.viewComponent.scrollToIndex(index)
         }
     }
 
@@ -89,8 +93,15 @@ class FrameViewAdapter(
         lastReference = null
         currentIndex = DEFAULT_START_INDEX
         adjustViewPort(0)
-        runSequential(150, viewHolders.size) {
+        runSequential(80, viewHolders.size) {
             context.runOnUiThread { viewHolders[it]?.resetCell(resetFlipSpeed) }
+        }
+    }
+
+    internal fun revealAllFrames() {
+        adjustViewPort(0)
+        runSequential(120, viewHolders.size) {
+            context.runOnUiThread { viewHolders[it]?.revealCell(revealSpeed, this) }
         }
     }
 
@@ -123,8 +134,6 @@ class FrameViewAdapter(
             roundOneMark.isClickable = false
             roundTwoMark.isClickable = false
             roundExtraMark.isClickable = false
-
-            resetCell(300)
         }
 
         override fun onClick(view: View?) {
@@ -144,11 +153,11 @@ class FrameViewAdapter(
                                 bringCurrentToFront(frame, it)
                             }
                         }
-                    } else {
-                        if(frame is FrameLast && frame.isCompleted) {
-                            it.viewComponent.controller.performFrameSelection(frame.index)
-                            bringCurrentToFront(frame, it)
-                        } else { }
+                        return
+                    }
+                    if(frame is FrameLast && frame.isCompleted) {
+                        it.viewComponent.controller.performFrameSelection(frame.index)
+                        bringCurrentToFront(frame, it)
                     }
                 }
             }
@@ -160,6 +169,15 @@ class FrameViewAdapter(
                     onEnd?.invoke()
                     resetValues()
                 }
+            }
+        }
+
+        fun revealCell(
+            flipSpeed: Long,
+            adapter: FrameViewAdapter
+        ) {
+            frame?.let {
+                animateFrameReveal(flipSpeed, adapter)
             }
         }
 
@@ -204,7 +222,16 @@ class FrameViewAdapter(
         internal fun performBinding(adapter: FrameViewAdapter, frame: Frame) {
             this.frame = frame
             this.adapter = adapter
-            this.adapter!!.viewHolders[frame.index] = this
+
+            if (!adapter.viewHolders.any { holder -> holder?.layoutPosition == frame.index }) {
+                view.translationZ = 30.dp
+                view.translationY = (-20).dp
+                view.scaleX = 1.3f
+                view.scaleY = 1.3f
+                view.alpha = 0f
+            }
+
+            adapter.viewHolders[frame.index] = this
 
             frameIndex.text = (frame.index + 1).toString()
             frameScore.text = frame.getTotal(true).toString()
@@ -380,11 +407,36 @@ class FrameViewAdapter(
             animateMarkUnselected(viewHolder.roundExtraMark, adapter)
         }
 
+        private fun animateFrameReveal(
+            duration: Long,
+            adapter: FrameViewAdapter
+        ) {
+            var translateY = 0f
+            var translateZ = 0f
+
+            frame?.let {
+                if (adapter.currentIndex == it.index) {
+                    translateY = (-1).dp
+                    translateZ = 4.dp
+                }
+            }
+
+            view.animate()
+                .setInterpolator(DecelerateInterpolator())
+                .setDuration(duration)
+                .translationZ(translateZ)
+                .translationY(translateY)
+                .scaleX(1f)
+                .scaleY(1f)
+                .alpha(1f)
+                .start()
+        }
+
         private fun animateResetFrameCell(flipSpeed: Long, onEnd: (() -> Unit)? = null) {
             val animator = ValueAnimator.ofFloat(0f, 360f)
 
             animator.duration = flipSpeed
-            animator.interpolator = LinearInterpolator()
+            animator.interpolator = AccelerateDecelerateInterpolator()
 
             var showBack = false
 

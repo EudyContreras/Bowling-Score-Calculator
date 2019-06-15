@@ -1,4 +1,4 @@
-package com.eudycontreras.bowlingcalculator.persistance
+package com.eudycontreras.bowlingcalculator.persistance.primitive
 
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 
@@ -13,6 +13,8 @@ interface PrimitiveStorage {
     var bowler: Bowler
 
     var autoSave: Boolean
+
+    var hasBowler: Boolean
 
     fun restoreUserDefaults()
 }

@@ -2,6 +2,7 @@ package com.eudycontreras.bowlingcalculator.calculator.elements
 
 import com.eudycontreras.bowlingcalculator.DEFAULT_FRAME_COUNT
 import com.eudycontreras.bowlingcalculator.DEFAULT_START_INDEX
+import com.eudycontreras.bowlingcalculator.NO_ID
 import com.eudycontreras.bowlingcalculator.calculator.ScoreCalculator
 import com.eudycontreras.bowlingcalculator.calculator.listeners.ScoreStateListener
 import com.eudycontreras.bowlingcalculator.extensions.clamp
@@ -22,9 +23,11 @@ data class Bowler(
         PROFESSIONAL
     }
 
-    var id: Int  = 0
+    var id: Long  = NO_ID
 
-    val frames: List<Frame> = List(DEFAULT_FRAME_COUNT) { i ->
+    var resultId: Long? = null
+
+    var frames: List<Frame> = List(DEFAULT_FRAME_COUNT) { i ->
         if (i < DEFAULT_FRAME_COUNT - 1) {
             FrameNormal(i)
         } else {
@@ -32,12 +35,12 @@ data class Bowler(
         }
     }
 
-    var lastPlayedFrame: Frame = frames[DEFAULT_START_INDEX]
+    var lastPlayedFrameIndex: Int = DEFAULT_START_INDEX
 
     var currentFrameIndex: Int = DEFAULT_START_INDEX
         set(value) {
-            if (value > lastPlayedFrame.index) {
-                lastPlayedFrame = frames[value]
+            if (value > lastPlayedFrameIndex) {
+                lastPlayedFrameIndex = frames[value].index
             }
             field = value
         }
@@ -56,7 +59,7 @@ data class Bowler(
 
     override fun reset() {
         id = 0
-        lastPlayedFrame = frames[DEFAULT_START_INDEX]
+        lastPlayedFrameIndex = DEFAULT_START_INDEX
         currentFrameIndex = DEFAULT_START_INDEX
         frames.forEach { it.reset() }
         frames.forEach { it.rolls.clear() }
@@ -64,7 +67,7 @@ data class Bowler(
 
     fun performRoll(pinCount: Int, listener: ScoreStateListener? = null) {
 
-        val roll = Roll(totalKnockdown = pinCount)
+        val roll = Roll(bowlerId = this.id, totalKnockdown = pinCount)
 
         var currentFrame = getCurrentFrame()
 
@@ -139,7 +142,7 @@ data class Bowler(
     override fun hashCode(): Int {
         var result = name.hashCode()
         result = 31 * result + skill.hashCode()
-        result = 31 * result + id
+        result = 31 * result + id.toInt()
         return result
     }
 }

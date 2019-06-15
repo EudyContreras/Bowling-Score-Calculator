@@ -9,15 +9,12 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.Roll
 import com.eudycontreras.bowlingcalculator.calculator.listeners.ScoreStateListener
 import com.eudycontreras.bowlingcalculator.extensions.getComputedScore
 import com.eudycontreras.bowlingcalculator.extensions.sum
-import java.io.Serializable
 
 /**
  * Created by eudycontreras.
  */
 
-sealed class ScoreCalculator(
-    var name: String
-) : Serializable {
+sealed class ScoreCalculator {
 
     companion object {
 

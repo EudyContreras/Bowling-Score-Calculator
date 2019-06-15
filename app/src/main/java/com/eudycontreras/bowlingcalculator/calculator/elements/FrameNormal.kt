@@ -2,6 +2,7 @@ package com.eudycontreras.bowlingcalculator.calculator.elements
 
 import com.eudycontreras.bowlingcalculator.DEFAULT_FRAME_CHANCES
 import com.eudycontreras.bowlingcalculator.DEFAULT_PIN_COUNT
+import com.eudycontreras.bowlingcalculator.NO_ID
 
 /**
  * Created by eudycontreras.
@@ -9,13 +10,19 @@ import com.eudycontreras.bowlingcalculator.DEFAULT_PIN_COUNT
 
 data class FrameNormal(override var index: Int) : Frame() {
 
-    override val type: String = "FrameNormal"
+    companion object {
+        const val FRAME_NORMAL: String = "FrameNormal"
+    }
+
+    override var bowlerId: Long = NO_ID
+
+    override val type: String = FRAME_NORMAL
 
     override val rolls: LinkedHashMap<State, Roll> = LinkedHashMap()
 
     override var chances: Int = DEFAULT_FRAME_CHANCES
 
-    override val pins: List<Pin> = List(DEFAULT_PIN_COUNT) { i -> Pin(i) }
+    override var pins: List<Pin> = List(DEFAULT_PIN_COUNT) { Pin() }
 
     override var state: State = State.FIRST_CHANCE
 

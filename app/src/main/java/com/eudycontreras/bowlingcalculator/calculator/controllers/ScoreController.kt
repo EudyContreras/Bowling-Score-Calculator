@@ -46,6 +46,7 @@ class ScoreController(val bowler: Bowler) : ScoreStateListener, BowlerActionList
     override fun onFrameSelected(frameIndex: Int) {
         bowler.currentFrameIndex = frameIndex
         statsController.setCurrentFrame(frameIndex + 1)
+        actionController.updateActionInput(bowler.getCurrentFrame().pinUpCount())
         allowRedoChance(bowler.getCurrentFrame(), Frame.State.FIRST_CHANCE)
     }
 
@@ -54,12 +55,12 @@ class ScoreController(val bowler: Bowler) : ScoreStateListener, BowlerActionList
         statsController.updateTotalScore(totalScore)
         statsController.updateMaxPossibleScore(totalPossible)
         statsController.setCurrentFrame(current.index + 1)
+        actionController.updateActionInput(current.pinUpCount())
         if (current is FrameLast) {
             if (current.isCompleted) {
                 actionController.deactivateAllInput()
                 return
             }
         }
-        actionController.updateActionInput(current.pinUpCount())
     }
 }

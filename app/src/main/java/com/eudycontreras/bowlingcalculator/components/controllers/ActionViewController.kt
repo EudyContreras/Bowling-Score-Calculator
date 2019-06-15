@@ -31,11 +31,19 @@ class ActionViewController(
 
     }
 
+    fun handleLoadAction() {
+
+    }
+
     fun updateActionInput(remainingPins: Int) {
         viewComponent.setAvailablePins(remainingPins)
     }
 
     fun deactivateAllInput() {
         viewComponent.setAvailablePins(-1)
+    }
+
+    fun revealPins() {
+        viewComponent.revealAvailablePins()
     }
 }

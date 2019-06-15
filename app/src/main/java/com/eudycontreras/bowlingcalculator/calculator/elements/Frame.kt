@@ -15,6 +15,12 @@ abstract class Frame : Element {
         CLEARED
     }
 
+    companion object {
+        const val TYPE_KEY: String = "type"
+    }
+
+    abstract var bowlerId: Long
+
     abstract var index: Int
 
     abstract val type: String

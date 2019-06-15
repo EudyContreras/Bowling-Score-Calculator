@@ -5,11 +5,9 @@ package com.eudycontreras.bowlingcalculator.calculator.elements
  */
 
 
-data class Pin(var id: Int = 0) : Element {
+data class Pin(var state: State = State.UP) : Element {
 
     enum class State { UP, DOWN, ALL }
-
-    var state: State = State.UP
 
     override fun init() {
         reset()

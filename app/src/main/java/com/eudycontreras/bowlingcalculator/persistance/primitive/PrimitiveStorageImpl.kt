@@ -1,4 +1,4 @@
-package com.eudycontreras.bowlingcalculator.persistance
+package com.eudycontreras.bowlingcalculator.persistance.primitive
 
 import android.content.Context
 import android.preference.PreferenceManager
@@ -15,7 +15,8 @@ import com.google.gson.GsonBuilder
  * Created by eudycontreras.
  */
 
-class SharedPreferencesStorage(context: Context) : PrimitiveStorage {
+class PrimitiveStorageImpl(context: Context) :
+    PrimitiveStorage {
 
     companion object {
         private const val ACTIVE_USER = "active_user"
@@ -23,6 +24,9 @@ class SharedPreferencesStorage(context: Context) : PrimitiveStorage {
 
         private const val AUTO_SAVE = "auto_save"
         private const val AUTO_SAVE_DEFAULT = false
+
+        private const val HAS_BOWLER = "auto_save"
+        private const val HAS_BOWLER_DEFAULT = false
 
         private const val BOWLER = "auto_save"
         private val BOWLER_DEFAULT = null
@@ -38,12 +42,25 @@ class SharedPreferencesStorage(context: Context) : PrimitiveStorage {
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     override var userName: String?
-        get() = sharedPreferences.getString(ACTIVE_USER, ACTIVE_USER_DEFAULT)
+        get() = sharedPreferences.getString(
+            ACTIVE_USER,
+            ACTIVE_USER_DEFAULT
+        )
         set(value) = sharedPreferences.edit { putString(ACTIVE_USER, value) }
 
     override var autoSave: Boolean
-        get() = sharedPreferences.getBoolean(AUTO_SAVE, AUTO_SAVE_DEFAULT)
+        get() = sharedPreferences.getBoolean(
+            AUTO_SAVE,
+            AUTO_SAVE_DEFAULT
+        )
         set(value) = sharedPreferences.edit { putBoolean(AUTO_SAVE, value) }
+
+    override var hasBowler: Boolean
+        get() = sharedPreferences.getBoolean(
+            HAS_BOWLER,
+            HAS_BOWLER_DEFAULT
+        )
+        set(value) = sharedPreferences.edit { putBoolean(HAS_BOWLER, value) }
 
     override var bowler: Bowler
         get() = if (sharedPreferences.getString(BOWLER, BOWLER_DEFAULT) == null) {
@@ -55,9 +72,18 @@ class SharedPreferencesStorage(context: Context) : PrimitiveStorage {
 
     override fun restoreUserDefaults() {
         sharedPreferences.edit {
-            putString(ACTIVE_USER, ACTIVE_USER_DEFAULT)
-            putBoolean(AUTO_SAVE, AUTO_SAVE_DEFAULT)
-            putString(BOWLER, BOWLER_DEFAULT)
+            putString(
+                ACTIVE_USER,
+                ACTIVE_USER_DEFAULT
+            )
+            putBoolean(
+                AUTO_SAVE,
+                AUTO_SAVE_DEFAULT
+            )
+            putString(
+                BOWLER,
+                BOWLER_DEFAULT
+            )
         }
     }
 }

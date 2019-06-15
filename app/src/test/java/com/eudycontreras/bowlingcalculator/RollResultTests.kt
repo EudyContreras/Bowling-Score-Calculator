@@ -39,8 +39,6 @@ class RollResultTests {
     fun exampleRollTestTwo() {
 
         val bowler = Bowler()
-        bowler.init()
-        bowler.reset()
 
         val strike = 10
 

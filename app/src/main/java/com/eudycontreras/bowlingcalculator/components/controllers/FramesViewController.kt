@@ -22,7 +22,7 @@ class FramesViewController(
     }
 
     fun canSelect(wantedIndex: Int, lastIndex: Int? = null): Boolean {
-        val canProceed = scoreController.bowler.lastPlayedFrame.index >= wantedIndex
+        val canProceed = scoreController.bowler.lastPlayedFrameIndex >= wantedIndex
 
         if (lastIndex != null) {
             val frame: Frame = scoreController.bowler.frames[lastIndex]
@@ -47,6 +47,10 @@ class FramesViewController(
 
     fun resetFrames() {
         viewComponent.resetFrames()
+    }
+
+    fun revealFrames() {
+        viewComponent.revealFrames()
     }
 
     fun performFrameSelection(index: Int) {

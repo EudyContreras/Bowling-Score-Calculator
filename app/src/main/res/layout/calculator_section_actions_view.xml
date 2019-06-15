@@ -9,7 +9,7 @@
         android:layout_height="60dp" >
     <LinearLayout
             android:id="@+id/actionClearScore"
-            android:layout_width="wrap_content"
+            android:layout_width="105dp"
             android:layout_height="match_parent"
             android:background="@drawable/shape_button"
             android:layout_marginTop="@dimen/margin_large"
@@ -75,41 +75,57 @@
     </FrameLayout>
 
     <LinearLayout
-            android:visibility="gone"
-            android:id="@+id/actionSaveScore"
-            android:layout_width="wrap_content"
+            android:visibility="visible"
+            android:id="@+id/actionLoadSaveScore"
+            android:layout_width="105dp"
             android:layout_height="match_parent"
-            android:background="@drawable/shape_button"
             android:layout_marginTop="@dimen/margin_large"
             android:layout_marginBottom="@dimen/margin_large"
             android:layout_marginStart="@dimen/margin_medium"
             android:layout_marginEnd="@dimen/margin_medium"
-            android:backgroundTint="@color/colorActionButton"
-            android:elevation="0dp"
-            android:translationZ="2dp"
+            android:baselineAligned="false"
+            android:clipToPadding="false"
+            android:clipChildren="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent">
-        <View
-                android:id="@+id/actionSaveScoreIcon"
-                android:layout_width="@dimen/actionIcon_small"
-                android:layout_height="@dimen/actionIcon_small"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_medium"
-                android:background="@drawable/ic_save_score"/>
 
-        <TextView
-                android:id="@+id/actionSaveScoreText"
-                android:layout_width="wrap_content"
+        <FrameLayout
+                android:id="@+id/actionLoadScore"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/shape_button_left"
+                android:backgroundTint="@color/colorAccent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:textStyle="bold"
-                android:textColor="@color/white"
-                android:textAlignment="gravity"
-                android:textAppearance="@style/TextAppearance.AppCompat.Button"
-                android:paddingEnd="@dimen/padding_extra_large"
-                android:paddingStart="@dimen/padding_medium"
-                android:gravity="center"
-                android:text="@string/action_save"/>
+                android:elevation="1dp"
+                android:translationZ="3dp">
+            <View
+                    android:id="@+id/actionLoadScoreIcon"
+                    android:layout_gravity="center"
+                    android:layout_width="@dimen/actionIcon_small"
+                    android:layout_height="@dimen/actionIcon_small"
+                    android:background="@drawable/ic_load_result"/>
+        </FrameLayout>
+
+        <FrameLayout
+                android:id="@+id/actionSaveScore"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/shape_button_right"
+                android:backgroundTint="@color/colorAccent"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:elevation="1dp"
+                android:translationZ="3dp">
+            <View
+                    android:id="@+id/actionSaveScoreIcon"
+                    android:layout_gravity="center"
+                    android:layout_width="@dimen/actionIcon_small"
+                    android:layout_height="@dimen/actionIcon_small"
+                    android:background="@drawable/ic_save_result"/>
+        </FrameLayout>
+
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
