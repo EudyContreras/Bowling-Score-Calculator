@@ -10,6 +10,11 @@
     <string name="action_settings">settings</string>
     <string name="load_result">Load a result</string>
     <string name="save_result">Save result</string>
-    <string name="save">save</string>
-    <string name="cancel">cancel</string>
+    <string name="create_result">Create result sheet</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="clear">Clear</string>
+    <string name="no_result_name">No name given!</string>
+    <string name="create_bowler">Enter bowler\'s name</string>
+    <string name="max_input_count_reached">Max allowed reached!</string>
 </resources>

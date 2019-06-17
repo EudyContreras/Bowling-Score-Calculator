@@ -1,5 +1,6 @@
 package com.eudycontreras.bowlingcalculator.repositories
 
+import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.eudycontreras.bowlingcalculator.Application
@@ -22,16 +23,14 @@ class RollRepositoryImpl(
 
     private val appExecutor: AppExecutors = application.appExecutor
 
+    @WorkerThread
     override fun saveRolls(rolls: List<Roll>) {
-        appExecutor.ioThread {
-            rollDao.insert(rolls.map { RollEntity.from(it) })
-        }
+        rollDao.insert(rolls.map { RollEntity.from(it) })
     }
 
+    @WorkerThread
     override fun updateRolls(frame: Frame, rolls: List<Roll>) {
-        appExecutor.ioThread {
-            rollDao.update(rolls.map { RollEntity.from(it) })
-        }
+        rollDao.update(rolls.map { RollEntity.from(it) })
     }
 
     override fun getRolls(bowler: Bowler): LiveData<List<Roll>> {
@@ -67,22 +66,18 @@ class RollRepositoryImpl(
         return liveData
     }
 
+    @WorkerThread
     override fun delete(bowler: Bowler) {
-        appExecutor.ioThread {
-            rollDao.delete(bowler.id)
-        }
+        rollDao.delete(bowler.id)
     }
 
+    @WorkerThread
     override fun delete(frame: Frame) {
-        appExecutor.ioThread {
-            rollDao.delete(frame.index, frame.bowlerId)
-        }
+        rollDao.delete(frame.index, frame.bowlerId)
     }
 
+    @WorkerThread
     override fun deleteAll() {
-        appExecutor.ioThread {
-            rollDao.clear()
-        }
+        rollDao.clear()
     }
-
 }

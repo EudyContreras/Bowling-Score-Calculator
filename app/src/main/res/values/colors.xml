@@ -3,6 +3,7 @@
     <color name="colorPrimary">#212121</color>
     <color name="colorPrimaryDark">#212121</color>
     <color name="colorPrimaryLight">#2B2B2B</color>
+    <color name="colorPrimaryVeryLight">#373737</color>
 
     <color name="colorAccent">#B71C1C</color>
     <color name="colorAccentLight">#C62828</color>
@@ -12,7 +13,8 @@
     <color name="gray">#D6D6D6</color>
 
     <color name="shadow">#40000000</color>
-    <color name="shadowDark">#75000000</color>
+    <color name="shadowDark">#A0000000</color>
+    <color name="transparent">#00000000</color>
 
     <color name="background">#EFEFEF</color>
 
@@ -24,4 +26,5 @@
     <color name="frameMarkInactive">#DEDEDE</color>
 
     <color name="colorActionButton">#212121</color>
+
 </resources>

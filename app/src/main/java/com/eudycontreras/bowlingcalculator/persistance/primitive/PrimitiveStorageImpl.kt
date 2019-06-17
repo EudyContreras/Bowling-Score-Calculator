@@ -3,13 +3,12 @@ package com.eudycontreras.bowlingcalculator.persistance.primitive
 import android.content.Context
 import android.preference.PreferenceManager
 import androidx.core.content.edit
+import com.eudycontreras.bowlingcalculator.DEFAULT_BOWLER_NAME
 import com.eudycontreras.bowlingcalculator.adapters.FrameTypeAdapter
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-
-
 
 /**
  * Created by eudycontreras.
@@ -27,6 +26,9 @@ class PrimitiveStorageImpl(context: Context) :
 
         private const val HAS_BOWLER = "auto_save"
         private const val HAS_BOWLER_DEFAULT = false
+
+        private const val ACTIVE_TAB_INDEX = "active_tab_index"
+        private const val ACTIVE_TAB_INDEX_DEFAULT = 0
 
         private const val BOWLER = "auto_save"
         private val BOWLER_DEFAULT = null
@@ -55,6 +57,13 @@ class PrimitiveStorageImpl(context: Context) :
         )
         set(value) = sharedPreferences.edit { putBoolean(AUTO_SAVE, value) }
 
+    override var activeTab: Int
+        get() = sharedPreferences.getInt(
+            ACTIVE_TAB_INDEX,
+            ACTIVE_TAB_INDEX_DEFAULT
+        )
+        set(value) = sharedPreferences.edit { putInt(ACTIVE_TAB_INDEX, value) }
+
     override var hasBowler: Boolean
         get() = sharedPreferences.getBoolean(
             HAS_BOWLER,
@@ -64,7 +73,7 @@ class PrimitiveStorageImpl(context: Context) :
 
     override var bowler: Bowler
         get() = if (sharedPreferences.getString(BOWLER, BOWLER_DEFAULT) == null) {
-            Bowler()
+            Bowler(name = DEFAULT_BOWLER_NAME)
         } else {
             gson.fromJson(sharedPreferences.getString(BOWLER, BOWLER_DEFAULT)!!, Bowler::class.java)
         }

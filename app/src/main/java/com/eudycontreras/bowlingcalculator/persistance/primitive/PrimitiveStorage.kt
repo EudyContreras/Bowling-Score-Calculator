@@ -16,5 +16,7 @@ interface PrimitiveStorage {
 
     var hasBowler: Boolean
 
+    var activeTab: Int
+
     fun restoreUserDefaults()
 }

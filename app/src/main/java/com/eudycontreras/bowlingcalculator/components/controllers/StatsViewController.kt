@@ -2,18 +2,18 @@ package com.eudycontreras.bowlingcalculator.components.controllers
 
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
-import com.eudycontreras.bowlingcalculator.components.StatsViewComponent
+import com.eudycontreras.bowlingcalculator.components.views.StatsViewComponent
 
 /**
  * Created by eudycontreras.
  */
 
 class StatsViewController(
-    context: MainActivity,
+    private val context: MainActivity,
     scoreController: ScoreController
 ) {
 
-    var showStats = false
+    var showStats = true
 
     private var viewComponent: StatsViewComponent = StatsViewComponent(context, this)
 

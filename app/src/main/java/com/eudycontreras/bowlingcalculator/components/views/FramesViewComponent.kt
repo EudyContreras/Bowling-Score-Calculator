@@ -1,4 +1,4 @@
-package com.eudycontreras.bowlingcalculator.components
+package com.eudycontreras.bowlingcalculator.components.views
 
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -9,7 +9,6 @@ import com.eudycontreras.bowlingcalculator.adapters.FrameViewAdapter
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
 import com.eudycontreras.bowlingcalculator.components.controllers.FramesViewController
-import com.eudycontreras.bowlingcalculatorchallenge.view_components.ViewComponent
 import kotlinx.android.synthetic.main.activity_main.*
 
 /**

@@ -1,4 +1,4 @@
-package com.eudycontreras.bowlingcalculatorchallenge.view_components
+package com.eudycontreras.bowlingcalculator.components.views
 
 import android.view.View
 

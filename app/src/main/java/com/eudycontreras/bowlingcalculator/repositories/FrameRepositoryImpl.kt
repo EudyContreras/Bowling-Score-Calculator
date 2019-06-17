@@ -1,5 +1,6 @@
 package com.eudycontreras.bowlingcalculator.repositories
 
+import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.eudycontreras.bowlingcalculator.Application
@@ -21,16 +22,14 @@ class FrameRepositoryImpl(
 
     private val appExecutor: AppExecutors = application.appExecutor
 
+    @WorkerThread
     override fun saveFrames(frames: List<Frame>) {
-        appExecutor.ioThread {
-            frameDao.insert(frames.map { FrameEntity.from(it) })
-        }
+        frameDao.insert(frames.map { FrameEntity.from(it) })
     }
 
+    @WorkerThread
     override fun updateFrames(bower: Bowler, frames: List<Frame>) {
-        appExecutor.ioThread {
-            frameDao.update(frames.map { FrameEntity.from(it) })
-        }
+        frameDao.update(frames.map { FrameEntity.from(it) })
     }
 
     override fun getFrames(bower: Bowler): LiveData<List<Frame>> {
@@ -41,15 +40,13 @@ class FrameRepositoryImpl(
         }
     }
 
+    @WorkerThread
     override fun deleteFrames(bowler: Bowler) {
-        appExecutor.ioThread {
-            frameDao.delete(bowler.id)
-        }
+        frameDao.delete(bowler.id)
     }
 
+    @WorkerThread
     override fun deleteAll() {
-        appExecutor.ioThread {
-            frameDao.clear()
-        }
+        frameDao.clear()
     }
 }

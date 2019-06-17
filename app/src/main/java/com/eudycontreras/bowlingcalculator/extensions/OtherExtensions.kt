@@ -1,6 +1,7 @@
 package com.eudycontreras.bowlingcalculator.extensions
 
 import android.app.Activity
+import android.util.DisplayMetrics
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Transformations
@@ -28,6 +29,16 @@ fun List<Frame>.getComputedScore(): Int {
 val Activity.app: Application
     get() = application as Application
 
+fun Activity.dimensions(): Pair<Int, Int> {
+    val displayMetrics = DisplayMetrics()
+
+    windowManager.defaultDisplay.getMetrics(displayMetrics)
+
+    val width = displayMetrics.widthPixels
+    val height = displayMetrics.heightPixels
+
+    return Pair(width, height)
+}
 
 fun <X, Y> LiveData<X>.switchMap(func: (X) -> LiveData<Y>): LiveData<Y> {
     return Transformations.switchMap(this, func)

@@ -4,7 +4,7 @@ import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
-import com.eudycontreras.bowlingcalculator.components.FramesViewComponent
+import com.eudycontreras.bowlingcalculator.components.views.FramesViewComponent
 
 /**
  * Created by eudycontreras.

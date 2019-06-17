@@ -1,4 +1,4 @@
-package com.eudycontreras.bowlingcalculator.components
+package com.eudycontreras.bowlingcalculator.components.views
 
 import android.view.View
 import android.widget.TextView
@@ -7,7 +7,6 @@ import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.components.controllers.StatsViewController
 import com.eudycontreras.bowlingcalculator.toString
-import com.eudycontreras.bowlingcalculatorchallenge.view_components.ViewComponent
 import kotlinx.android.synthetic.main.activity_main.*
 
 

@@ -9,7 +9,7 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.Result
 
 interface ResultRepository {
 
-    fun saveResult(result: Result)
+    fun saveResult(result: Result, listener: ((id: Long, name: String) -> Unit)? = null)
 
     fun updateResult(result: Result)
 

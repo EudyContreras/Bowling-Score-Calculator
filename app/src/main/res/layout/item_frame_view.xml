@@ -28,7 +28,7 @@
             app:layout_constraintStart_toStartOf="parent"/>
 
     <include
-            layout="@layout/frame_item_mark_view"
+            layout="@layout/item_frame_view_mark"
             android:id="@+id/firstRoundMark"
             android:layout_width="@dimen/mark"
             android:layout_height="@dimen/mark"
@@ -38,7 +38,7 @@
             app:layout_constraintStart_toEndOf="@id/frameIndex"/>
 
     <include
-            layout="@layout/frame_item_mark_view"
+            layout="@layout/item_frame_view_mark"
             android:id="@+id/secondRoundMark"
             android:layout_width="@dimen/mark"
             android:layout_height="@dimen/mark"
@@ -48,7 +48,7 @@
             app:layout_constraintStart_toEndOf="@id/firstRoundMark"/>
 
     <include
-            layout="@layout/frame_item_mark_view"
+            layout="@layout/item_frame_view_mark"
             android:id="@+id/extraRoundMark"
             android:layout_width="@dimen/mark"
             android:layout_height="@dimen/mark"

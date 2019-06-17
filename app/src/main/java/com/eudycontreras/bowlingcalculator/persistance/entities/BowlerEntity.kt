@@ -19,14 +19,14 @@ data class BowlerEntity(
 ) {
 
     @PrimaryKey(autoGenerate = true)
-    var id: Long = NO_ID
+    var id: Long? = null
 
     fun toBowler(): Bowler {
         return Bowler(name, skill).apply {
             lastPlayedFrameIndex = this@BowlerEntity.lastPlayedFrameIndex
             currentFrameIndex = this@BowlerEntity.currentFrameIndex
-            resultId = this@BowlerEntity.resultId
-            id = this@BowlerEntity.id
+            resultId = this@BowlerEntity.resultId ?: NO_ID
+            id = this@BowlerEntity.id ?: NO_ID
         }
     }
 
@@ -38,7 +38,7 @@ data class BowlerEntity(
                 resultId = bowler.resultId,
                 lastPlayedFrameIndex = bowler.lastPlayedFrameIndex,
                 currentFrameIndex = bowler.currentFrameIndex
-            ).also { it.id = bowler.id }
+            ).also { it.id = if (bowler.id == NO_ID) null else bowler.id }
         }
     }
 }

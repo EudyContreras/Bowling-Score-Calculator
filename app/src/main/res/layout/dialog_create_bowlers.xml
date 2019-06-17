@@ -7,6 +7,9 @@
         android:backgroundTint="@color/colorPrimary"
         android:elevation="2dp"
         android:translationZ="18dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:minWidth="260dp"
         android:padding="@dimen/margin_large"
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -14,8 +17,8 @@
         tools:context=".activities.MainActivity">
 
     <TextView
-            android:id="@+id/saveDialogLabel"
-            android:text="@string/save_result"
+            android:id="@+id/createDialogLabel"
+            android:text="@string/create_bowler"
             android:textAlignment="gravity"
             android:textColor="@color/white"
             android:gravity="center"
@@ -27,29 +30,20 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
 
-
-    <FrameLayout
-            android:id="@+id/saveDialogInputContainer"
-            android:background="@drawable/shape_button"
-            android:paddingStart="@dimen/padding"
-            android:paddingEnd="@dimen/padding"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/createDialogInputRecycler"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:maxHeight="350dp"
             android:layout_marginStart="@dimen/margin_medium"
             android:layout_marginEnd="@dimen/margin_medium"
             android:layout_marginTop="@dimen/margin_extra_large"
-            app:layout_constraintTop_toBottomOf="@+id/saveDialogLabel">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/createDialogLabel"/>
 
-        <EditText
-                android:id="@+id/saveDialogInput"
-                android:background="@null"
-                android:singleLine="true"
-                android:inputType="textPersonName"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-    </FrameLayout>
     <LinearLayout
-            android:id="@+id/dialogSaveCancel"
+            android:id="@+id/dialogCreateCancel"
             android:layout_width="115dp"
             android:layout_height="35dp"
             android:background="@drawable/shape_button"
@@ -61,9 +55,9 @@
             android:translationZ="4dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/saveDialogInputContainer">
+            app:layout_constraintTop_toBottomOf="@+id/createDialogInputRecycler">
         <View
-                android:id="@+id/dialogSaveCancelIcon"
+                android:id="@+id/dialogCreateCancelIcon"
                 android:layout_width="@dimen/actionIcon"
                 android:layout_height="@dimen/actionIcon"
                 android:layout_gravity="center"
@@ -71,7 +65,7 @@
                 android:background="@drawable/ic_cancel"/>
 
         <TextView
-                android:id="@+id/dialogSaveCancelText"
+                android:id="@+id/dialogCreateancelText"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
@@ -84,8 +78,34 @@
                 android:gravity="center"
                 android:text="@string/cancel"/>
     </LinearLayout>
+
+
+    <FrameLayout
+            android:id="@+id/createDialogAddInput"
+            android:layout_marginStart="@dimen/margin_large"
+            android:layout_marginEnd="@dimen/margin"
+            android:layout_gravity="end|center"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/shape_circle"
+            android:backgroundTint="@color/colorAccent"
+            android:elevation="1dp"
+            android:translationZ="8dp"
+            app:layout_constraintStart_toEndOf="@id/dialogCreateCancel"
+            app:layout_constraintEnd_toStartOf="@id/dialogCreateSubmit"
+            app:layout_constraintTop_toTopOf="@+id/dialogCreateCancel"
+            app:layout_constraintBottom_toBottomOf="@+id/dialogCreateCancel">
+        <View
+                android:layout_gravity="center"
+                android:background="@drawable/ic_add"
+                android:backgroundTint="@color/white"
+                android:layout_width="24dp"
+                android:layout_height="24dp"/>
+    </FrameLayout>
+
+
     <LinearLayout
-            android:id="@+id/dialogSaveSubmit"
+            android:id="@+id/dialogCreateSubmit"
             android:layout_width="115dp"
             android:layout_height="35dp"
             android:background="@drawable/shape_button"
@@ -99,9 +119,9 @@
             android:translationZ="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/saveDialogInputContainer">
+            app:layout_constraintTop_toBottomOf="@+id/createDialogInputRecycler">
         <View
-                android:id="@+id/dialogSaveSubmitIcon"
+                android:id="@+id/dialogCreateSubmitIcon"
                 android:layout_width="@dimen/actionIcon_small"
                 android:layout_height="@dimen/actionIcon_small"
                 android:layout_gravity="center"
@@ -109,7 +129,7 @@
                 android:background="@drawable/ic_save_score"/>
 
         <TextView
-                android:id="@+id/dialogSaveSubmitText"
+                android:id="@+id/dialogCreateSubmitText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="@dimen/margin"

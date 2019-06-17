@@ -15,23 +15,23 @@
         android:layout_height="60dp">
 
     <include
-            layout="@layout/input_item_view"/>
+            layout="@layout/item_input_view"/>
     <include
-            layout="@layout/input_item_view"/>
+            layout="@layout/item_input_view"/>
     <include
-            layout="@layout/input_item_view"/>
+            layout="@layout/item_input_view"/>
     <include
-            layout="@layout/input_item_view"/>
+            layout="@layout/item_input_view"/>
     <include
-            layout="@layout/input_item_view"/>
+            layout="@layout/item_input_view"/>
     <include
-            layout="@layout/input_item_view"/>
+            layout="@layout/item_input_view"/>
     <include
-            layout="@layout/input_item_view"/>
+            layout="@layout/item_input_view"/>
     <include
-            layout="@layout/input_item_view"/>
+            layout="@layout/item_input_view"/>
     <include
-            layout="@layout/input_item_view"/>
+            layout="@layout/item_input_view"/>
     <include
-            layout="@layout/input_item_view"/>
+            layout="@layout/item_input_view"/>
 </LinearLayout>

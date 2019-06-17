@@ -10,6 +10,7 @@ import com.eudycontreras.bowlingcalculator.calculator.listeners.ScoreStateListen
 import com.eudycontreras.bowlingcalculator.components.controllers.ActionViewController
 import com.eudycontreras.bowlingcalculator.components.controllers.FramesViewController
 import com.eudycontreras.bowlingcalculator.components.controllers.StatsViewController
+import com.eudycontreras.bowlingcalculator.components.controllers.TabsViewController
 
 
 /**
@@ -21,6 +22,7 @@ class ScoreController(val bowler: Bowler) : ScoreStateListener, BowlerActionList
     lateinit var actionController: ActionViewController
     lateinit var framesController: FramesViewController
     lateinit var statsController: StatsViewController
+    lateinit var tabsController: TabsViewController
 
     private fun allowRedoChance(frame: Frame, chance: Frame.State) {
         bowler.currentFrameIndex = frame.index
@@ -40,7 +42,6 @@ class ScoreController(val bowler: Bowler) : ScoreStateListener, BowlerActionList
         statsController.setCurrentFrame(bowler.currentFrameIndex + 1)
         actionController.updateActionInput(DEFAULT_PIN_COUNT)
         framesController.resetFrames()
-
     }
 
     override fun onFrameSelected(frameIndex: Int) {
@@ -62,5 +63,9 @@ class ScoreController(val bowler: Bowler) : ScoreStateListener, BowlerActionList
                 return
             }
         }
+    }
+
+    fun selectBowler(bowlerId: Long) {
+
     }
 }

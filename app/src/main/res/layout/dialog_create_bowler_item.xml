@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:background="@drawable/shape_button"
+        android:backgroundTint="@color/white"
+        android:paddingStart="@dimen/padding"
+        android:paddingEnd="@dimen/padding_small"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_marginBottom="@dimen/margin_medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/createDialogLabel">
+
+    <EditText
+            android:id="@+id/createDialogInput"
+            android:focusable="true"
+            android:singleLine="true"
+            android:inputType="textPersonName"
+            android:background="@null"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    <FrameLayout
+            android:id="@+id/createDialogInputDelete"
+            android:layout_marginStart="4dp"
+            android:layout_gravity="end|center_vertical"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/shape_circle"
+            android:backgroundTint="@color/colorPrimaryLight"
+            android:elevation="1dp"
+            android:translationZ="6dp">
+        <View
+                android:layout_gravity="center"
+                android:background="@drawable/ic_clear"
+                android:backgroundTint="@color/white"
+                android:layout_width="24dp"
+                android:layout_height="24dp"/>
+    </FrameLayout>
+</FrameLayout>

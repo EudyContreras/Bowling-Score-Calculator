@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 2,
-    "identityHash": "d9087a8dd116799337a96a4a883953ff",
+    "version": 3,
+    "identityHash": "c093a497e9d415545f04ebb4d6b507b3",
     "entities": [
       {
         "tableName": "Bowlers",
@@ -56,13 +56,13 @@
       },
       {
         "tableName": "Frames",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bowlerId` INTEGER, `type` TEXT NOT NULL, `index` INTEGER NOT NULL, `chances` INTEGER NOT NULL, `pinsUp` INTEGER NOT NULL, `state` TEXT NOT NULL, `bonusPoints` INTEGER NOT NULL, `pointsFromPrevious` INTEGER NOT NULL, PRIMARY KEY(`index`, `bowlerId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bowlerId` INTEGER NOT NULL, `type` TEXT NOT NULL, `index` INTEGER NOT NULL, `chances` INTEGER NOT NULL, `pinsUp` INTEGER NOT NULL, `state` TEXT NOT NULL, `bonusPoints` INTEGER NOT NULL, `pointsFromPrevious` INTEGER NOT NULL, PRIMARY KEY(`index`, `bowlerId`))",
         "fields": [
           {
             "fieldPath": "bowlerId",
             "columnName": "bowlerId",
             "affinity": "INTEGER",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "type",
@@ -129,13 +129,13 @@
       },
       {
         "tableName": "Rolls",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bowlerId` INTEGER, `frameIndex` INTEGER NOT NULL, `parentState` TEXT NOT NULL, `totalKnockdown` INTEGER NOT NULL, `result` TEXT NOT NULL, PRIMARY KEY(`bowlerId`, `frameIndex`, `parentState`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bowlerId` INTEGER NOT NULL, `frameIndex` INTEGER NOT NULL, `parentState` TEXT NOT NULL, `totalKnockdown` INTEGER NOT NULL, `result` TEXT NOT NULL, PRIMARY KEY(`bowlerId`, `frameIndex`, `parentState`))",
         "fields": [
           {
             "fieldPath": "bowlerId",
             "columnName": "bowlerId",
             "affinity": "INTEGER",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "frameIndex",
@@ -220,7 +220,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd9087a8dd116799337a96a4a883953ff')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c093a497e9d415545f04ebb4d6b507b3')"
     ]
   }
 }

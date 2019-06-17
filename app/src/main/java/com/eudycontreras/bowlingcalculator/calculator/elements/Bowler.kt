@@ -23,9 +23,9 @@ data class Bowler(
         PROFESSIONAL
     }
 
-    var id: Long  = NO_ID
+    var id: Long = NO_ID
 
-    var resultId: Long? = null
+    var resultId: Long = NO_ID
 
     var frames: List<Frame> = List(DEFAULT_FRAME_COUNT) { i ->
         if (i < DEFAULT_FRAME_COUNT - 1) {
@@ -142,7 +142,7 @@ data class Bowler(
     override fun hashCode(): Int {
         var result = name.hashCode()
         result = 31 * result + skill.hashCode()
-        result = 31 * result + id.toInt()
+        result = 31 * result + (id ?: NO_ID).toInt()
         return result
     }
 }

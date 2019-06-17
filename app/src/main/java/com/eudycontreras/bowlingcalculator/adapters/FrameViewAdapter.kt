@@ -19,16 +19,15 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
 import com.eudycontreras.bowlingcalculator.calculator.elements.FrameLast
 import com.eudycontreras.bowlingcalculator.calculator.elements.FrameNormal
 import com.eudycontreras.bowlingcalculator.calculator.elements.Roll
-import com.eudycontreras.bowlingcalculator.components.FramesViewComponent
+import com.eudycontreras.bowlingcalculator.components.views.FramesViewComponent
 import com.eudycontreras.bowlingcalculator.extensions.animateColor
 import com.eudycontreras.bowlingcalculator.extensions.dp
 import com.eudycontreras.bowlingcalculator.extensions.hide
 import com.eudycontreras.bowlingcalculator.extensions.show
 import com.eudycontreras.bowlingcalculator.runSequential
-import kotlinx.android.synthetic.main.frame_item_mark_view.view.*
-import kotlinx.android.synthetic.main.frame_item_view.view.*
+import kotlinx.android.synthetic.main.item_frame_view.view.*
+import kotlinx.android.synthetic.main.item_frame_view_mark.view.*
 import java.lang.ref.WeakReference
-
 
 /**
  * Created by eudycontreras.
@@ -61,7 +60,7 @@ class FrameViewAdapter(
     private var revealSpeed: Long = 200
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FrameViewHolder {
-        return FrameViewHolder(LayoutInflater.from(context).inflate(com.eudycontreras.bowlingcalculator.R.layout.frame_item_view, parent, false))
+        return FrameViewHolder(LayoutInflater.from(context).inflate(R.layout.item_frame_view, parent, false))
     }
 
     override fun onViewRecycled(holder: FrameViewHolder) {

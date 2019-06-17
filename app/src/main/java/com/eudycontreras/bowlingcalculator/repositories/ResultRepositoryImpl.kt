@@ -1,5 +1,6 @@
 package com.eudycontreras.bowlingcalculator.repositories
 
+import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.eudycontreras.bowlingcalculator.Application
@@ -14,28 +15,26 @@ import com.eudycontreras.bowlingcalculator.utilities.AppExecutors
  */
 
 class ResultRepositoryImpl(
-    application: Application,
+    private val application: Application,
     private val resultDao: ResultsDao
 ) : ResultRepository {
 
     private val appExecutor: AppExecutors = application.appExecutor
 
-    override fun saveResult(result: Result) {
-        appExecutor.ioThread {
-            resultDao.insert(ResultEntity.from(result))
-        }
+    @WorkerThread
+    override fun saveResult(result: Result, listener: ((id: Long, name: String) -> Unit)?) {
+        resultDao.insert(ResultEntity.from(result))
+        listener?.invoke(result.id, result.name)
     }
 
+    @WorkerThread
     override fun updateResult(result: Result) {
-        appExecutor.ioThread {
-            resultDao.update(ResultEntity.from(result))
-        }
+        resultDao.update(ResultEntity.from(result))
     }
 
+    @WorkerThread
     override fun saveResults(results: List<Result>) {
-        appExecutor.ioThread {
-            resultDao.insert(results.map { ResultEntity.from(it) })
-        }
+        resultDao.insert(results.map { ResultEntity.from(it) })
     }
 
     override fun getResults(): LiveData<List<Result>> {
@@ -46,16 +45,14 @@ class ResultRepositoryImpl(
         }
     }
 
+    @WorkerThread
     override fun deleteResult(result: Result) {
-        appExecutor.ioThread {
-            resultDao.delete(result.id)
-        }
+        resultDao.delete(result.id)
     }
 
+    @WorkerThread
     override fun deleteAll() {
-        appExecutor.ioThread {
-            resultDao.clear()
-        }
+        resultDao.clear()
     }
 
 }

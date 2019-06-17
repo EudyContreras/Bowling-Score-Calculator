@@ -1,4 +1,4 @@
-package com.eudycontreras.bowlingcalculator.components
+package com.eudycontreras.bowlingcalculator.components.views
 
 import android.view.View
 import android.view.animation.AccelerateInterpolator
@@ -14,7 +14,6 @@ import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.components.controllers.ActionViewController
 import com.eudycontreras.bowlingcalculator.extensions.addTouchAnimation
 import com.eudycontreras.bowlingcalculator.extensions.clamp
-import com.eudycontreras.bowlingcalculatorchallenge.view_components.ViewComponent
 import kotlinx.android.synthetic.main.activity_main.*
 
 /**
@@ -37,10 +36,10 @@ class ActionsViewComponent(
 
     private val strikeAction: View? = parentView?.findViewById(R.id.actionStrike)
     private val resetAction: View? = parentView?.findViewById(R.id.actionClearScore)
-    private val loadSaveAction: View? = parentView?.findViewById(R.id.actionLoadSaveScore)
+    private val loadSaveAction: View? = parentView?.findViewById(R.id.actionLoadSaveResult)
 
-    private val loadAction: View? = loadSaveAction?.findViewById(R.id.actionLoadScore)
-    private val saveAction: View? = loadSaveAction?.findViewById(R.id.actionSaveScore)
+    private val loadAction: View? = loadSaveAction?.findViewById(R.id.actionLoadResult)
+    private val saveAction: View? = loadSaveAction?.findViewById(R.id.actionSaveResult)
 
     init {
         setDefaultValues()
@@ -56,7 +55,7 @@ class ActionsViewComponent(
         loadSaveAction?.visibility = if (SHOW_SAVE_BUTTON) {
             View.VISIBLE
         } else {
-            View.INVISIBLE
+            View.GONE
         }
 
         throwAction?.let { parent ->
@@ -121,7 +120,9 @@ class ActionsViewComponent(
             var rightIndex = parent.childCount / 2
             runSequential(delay, parent.childCount - 1) {
                 context.runOnUiThread {
-                    parent.getChildAt(leftIndex).animate()
+                    val view = parent.getChildAt(leftIndex)
+                    view.isEnabled = true
+                    view.animate()
                         .alpha(1f)
                         .scaleX(1f)
                         .scaleY(1f)
@@ -131,7 +132,9 @@ class ActionsViewComponent(
                     leftIndex = (leftIndex - 1).clamp(0,4)
                 }
                 context.runOnUiThread {
-                    parent.getChildAt(rightIndex).animate()
+                    val view = parent.getChildAt(rightIndex)
+                    view.isEnabled = true
+                    view.animate()
                         .alpha(1f)
                         .scaleX(1f)
                         .scaleY(1f)
@@ -173,7 +176,6 @@ class ActionsViewComponent(
                 .setDuration(250)
                 .setInterpolator(OvershootInterpolator())
                 .start()
-
         }
     }
 

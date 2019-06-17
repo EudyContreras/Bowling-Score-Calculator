@@ -11,6 +11,14 @@ import com.eudycontreras.bowlingcalculator.listeners.AnimationListener
  * Created by eudycontreras.
  */
 
+fun View.detach() {
+    this.visibility = View.GONE
+}
+
+fun View.attach() {
+    this.visibility = View.VISIBLE
+}
+
 fun View.hide(duration: Long = 0L) {
     if (duration == 0L){
         this.alpha = 0f
@@ -51,6 +59,7 @@ fun View.addTouchAnimation(
     durationPress: Long = 150,
     durationRelease: Long = 200,
     scale: Float = 0.97f,
+    depth: Float = 0f,
     interpolatorPress: Interpolator? = null,
     interpolatorRelease: Interpolator? = null,
     directFeedback: Boolean = true
@@ -68,14 +77,14 @@ fun View.addTouchAnimation(
         }
     )
 
-    val depth = this.translationZ
+    val lastDepth = this.translationZ
     this.setOnTouchListener { _, motionEvent ->
         when (motionEvent.action) {
             MotionEvent.ACTION_DOWN -> {
                 this.animate()
                     .setInterpolator(interpolatorPress)
                     .setListener(null)
-                    .translationZ(0f)
+                    .translationZ(depth)
                     .scaleY(scale)
                     .scaleX(scale)
                     .setDuration(durationPress)
@@ -85,7 +94,7 @@ fun View.addTouchAnimation(
                 this.animate()
                     .setInterpolator(interpolatorRelease)
                     .setListener(releaseListener)
-                    .translationZ(depth)
+                    .translationZ(lastDepth)
                     .scaleY(1f)
                     .scaleX(1f)
                     .setDuration(durationRelease)
@@ -99,7 +108,7 @@ fun View.addTouchAnimation(
                 this.animate()
                     .setInterpolator(interpolatorRelease)
                     .setListener(null)
-                    .translationZ(depth)
+                    .translationZ(lastDepth)
                     .scaleY(1f)
                     .scaleX(1f)
                     .setDuration(durationRelease)
@@ -109,7 +118,7 @@ fun View.addTouchAnimation(
                 this.animate()
                     .setInterpolator(interpolatorRelease)
                     .setListener(null)
-                    .translationZ(depth)
+                    .translationZ(lastDepth)
                     .scaleY(1f)
                     .scaleX(1f)
                     .setDuration(durationRelease)

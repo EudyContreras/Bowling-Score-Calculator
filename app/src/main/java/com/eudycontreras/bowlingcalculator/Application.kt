@@ -42,21 +42,53 @@ class Application : Application() {
         rollRepo = RollRepositoryImpl(this, appDatabase.roll)
     }
 
-    fun saveBowler(bowler: Bowler, toDb: Boolean = false) {
+     fun saveBowler(bowler: Bowler, listener: ((bowler: Bowler) -> Unit)? = null) {
         storage.bowler = bowler
-        if (toDb) {
+        appExecutor.ioThread {
             bowlerRepo.saveBowler(bowler)
             frameRepo.saveFrames(bowler.frames)
             rollRepo.saveRolls(bowler.frames.flatMap { it.rolls.values })
+            appExecutor.mainThread {
+                listener?.invoke(bowler)
+            }
         }
     }
 
-    fun saveResult(result: Result) {
-        resultRepo.saveResult(result)
-        for (bowler in result.bowlers) {
-            bowlerRepo.saveBowler(bowler)
-            frameRepo.saveFrames(bowler.frames)
-            rollRepo.saveRolls(bowler.frames.flatMap { it.rolls.values })
+    fun saveBowlers(bowlers: List<Bowler>, listener: ((bowlers: List<Bowler>) -> Unit)? = null) {
+        appExecutor.ioThread {
+            bowlerRepo.saveBowlers(bowlers)
+            for(bowler in bowlers) {
+                frameRepo.saveFrames(bowler.frames)
+                rollRepo.saveRolls(bowler.frames.flatMap { it.rolls.values })
+            }
+            appExecutor.mainThread {
+                listener?.invoke(bowlers)
+            }
         }
+    }
+
+    fun saveResult(result: Result, listener: ((name: String) -> Unit)? = null) {
+        appExecutor.ioThread {
+            resultRepo.saveResult(result){ id, name ->
+                for (bowler in result.bowlers) {
+                    bowler.resultId = id
+                    bowlerRepo.saveBowler(bowler)
+                    frameRepo.saveFrames(bowler.frames)
+                    rollRepo.saveRolls(bowler.frames.flatMap { it.rolls.values })
+                }
+                appExecutor.mainThread {
+                    listener?.invoke(name)
+                    resultRepo.getResults().observeForever {
+                        var results = it
+                    }
+                }
+            }
+        }
+    }
+
+    fun getBowlers(): List<Bowler> {
+        val bowlers = ArrayList<Bowler>()
+        bowlers.add(storage.bowler)
+        return bowlers
     }
 }

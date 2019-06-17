@@ -1,5 +1,6 @@
 package com.eudycontreras.bowlingcalculator.repositories
 
+import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.eudycontreras.bowlingcalculator.Application
@@ -21,22 +22,20 @@ class BowlerRepositoryImpl(
 
     private val appExecutor: AppExecutors = application.appExecutor
 
+    @WorkerThread
     override fun saveBowler(bowler: Bowler) {
-        appExecutor.ioThread {
-            bowlerDao.insert(BowlerEntity.from(bowler))
-        }
+        val id = bowlerDao.insert(BowlerEntity.from(bowler))
+        bowler.id = id
     }
 
+    @WorkerThread
     override fun updateBowler(bowler: Bowler) {
-        appExecutor.ioThread {
-            bowlerDao.update(BowlerEntity.from(bowler))
-        }
+        bowlerDao.update(BowlerEntity.from(bowler))
     }
 
+    @WorkerThread
     override fun saveBowlers(bowlers: List<Bowler>) {
-        appExecutor.ioThread {
-            bowlerDao.insert(bowlers.map { BowlerEntity.from(it) })
-        }
+        bowlerDao.insert(bowlers.map { BowlerEntity.from(it) })
     }
 
     override fun getBowlers(result: Result): LiveData<List<Bowler>> {
@@ -55,21 +54,18 @@ class BowlerRepositoryImpl(
         }
     }
 
+    @WorkerThread
     override fun deleteBowler(bowler: Bowler) {
-        appExecutor.ioThread {
-            bowlerDao.deleteById(bowler.id)
-        }
+        bowlerDao.deleteById(bowler.id)
     }
 
+    @WorkerThread
     override fun deleteAll(result: Result) {
-        appExecutor.ioThread {
-            bowlerDao.deleteByResultId(result.id)
-        }
+        bowlerDao.deleteByResultId(result.id)
     }
 
+    @WorkerThread
     override fun deleteAll() {
-        appExecutor.ioThread {
-            bowlerDao.clear()
-        }
+        bowlerDao.clear()
     }
 }

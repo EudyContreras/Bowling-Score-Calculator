@@ -10,6 +10,7 @@
     <dimen name="margin_medium">8dp</dimen>
     <dimen name="margin_large">12dp</dimen>
     <dimen name="margin_extra_large">16dp</dimen>
+    <dimen name="margin_dialog">24dp</dimen>
 
     <dimen name="padding">12dp</dimen>
     <dimen name="padding_small">4dp</dimen>

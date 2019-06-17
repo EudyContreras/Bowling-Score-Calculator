@@ -17,10 +17,10 @@ data class ResultEntity(
     val date: Date
 ) {
     @PrimaryKey(autoGenerate = true)
-    var id: Long = NO_ID
+    var id: Long? = null
 
     fun toResult(): Result {
-        return Result(name, date).also { it.id = id }
+        return Result(name, date).also { it.id = id ?: NO_ID }
     }
 
     companion object {
@@ -28,7 +28,7 @@ data class ResultEntity(
             return ResultEntity(
                 name = result.name,
                 date = result.date
-            ).also { it.id = result.id }
+            ).also { it.id = if (result.id == NO_ID) null else result.id }
         }
     }
 }

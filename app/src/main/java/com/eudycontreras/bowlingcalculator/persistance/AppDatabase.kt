@@ -23,7 +23,7 @@ import com.eudycontreras.bowlingcalculator.persistance.entities.RollEntity
  *
  * Created by eudycontreras.
  */
-private const val VERSION = 2
+private const val VERSION = 3
 
 private const val DATABASE_NAME = "bowling_calculator.db"
 

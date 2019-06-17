@@ -7,49 +7,60 @@
         android:background="@color/colorAccent"
         android:layout_width="match_parent"
         android:layout_height="60dp" >
-    <LinearLayout
-            android:id="@+id/actionClearScore"
-            android:layout_width="105dp"
+
+    <FrameLayout
+            android:padding="2dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:layout_width="110dp"
             android:layout_height="match_parent"
             android:background="@drawable/shape_button"
-            android:layout_marginTop="@dimen/margin_large"
-            android:layout_marginBottom="@dimen/margin_large"
+            android:backgroundTint="@color/shadow"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:layout_marginStart="@dimen/margin_medium"
             android:layout_marginEnd="@dimen/margin_medium"
-            android:backgroundTint="@color/colorActionButton"
-            android:elevation="0dp"
-            android:translationZ="3dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent">
-        <View
-                android:id="@+id/actionClearScoreIcon"
-                android:layout_width="@dimen/actionIcon"
-                android:layout_height="@dimen/actionIcon"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_medium"
-                android:background="@drawable/ic_reset_score"/>
-
-        <TextView
-                android:id="@+id/actionClearScoreText"
-                android:layout_width="wrap_content"
+        <LinearLayout
+                android:id="@+id/actionClearScore"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:textStyle="bold"
-                android:textColor="@color/white"
-                android:textAlignment="gravity"
-                android:textAppearance="@style/TextAppearance.AppCompat.Button"
-                android:paddingEnd="@dimen/padding_extra_large"
-                android:paddingStart="@dimen/padding_medium"
-                android:gravity="center"
-                android:text="@string/action_clear"/>
-    </LinearLayout>
+                android:background="@drawable/shape_button"
+                android:backgroundTint="@color/colorActionButton"
+                android:elevation="0dp"
+                android:translationZ="3dp">
+            <View
+                    android:id="@+id/actionClearScoreIcon"
+                    android:layout_width="@dimen/actionIcon"
+                    android:layout_height="@dimen/actionIcon"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="@dimen/margin_medium"
+                    android:background="@drawable/ic_reset_score"/>
 
+            <TextView
+                    android:id="@+id/actionClearScoreText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:textAlignment="gravity"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Button"
+                    android:paddingEnd="@dimen/padding_extra_large"
+                    android:paddingStart="@dimen/padding_medium"
+                    android:gravity="center"
+                    android:text="@string/action_clear"/>
+        </LinearLayout>
+
+    </FrameLayout>
     <FrameLayout
             android:clipToPadding="false"
             android:clipChildren="false"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:padding="@dimen/padding_small"
             android:background="@drawable/shape_circle"
             android:backgroundTint="@color/shadow"
             android:layout_marginStart="@dimen/margin_medium"
@@ -61,8 +72,9 @@
         <FrameLayout
                 android:visibility="visible"
                 android:id="@+id/actionStrike"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:background="@drawable/shape_circle"
                 android:backgroundTint="@color/colorActionButton"
                 android:elevation="1dp"
@@ -76,24 +88,27 @@
 
     <LinearLayout
             android:visibility="visible"
-            android:id="@+id/actionLoadSaveScore"
-            android:layout_width="105dp"
+            android:id="@+id/actionLoadSaveResult"
+            android:layout_width="110dp"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/margin_large"
-            android:layout_marginBottom="@dimen/margin_large"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:layout_marginStart="@dimen/margin_medium"
             android:layout_marginEnd="@dimen/margin_medium"
+            android:padding="2dp"
             android:baselineAligned="false"
             android:clipToPadding="false"
             android:clipChildren="false"
+            android:background="@drawable/shape_button"
+            android:backgroundTint="@color/shadow"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
         <FrameLayout
-                android:id="@+id/actionLoadScore"
+                android:id="@+id/actionLoadResult"
                 android:layout_weight="1"
-                android:layout_marginEnd="4dp"
+                android:layout_marginEnd="2dp"
                 android:background="@drawable/shape_button_left"
                 android:backgroundTint="@color/colorAccent"
                 android:layout_width="0dp"
@@ -101,7 +116,7 @@
                 android:elevation="1dp"
                 android:translationZ="3dp">
             <View
-                    android:id="@+id/actionLoadScoreIcon"
+                    android:id="@+id/actionLoadResultIcon"
                     android:layout_gravity="center"
                     android:layout_width="@dimen/actionIcon_small"
                     android:layout_height="@dimen/actionIcon_small"
@@ -109,9 +124,9 @@
         </FrameLayout>
 
         <FrameLayout
-                android:id="@+id/actionSaveScore"
+                android:id="@+id/actionSaveResult"
                 android:layout_weight="1"
-                android:layout_marginStart="4dp"
+                android:layout_marginStart="2dp"
                 android:background="@drawable/shape_button_right"
                 android:backgroundTint="@color/colorAccent"
                 android:layout_width="0dp"
@@ -119,7 +134,7 @@
                 android:elevation="1dp"
                 android:translationZ="3dp">
             <View
-                    android:id="@+id/actionSaveScoreIcon"
+                    android:id="@+id/actionSaveResultIcon"
                     android:layout_gravity="center"
                     android:layout_width="@dimen/actionIcon_small"
                     android:layout_height="@dimen/actionIcon_small"
