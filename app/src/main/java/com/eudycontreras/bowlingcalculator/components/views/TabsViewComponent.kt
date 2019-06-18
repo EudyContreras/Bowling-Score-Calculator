@@ -50,19 +50,17 @@ class TabsViewComponent(
     fun crateTabs(bowlers: List<Bowler>) {
         val list = ArrayList<TabViewAdapter.TabViewModel>()
 
-        bowlers.forEachIndexed { index, bowler ->
-            list.add(TabViewAdapter.TabViewModel.fromBowler(bowler, index))
-        }
+        bowlers.forEach { list.add(TabViewAdapter.TabViewModel.fromBowler(it)) }
 
         list.add(
-            TabViewAdapter.TabViewModel(index = list.size).also { it.type = TabViewAdapter.ViewType.ADD_TAB }
+            TabViewAdapter.TabViewModel().also { it.type = TabViewAdapter.ViewType.ADD_TAB }
         )
+        tabAdapter = TabViewAdapter(context, this, list)
+
         tabRecycler?.let {
-            tabAdapter = TabViewAdapter(context, this, list)
             it.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
             it.adapter = tabAdapter
         }
-
     }
 
     fun createTab() {
@@ -70,32 +68,7 @@ class TabsViewComponent(
     }
 
     fun addTabs(bowlers: List<Bowler>) {
-        if (bowlers.size == 1){
-            addTab(bowlers.first())
-            return
-        }
-        val start = tabAdapter.itemCount - 1
-        val end = start + (bowlers.size - 1)
-
-        tabAdapter.lastTab?.let { reference ->
-            if (!reference.isEnqueued) {
-                (reference.get() as TabViewAdapter.TabViewHolderNormal).deactivateTab()
-            }
-        }
-        bowlers.forEach {
-            val model = TabViewAdapter.TabViewModel(
-                bowlerName = it.name,
-                bowlerId = it.id,
-                index = tabAdapter.currentIndex
-            )
-            tabAdapter.addItem(tabAdapter.currentIndex, model)
-        }
-
-        tabAdapter.currentIndex = end
-        tabAdapter.lastSelected = end
-        tabAdapter.lastTab = null
-        tabAdapter.notifyDataSetChanged()
-        scrollToIndex(end)
+        tabAdapter.addItems(bowlers.map { TabViewAdapter.TabViewModel(it.id, it.name) })
     }
 
     fun addTab(vararg bowler: Bowler) {

@@ -6,6 +6,8 @@ package com.eudycontreras.bowlingcalculator
 
 const val NO_ID = -1L
 
+const val MAX_BOWLERS_PER_GAME = 10
+
 const val MAX_ALLOWED_INPUT_FIELDS = 8
 
 const val MAX_POSSIBLE_SCORE_GAME = 300

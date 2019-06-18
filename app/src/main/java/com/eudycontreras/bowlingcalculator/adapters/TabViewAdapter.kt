@@ -8,6 +8,7 @@ import android.view.animation.DecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.eudycontreras.bowlingcalculator.DEFAULT_START_INDEX
 import com.eudycontreras.bowlingcalculator.R
@@ -35,17 +36,37 @@ class TabViewAdapter(
     internal var lastTab: WeakReference<TabViewHolder>? = null
 
     internal var currentIndex: Int = DEFAULT_START_INDEX
-    internal var lastSelected: Int = DEFAULT_START_INDEX
 
-    fun addItem(index: Int, model: TabViewModel) {
-        items.add(index, model)
-        items.forEachIndexed { index, tabViewModel ->
-            tabViewModel.index = index
-        }
+    fun addItem(item: TabViewModel) {
+        items.add(item)
+        notifyItemInserted(items.size - 1)
     }
 
-    fun addItem(model: TabViewModel) {
-        items.add(model)
+    fun addItems(items: List<TabViewModel>) {
+
+        lastTab?.let { reference ->
+            if (!reference.isEnqueued) {
+                (reference.get() as TabViewAdapter.TabViewHolderNormal?)?.deactivateTab()
+            }
+        }
+
+        items.forEach {
+            this.items.add(currentIndex, it)
+        }
+
+        currentIndex = this.items.size - 2
+        lastTab = null
+
+        notifyDataSetChanged()
+        viewComponent.scrollToIndex(this.items.size - 1)
+    }
+
+    fun removeItem(index: Int) {
+        items.removeAt(index)
+    }
+
+    fun removeItem(item: TabViewModel) {
+        items.remove(item)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -80,14 +101,8 @@ class TabViewAdapter(
         return items.size
     }
 
-    internal fun adjustViewPort(index: Int) {
-        if (index != currentIndex) {
-            return
-        }
-
-        if ((index > (itemCount / 2)) || index == DEFAULT_START_INDEX) {
-            this.viewComponent.scrollToIndex(index)
-        }
+    override fun getItemId(position: Int): Long {
+        return items[position].bowlerId
     }
 
     abstract class TabViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
@@ -97,6 +112,8 @@ class TabViewAdapter(
     }
 
     inner class TabViewHolderAdd(view: View) : TabViewHolder(view) {
+
+        private var model: TabViewModel? = null
 
         init {
             resetValues()
@@ -110,7 +127,8 @@ class TabViewAdapter(
         override fun resetValues() { }
 
         override fun performBinding(model: TabViewModel) {
-            itemView.addTouchAnimation(
+            this.model = model
+            this.itemView.addTouchAnimation(
                 clickTarget = null,
                 scale = 0.90f,
                 depth = (-8).dp,
@@ -120,15 +138,17 @@ class TabViewAdapter(
         }
 
         override fun onClick(view: View?) {
-            viewComponent.createTab()
-            currentIndex = layoutPosition
-            lastSelected = layoutPosition
+            model?.let {
+                currentIndex = layoutPosition
+                viewComponent.createTab()
+            }
         }
     }
 
     inner class TabViewHolderNormal(view: View) : TabViewHolder(view){
 
-        private val tabLabel: TextView = view.tabItemLabel
+        private val tabItem: ConstraintLayout = view.tabItem
+        private val tabLabel: TextView = tabItem.tabItemLabel
 
         private val tabAction: FrameLayout = view.tabItemAction
 
@@ -140,10 +160,10 @@ class TabViewAdapter(
         }
 
         override fun registerListeners(){
-            itemView.setOnClickListener(this)
+            tabItem.setOnClickListener(this)
 
             tabAction.setOnClickListener {
-                removeTab(layoutPosition)
+                removeTab()
             }
         }
 
@@ -152,10 +172,10 @@ class TabViewAdapter(
                 if (currentIndex != layoutPosition) {
                     currentIndex = layoutPosition
                 }
-                viewComponent.controller.performTabSelection(model.bowlerId, layoutPosition, lastSelected)
+                viewComponent.controller.performTabSelection(model.bowlerId, layoutPosition)
                 lastTab?.let { reference ->
                     if (!reference.isEnqueued) {
-                        (reference.get() as TabViewHolderNormal).deactivateTab()
+                        (reference.get() as TabViewHolderNormal?)?.deactivateTab()
                     }
                 }
                 activateTab()
@@ -164,9 +184,9 @@ class TabViewAdapter(
 
         override fun resetValues() {
             this.tabAction.detach()
-            this.itemView.alpha = 0.5f
-            this.itemView.scaleY = 0.9f
-            this.itemView.translationZ = (-10).dp
+            this.tabItem.alpha = 0.5f
+            this.tabItem.translationY = 4.dp
+            this.tabItem.translationZ = (-10).dp
         }
 
         override fun performBinding(model: TabViewModel) {
@@ -182,9 +202,10 @@ class TabViewAdapter(
         private fun activateTab() {
             lastTab = WeakReference(this)
             this.tabAction.attach()
-            this.itemView.animate()
+            this.tabItem.animate()
                 .alpha(1f)
-                .scaleY(1f)
+                .setListener(null)
+                .translationY(0f)
                 .translationZ(0.dp)
                 .setDuration(150)
                 .start()
@@ -192,16 +213,17 @@ class TabViewAdapter(
 
         fun deactivateTab() {
             this.tabAction.detach()
-            this.itemView.animate()
+            this.tabItem.animate()
                 .alpha(0.5f)
-                .scaleY(0.9f)
+                .setListener(null)
+                .translationY(4.dp)
                 .translationZ((-10).dp)
                 .setDuration(150)
                 .start()
         }
 
         private fun animateRemoval(onEnd: ()-> Unit) {
-            this.itemView.animate()
+            this.tabItem.animate()
                 .alpha(0f)
                 .translationZ((-10).dp)
                 .setDuration(100)
@@ -209,22 +231,17 @@ class TabViewAdapter(
                 .start()
         }
 
-        private fun removeTab(index: Int) {
-            viewComponent.removeTab(index) {
-                if (index == itemCount - 2) {
-                    currentIndex = index - 1
-                    lastSelected = index - 1
+        private fun removeTab() {
+            viewComponent.removeTab(layoutPosition) {
+                currentIndex = if (layoutPosition == itemCount - 2) {
+                    layoutPosition - 1
                 } else {
-                    currentIndex = index
-                    lastSelected = index
+                    layoutPosition
                 }
                 animateRemoval {
-                    items.removeAt(index)
-                    notifyItemRemoved(index)
-
-                    lastSelected = layoutPosition
+                    removeItem(layoutPosition)
+                    notifyItemRemoved(layoutPosition)
                     notifyItemChanged(currentIndex)
-                    adjustViewPort(currentIndex)
                 }
             }
         }
@@ -237,18 +254,15 @@ class TabViewAdapter(
 
     data class TabViewModel(
         val bowlerId: Long = 0,
-        val bowlerName: String = "",
-        var index: Int = 0
+        val bowlerName: String = ""
     ) {
-        var active: Boolean = false
         var type: ViewType = ViewType.NORMAL_TAB
 
         companion object {
-            fun fromBowler(bowler: Bowler, index: Int) : TabViewModel {
+            fun fromBowler(bowler: Bowler) : TabViewModel {
                 return TabViewModel(
                     bowlerId = bowler.id,
-                    bowlerName = bowler.name,
-                    index = index
+                    bowlerName = bowler.name
                 )
             }
         }

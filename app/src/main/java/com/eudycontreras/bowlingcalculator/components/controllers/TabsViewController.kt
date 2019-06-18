@@ -42,7 +42,7 @@ class TabsViewController(
         viewComponent.selectTab(index)
     }
 
-    fun performTabSelection(bowlerId: Long, current: Int, last: Int) {
+    fun performTabSelection(bowlerId: Long, current: Int) {
         scoreController.selectBowler(bowlerId)
     }
 
