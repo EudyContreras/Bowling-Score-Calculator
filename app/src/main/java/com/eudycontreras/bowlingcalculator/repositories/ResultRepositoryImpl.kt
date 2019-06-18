@@ -54,5 +54,4 @@ class ResultRepositoryImpl(
     override fun deleteAll() {
         resultDao.clear()
     }
-
 }

@@ -44,7 +44,7 @@ fun <X, Y> LiveData<X>.switchMap(func: (X) -> LiveData<Y>): LiveData<Y> {
     return Transformations.switchMap(this, func)
 }
 
-fun <T> List<T>.asLiveData(): LiveData<List<T>> {
+fun <T> List<T>.asLiveData(): MediatorLiveData<List<T>> {
     val livaData = MediatorLiveData<List<T>>()
     livaData.value = this
     return livaData

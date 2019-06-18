@@ -12,6 +12,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.eudycontreras.bowlingcalculator.BowlerListener
 import com.eudycontreras.bowlingcalculator.MAX_ALLOWED_INPUT_FIELDS
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.adapters.InputViewAdapter
@@ -31,11 +32,14 @@ class CreateBowlerFragment: DialogFragment(), ViewComponent {
 
     private var adapter: InputViewAdapter? = null
 
+    private var listener: BowlerListener = null
+
     private lateinit var createDialog: ConstraintLayout
 
     companion object {
-        fun instance(controller: TabsViewController): CreateBowlerFragment {
+        fun instance(controller: TabsViewController, listener: BowlerListener = null): CreateBowlerFragment {
             val fragment = CreateBowlerFragment()
+            fragment.listener = listener
             fragment.controller = controller
             return fragment
         }
@@ -105,6 +109,7 @@ class CreateBowlerFragment: DialogFragment(), ViewComponent {
 
             if(!names.isEmpty()) {
                 controller?.createBowler(names) {
+                    listener?.invoke(it)
                     dismiss()
                 }
             } else {

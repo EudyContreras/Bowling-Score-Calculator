@@ -52,9 +52,8 @@ class TabsViewComponent(
 
         bowlers.forEach { list.add(TabViewAdapter.TabViewModel.fromBowler(it)) }
 
-        list.add(
-            TabViewAdapter.TabViewModel().also { it.type = TabViewAdapter.ViewType.ADD_TAB }
-        )
+        list.add(TabViewAdapter.TabViewModel().also { it.type = TabViewAdapter.ViewType.ADD_TAB })
+
         tabAdapter = TabViewAdapter(context, this, list)
 
         tabRecycler?.let {
@@ -63,16 +62,12 @@ class TabsViewComponent(
         }
     }
 
-    fun createTab() {
-        controller.addTab()
-    }
-
     fun addTabs(bowlers: List<Bowler>) {
+        if (bowlers.size == 1) {
+            tabAdapter.addItem(bowlers.first().run { TabViewAdapter.TabViewModel(id, name) } )
+            return
+        }
         tabAdapter.addItems(bowlers.map { TabViewAdapter.TabViewModel(it.id, it.name) })
-    }
-
-    fun addTab(vararg bowler: Bowler) {
-        addTabs(bowler.toList())
     }
 
     fun removeTab(index: Int, onEnd: (() -> Unit)? = null) {
@@ -84,4 +79,6 @@ class TabsViewComponent(
         tabAdapter.notifyDataSetChanged()
         scrollToIndex(index)
     }
+
+    fun getCurrent() = tabAdapter.currentIndex
 }

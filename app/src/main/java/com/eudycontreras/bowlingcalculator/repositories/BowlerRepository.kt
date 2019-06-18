@@ -16,7 +16,9 @@ interface BowlerRepository {
 
     fun saveBowlers(bowlers: List<Bowler>)
 
-    fun getBowlers(result: Result): LiveData<List<Bowler>>
+    fun getBowlers(bowlerIds: LongArray): LiveData<List<Bowler>>
+
+    fun getBowlers(result: Result): List<Bowler>
 
     fun getDefaultBowler(): LiveData<Bowler>
 

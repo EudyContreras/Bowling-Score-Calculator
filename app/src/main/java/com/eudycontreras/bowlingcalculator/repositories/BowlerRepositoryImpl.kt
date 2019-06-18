@@ -3,6 +3,7 @@ package com.eudycontreras.bowlingcalculator.repositories
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import com.eudycontreras.bowlingcalculator.Application
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Result
@@ -16,7 +17,7 @@ import com.eudycontreras.bowlingcalculator.utilities.AppExecutors
  */
 
 class BowlerRepositoryImpl(
-    application: Application,
+    private val application: Application,
     private val bowlerDao: BowlersDao
 ) : BowlerRepository {
 
@@ -26,6 +27,9 @@ class BowlerRepositoryImpl(
     override fun saveBowler(bowler: Bowler) {
         val id = bowlerDao.insert(BowlerEntity.from(bowler))
         bowler.id = id
+        bowler.frames.forEach {
+            it.bowlerId = id
+        }
     }
 
     @WorkerThread
@@ -35,15 +39,23 @@ class BowlerRepositoryImpl(
 
     @WorkerThread
     override fun saveBowlers(bowlers: List<Bowler>) {
-        bowlerDao.insert(bowlers.map { BowlerEntity.from(it) })
+        bowlers.forEach {
+           saveBowler(it)
+        }
     }
 
-    override fun getBowlers(result: Result): LiveData<List<Bowler>> {
-        return bowlerDao.findByResultId(result.id).switchMap { entities ->
-            val data = MediatorLiveData<List<Bowler>>()
-            data.value = entities.map { it.toBowler() }
-            return@switchMap data
+    override fun getBowlers(bowlerIds: LongArray): LiveData<List<Bowler>> {
+        val bowlers = MutableLiveData<List<Bowler>>()
+        appExecutor.ioThread {
+            val temp = arrayListOf<Bowler>()
+            bowlerIds.forEach {
+                val bowler = bowlerDao.getById(it).toBowler()
+                bowler.frames = application.frameRepo.getFrames(bowler)
+                temp.add(bowler)
+            }
+            bowlers.postValue(temp)
         }
+        return bowlers
     }
 
     override fun getDefaultBowler(): LiveData<Bowler> {
@@ -52,6 +64,11 @@ class BowlerRepositoryImpl(
             data.value = it.toBowler()
             return@switchMap data
         }
+    }
+
+    @WorkerThread
+    override fun getBowlers(result: Result): List<Bowler> {
+        return bowlerDao.findByResultId(result.id).map { it.toBowler() }
     }
 
     @WorkerThread

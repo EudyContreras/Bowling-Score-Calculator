@@ -1,5 +1,6 @@
 package com.eudycontreras.bowlingcalculator.components.controllers
 
+import com.eudycontreras.bowlingcalculator.BowlerListener
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
@@ -30,8 +31,12 @@ class TabsViewController(
         viewComponent.crateTabs(bowler)
     }
 
-    fun addTab() {
-        context.openDialog(CreateBowlerFragment.instance(this))
+    fun requestTab(listener: BowlerListener = null) {
+        context.openDialog(CreateBowlerFragment.instance(this, listener))
+    }
+
+    fun addTabs(bowlers: List<Bowler>) {
+        viewComponent.addTabs(bowlers)
     }
 
     fun removeTab(index: Int) {
@@ -42,16 +47,20 @@ class TabsViewController(
         viewComponent.selectTab(index)
     }
 
-    fun performTabSelection(bowlerId: Long, current: Int) {
+    fun onTabSelection(bowlerId: Long, current: Int) {
         scoreController.selectBowler(bowlerId)
     }
 
-    fun createBowler(names: List<String>, listener: (names: List<String>) -> Unit) {
+    fun createBowler(names: List<String>, listener: BowlerListener) {
         val bowlers = names.map { Bowler(it) }
 
         context.app.saveBowlers(bowlers) {
-            listener.invoke(it.map { bowler -> bowler.name })
+            listener?.invoke(it)
             viewComponent.addTabs(it)
         }
+    }
+
+    fun getActive(): Int {
+        return viewComponent.getCurrent()
     }
 }

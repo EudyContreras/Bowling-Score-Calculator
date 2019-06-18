@@ -44,9 +44,9 @@ class FramesViewComponent(
         }
     }
 
-    fun createFrames(frames: List<Frame>) {
+    fun createFrames(bowler: Bowler) {
         frameRecycler?.let {
-            frameAdapter = FrameViewAdapter(context, this, frames as ArrayList<Frame>)
+            frameAdapter = FrameViewAdapter(context, this, bowler.frames as ArrayList<Frame>)
             it.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
             it.recycledViewPool.setMaxRecycledViews(0, 0)
             it.setItemViewCacheSize(10)

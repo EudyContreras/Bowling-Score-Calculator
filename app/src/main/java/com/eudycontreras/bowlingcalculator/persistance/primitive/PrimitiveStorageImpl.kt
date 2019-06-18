@@ -3,9 +3,7 @@ package com.eudycontreras.bowlingcalculator.persistance.primitive
 import android.content.Context
 import android.preference.PreferenceManager
 import androidx.core.content.edit
-import com.eudycontreras.bowlingcalculator.DEFAULT_BOWLER_NAME
 import com.eudycontreras.bowlingcalculator.adapters.FrameTypeAdapter
-import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -24,14 +22,11 @@ class PrimitiveStorageImpl(context: Context) :
         private const val AUTO_SAVE = "auto_save"
         private const val AUTO_SAVE_DEFAULT = false
 
-        private const val HAS_BOWLER = "auto_save"
-        private const val HAS_BOWLER_DEFAULT = false
-
         private const val ACTIVE_TAB_INDEX = "active_tab_index"
         private const val ACTIVE_TAB_INDEX_DEFAULT = 0
 
-        private const val BOWLER = "auto_save"
-        private val BOWLER_DEFAULT = null
+        private const val BOWLER_IDS = "bowler_ids"
+        private val BOWLER_IDS_DEFAULT = null
     }
 
     private var gson: Gson = Gson()
@@ -64,20 +59,13 @@ class PrimitiveStorageImpl(context: Context) :
         )
         set(value) = sharedPreferences.edit { putInt(ACTIVE_TAB_INDEX, value) }
 
-    override var hasBowler: Boolean
-        get() = sharedPreferences.getBoolean(
-            HAS_BOWLER,
-            HAS_BOWLER_DEFAULT
-        )
-        set(value) = sharedPreferences.edit { putBoolean(HAS_BOWLER, value) }
-
-    override var bowler: Bowler
-        get() = if (sharedPreferences.getString(BOWLER, BOWLER_DEFAULT) == null) {
-            Bowler(name = DEFAULT_BOWLER_NAME)
+    override var currentBowlerIds: LongArray
+        get() = if (sharedPreferences.getString(BOWLER_IDS, BOWLER_IDS_DEFAULT) == null) {
+            longArrayOf()
         } else {
-            gson.fromJson(sharedPreferences.getString(BOWLER, BOWLER_DEFAULT)!!, Bowler::class.java)
+            gson.fromJson(sharedPreferences.getString(BOWLER_IDS, BOWLER_IDS_DEFAULT)!!, LongArray::class.java)
         }
-        set(value) = sharedPreferences.edit { putString(BOWLER, gson.toJson(value, Bowler::class.java)) }
+        set(value) = sharedPreferences.edit { putString(BOWLER_IDS, gson.toJson(value, LongArray::class.java)) }
 
     override fun restoreUserDefaults() {
         sharedPreferences.edit {
@@ -90,8 +78,8 @@ class PrimitiveStorageImpl(context: Context) :
                 AUTO_SAVE_DEFAULT
             )
             putString(
-                BOWLER,
-                BOWLER_DEFAULT
+                BOWLER_IDS,
+                BOWLER_IDS_DEFAULT
             )
         }
     }

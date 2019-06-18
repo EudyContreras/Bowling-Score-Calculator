@@ -38,8 +38,16 @@ class TabViewAdapter(
     internal var currentIndex: Int = DEFAULT_START_INDEX
 
     fun addItem(item: TabViewModel) {
-        items.add(item)
-        notifyItemInserted(items.size - 1)
+        lastTab?.let { reference ->
+            if (!reference.isEnqueued) {
+                (reference.get() as TabViewAdapter.TabViewHolderNormal?)?.deactivateTab()
+            }
+        }
+        this.items.add(currentIndex, item)
+        notifyItemInserted(currentIndex)
+
+        currentIndex = this.items.size - 2
+        lastTab = null
     }
 
     fun addItems(items: List<TabViewModel>) {
@@ -140,7 +148,7 @@ class TabViewAdapter(
         override fun onClick(view: View?) {
             model?.let {
                 currentIndex = layoutPosition
-                viewComponent.createTab()
+                viewComponent.controller.requestTab()
             }
         }
     }
@@ -172,7 +180,7 @@ class TabViewAdapter(
                 if (currentIndex != layoutPosition) {
                     currentIndex = layoutPosition
                 }
-                viewComponent.controller.performTabSelection(model.bowlerId, layoutPosition)
+                viewComponent.controller.onTabSelection(model.bowlerId, layoutPosition)
                 lastTab?.let { reference ->
                     if (!reference.isEnqueued) {
                         (reference.get() as TabViewHolderNormal?)?.deactivateTab()

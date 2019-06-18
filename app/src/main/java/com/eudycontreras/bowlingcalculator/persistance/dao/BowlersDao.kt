@@ -24,8 +24,11 @@ abstract class BowlersDao {
     @Query("SELECT * FROM bowlers WHERE id = :id LIMIT 1")
     abstract fun findById(id: Long): LiveData<BowlerEntity>
 
+    @Query("SELECT * FROM bowlers WHERE id = :id LIMIT 1")
+    abstract fun getById(id: Long): BowlerEntity
+
     @Query("SELECT * FROM bowlers WHERE resultId = :id ORDER BY name ASC")
-    abstract fun findByResultId(id: Long): LiveData<List<BowlerEntity>>
+    abstract fun findByResultId(id: Long): List<BowlerEntity>
 
     @Query("SELECT * FROM bowlers WHERE skill = :skill")
     abstract fun findBySkill(skill: Bowler.SkillLevel): LiveData<List<BowlerEntity>>
