@@ -1,6 +1,5 @@
 package com.eudycontreras.bowlingcalculator.persistance.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.eudycontreras.bowlingcalculator.persistance.entities.RollEntity
 
@@ -30,10 +29,10 @@ abstract class RollsDao {
     abstract fun update(roll: List<RollEntity>): Int
 
     @Query(value = "SELECT * FROM rolls WHERE bowlerId = :id")
-    abstract fun findByBowlerId(id: Long): LiveData<List<RollEntity>>
+    abstract fun findByBowlerId(id: Long): List<RollEntity>
 
     @Query(value = "SELECT * FROM rolls WHERE bowlerId = :bowlerId AND frameIndex = :frameIndex")
-    abstract fun findByBowlerIdAndIndex(bowlerId: Long, frameIndex: Int): LiveData<List<RollEntity>>
+    abstract fun findByBowlerIdAndIndex(bowlerId: Long, frameIndex: Int): List<RollEntity>
 
     @Query(value = "SELECT * FROM rolls WHERE bowlerId = :bowlerId AND frameIndex = :frameIndex")
     abstract fun getByBowlerIdAndIndex(bowlerId: Long, frameIndex: Int): List<RollEntity>

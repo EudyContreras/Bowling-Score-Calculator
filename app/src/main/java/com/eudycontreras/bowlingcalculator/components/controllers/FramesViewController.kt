@@ -37,8 +37,8 @@ class FramesViewController(
         return canProceed
     }
 
-    fun createFrames(frames: List<Frame>){
-        viewComponent.createFrames(frames)
+    fun createFrames(bowler: Bowler){
+        viewComponent.createFrames(bowler)
     }
 
     fun updateFramesState(bowler: Bowler, current: Frame) {

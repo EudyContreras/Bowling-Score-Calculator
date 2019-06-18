@@ -1,12 +1,9 @@
 package com.eudycontreras.bowlingcalculator.repositories
 
 import androidx.annotation.WorkerThread
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import com.eudycontreras.bowlingcalculator.Application
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
-import com.eudycontreras.bowlingcalculator.extensions.switchMap
 import com.eudycontreras.bowlingcalculator.persistance.dao.FramesDao
 import com.eudycontreras.bowlingcalculator.persistance.entities.FrameEntity
 import com.eudycontreras.bowlingcalculator.utilities.AppExecutors
@@ -16,7 +13,7 @@ import com.eudycontreras.bowlingcalculator.utilities.AppExecutors
  */
 
 class FrameRepositoryImpl(
-    application: Application,
+    private val application: Application,
     private val frameDao: FramesDao
 ) : FrameRepository {
 
@@ -28,16 +25,21 @@ class FrameRepositoryImpl(
     }
 
     @WorkerThread
-    override fun updateFrames(bower: Bowler, frames: List<Frame>) {
+    override fun updateFrames(bowler: Bowler, frames: List<Frame>) {
         frameDao.update(frames.map { FrameEntity.from(it) })
     }
 
-    override fun getFrames(bower: Bowler): LiveData<List<Frame>> {
-        return frameDao.findForBowler(bower.id).switchMap { entities ->
-            val data = MediatorLiveData<List<Frame>>()
-            data.value = entities.map { it.toFrame() }
-            return@switchMap data
+    @WorkerThread
+    override fun getFrames(bowler: Bowler): List<Frame> {
+        val frames = frameDao.findForBowler(bowler.id).map { it.toFrame() }
+        frames.forEach {
+            it.bowlerId = bowler.id
+            val rolls = application.rollRepo.getRolls(it)
+            rolls.forEach { roll ->
+                it.rolls[roll.parentState] = roll
+            }
         }
+        return frames
     }
 
     @WorkerThread

@@ -1,6 +1,7 @@
 package com.eudycontreras.bowlingcalculator
 
 import android.app.Application
+import androidx.lifecycle.LiveData
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Result
 import com.eudycontreras.bowlingcalculator.persistance.AppDatabase
@@ -43,7 +44,6 @@ class Application : Application() {
     }
 
      fun saveBowler(bowler: Bowler, listener: ((bowler: Bowler) -> Unit)? = null) {
-        storage.bowler = bowler
         appExecutor.ioThread {
             bowlerRepo.saveBowler(bowler)
             frameRepo.saveFrames(bowler.frames)
@@ -86,9 +86,7 @@ class Application : Application() {
         }
     }
 
-    fun getBowlers(): List<Bowler> {
-        val bowlers = ArrayList<Bowler>()
-        bowlers.add(storage.bowler)
-        return bowlers
+    fun getBowlers(bowlerIds: LongArray): LiveData<List<Bowler>> {
+        return bowlerRepo.getBowlers(bowlerIds)
     }
 }

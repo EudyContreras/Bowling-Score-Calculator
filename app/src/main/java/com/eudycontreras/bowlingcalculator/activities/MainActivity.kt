@@ -6,15 +6,14 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
-import com.eudycontreras.bowlingcalculator.MAX_POSSIBLE_SCORE_GAME
+import androidx.lifecycle.Observer
+import com.eudycontreras.bowlingcalculator.DEFAULT_GRACE_PERIOD
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
-import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.components.controllers.ActionViewController
 import com.eudycontreras.bowlingcalculator.components.controllers.FramesViewController
 import com.eudycontreras.bowlingcalculator.components.controllers.StatsViewController
 import com.eudycontreras.bowlingcalculator.components.controllers.TabsViewController
 import com.eudycontreras.bowlingcalculator.extensions.app
-import com.eudycontreras.bowlingcalculator.extensions.getComputedScore
 import com.eudycontreras.bowlingcalculator.extensions.show
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -28,10 +27,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var statsController: StatsViewController
     private lateinit var tabsController: TabsViewController
 
-    private lateinit var bowlers: List<Bowler>
-
-    private var activeTab: Int = 0
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(com.eudycontreras.bowlingcalculator.R.layout.activity_main)
@@ -42,40 +37,52 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initControllers() {
-        bowlers = app.getBowlers()
 
-        val bowler: Bowler = bowlers[0]
-
-        scoreController = ScoreController(bowler)
+        scoreController = ScoreController(this)
 
         framesController = FramesViewController(this, scoreController)
         actionController = ActionViewController(this, scoreController)
         statsController = StatsViewController(this, scoreController)
         tabsController = TabsViewController(this, scoreController)
 
-        tabsController.createTabs(bowlers)
-
-        framesController.createFrames(bowler.frames)
-
-        scoreController.onScoreUpdated(bowler, bowler.getCurrentFrame(), bowler.frames, bowler.frames.getComputedScore(), MAX_POSSIBLE_SCORE_GAME)
+        tabsController.createTabs(emptyList())
     }
 
     override fun onResume() {
         super.onResume()
         Handler().postDelayed({
-            actionController.revealPins()
-            framesController.revealFrames()
-        }, 500)
+            if (app.storage.currentBowlerIds.isNotEmpty()) {
+                val bowlers = app.getBowlers(app.storage.currentBowlerIds)
+                bowlers.observe(this, Observer {
+                    val activeTab = app.storage.activeTab
+                    scoreController.initCalculator(it, activeTab)
+                    tabsController.addTabs(it)
+                })
+
+            } else {
+                tabsController.requestTab{
+                    val activeTab = tabsController.getActive()
+                    app.storage.activeTab = activeTab
+                    scoreController.initCalculator(it, activeTab)
+                }
+            }
+        }, DEFAULT_GRACE_PERIOD)
     }
+
 
     override fun onDestroy() {
         super.onDestroy()
-        app.saveBowlers(bowlers)
+        saveCurrentState()
     }
 
     override fun onPause() {
         super.onPause()
-        app.saveBowlers(bowlers)
+        saveCurrentState()
+    }
+
+    private fun saveCurrentState() {
+        app.storage.currentBowlerIds = scoreController.bowlers.map { it.id }.toLongArray()
+        app.saveBowlers(scoreController.bowlers)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

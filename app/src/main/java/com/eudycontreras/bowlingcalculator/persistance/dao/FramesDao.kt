@@ -1,6 +1,5 @@
 package com.eudycontreras.bowlingcalculator.persistance.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.eudycontreras.bowlingcalculator.persistance.entities.FrameEntity
 
@@ -30,13 +29,13 @@ abstract class FramesDao {
     abstract fun update(frames: List<FrameEntity>): Int
 
     @Query(value = "SELECT * FROM frames WHERE `index` = :index AND bowlerId = :bowlerId LIMIT 1")
-    abstract fun find(bowlerId: Long, index: Int): LiveData<FrameEntity>
+    abstract fun find(bowlerId: Long, index: Int): FrameEntity
 
     @Query(value = "SELECT * FROM frames WHERE bowlerId = :bowlerId ORDER BY `index` ASC")
-    abstract fun findForBowler(bowlerId: Long): LiveData<List<FrameEntity>>
+    abstract fun findForBowler(bowlerId: Long): List<FrameEntity>
 
     @Query("SELECT * FROM frames WHERE bowlerId = -1")
-    abstract fun getDefault(): LiveData<List<FrameEntity>>
+    abstract fun getDefault(): List<FrameEntity>
 
     @Query("DELETE FROM frames WHERE bowlerId = :bowlerId")
     abstract fun delete(bowlerId: Long)
