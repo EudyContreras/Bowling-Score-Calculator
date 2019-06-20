@@ -6,6 +6,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.eudycontreras.bowlingcalculator.DB_VERSION
 import com.eudycontreras.bowlingcalculator.persistance.dao.BowlersDao
 import com.eudycontreras.bowlingcalculator.persistance.dao.FramesDao
 import com.eudycontreras.bowlingcalculator.persistance.dao.ResultsDao
@@ -23,8 +24,6 @@ import com.eudycontreras.bowlingcalculator.persistance.entities.RollEntity
  *
  * Created by eudycontreras.
  */
-private const val VERSION = 3
-
 private const val DATABASE_NAME = "bowling_calculator.db"
 
 @Database(
@@ -34,7 +33,7 @@ private const val DATABASE_NAME = "bowling_calculator.db"
         RollEntity::class,
         ResultEntity::class
     ],
-    version = VERSION,
+    version = DB_VERSION,
     exportSchema = true
 )
 

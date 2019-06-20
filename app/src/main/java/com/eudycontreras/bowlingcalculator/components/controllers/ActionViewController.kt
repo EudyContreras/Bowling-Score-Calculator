@@ -54,6 +54,6 @@ class ActionViewController(
 
     fun saveCurrentResult(name: String, listener: (name: String) -> Unit) {
         val result = Result(name, Date())
-        context.app.saveResult(result, listener)
+        context.app.persistenceManager.saveResult(result, listener)
     }
 }

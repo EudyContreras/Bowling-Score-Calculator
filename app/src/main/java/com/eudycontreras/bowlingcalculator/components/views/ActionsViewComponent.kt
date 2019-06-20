@@ -110,7 +110,8 @@ class ActionsViewComponent(
     }
 
     fun revealAvailablePins() {
-        val delay: Long = 80
+        val delay: Long =  150
+        val duration: Long = 250
 
         throwAction?.let { parent ->
             var leftIndex = (parent.childCount / 2) - 1
@@ -124,7 +125,7 @@ class ActionsViewComponent(
                         .scaleX(1f)
                         .scaleY(1f)
                         .setInterpolator(OvershootInterpolator())
-                        .setDuration(250)
+                        .setDuration(duration)
                         .start()
                     leftIndex = (leftIndex - 1).clamp(0,4)
                 }
@@ -136,7 +137,7 @@ class ActionsViewComponent(
                         .scaleX(1f)
                         .scaleY(1f)
                         .setInterpolator(OvershootInterpolator())
-                        .setDuration(250)
+                        .setDuration(duration)
                         .start()
                     rightIndex = (rightIndex + 1).clamp(5,9)
                 }
@@ -161,6 +162,14 @@ class ActionsViewComponent(
                 }
             }
         }
+    }
+
+    fun revealArea() {
+
+    }
+
+    fun concealArea() {
+
     }
 
     private fun activateStrike(view: View?) {

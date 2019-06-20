@@ -1,9 +1,9 @@
 package com.eudycontreras.bowlingcalculator.repositories
 
 import androidx.annotation.WorkerThread
-import com.eudycontreras.bowlingcalculator.Application
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
+import com.eudycontreras.bowlingcalculator.persistance.PersistenceManager
 import com.eudycontreras.bowlingcalculator.persistance.dao.FramesDao
 import com.eudycontreras.bowlingcalculator.persistance.entities.FrameEntity
 
@@ -12,7 +12,7 @@ import com.eudycontreras.bowlingcalculator.persistance.entities.FrameEntity
  */
 
 class FrameRepositoryImpl(
-    private val application: Application,
+    private val manager: PersistenceManager,
     private val frameDao: FramesDao
 ) : FrameRepository {
 
@@ -22,8 +22,8 @@ class FrameRepositoryImpl(
     }
 
     @WorkerThread
-    override fun updateFrames(bowler: Bowler, frames: List<Frame>) {
-        frameDao.update(frames.map { FrameEntity.from(it) })
+    override fun updateFrames(bowlerId: Long, frames: List<Frame>) {
+        frameDao.replaceFor(bowlerId, frames.map { FrameEntity.from(it) })
     }
 
     @WorkerThread
@@ -31,7 +31,7 @@ class FrameRepositoryImpl(
         val frames = frameDao.findForBowler(bowler.id).map { it.toFrame() }
         frames.forEach {
             it.bowlerId = bowler.id
-            val rolls = application.rollRepo.getRolls(it)
+            val rolls = manager.rollRepo.getRolls(it)
             rolls.forEach { roll ->
                 it.rolls[roll.parentState] = roll
             }

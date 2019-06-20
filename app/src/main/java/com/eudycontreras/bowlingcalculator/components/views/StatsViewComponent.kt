@@ -44,6 +44,14 @@ class StatsViewComponent(
 
     override fun assignInteraction(view: View?) {}
 
+    fun revealArea() {
+
+    }
+
+    fun concealArea() {
+
+    }
+
     fun setFrameValue(frameIndex: Int) {
         currentFrameStat?.text = frameIndex.toString()
     }

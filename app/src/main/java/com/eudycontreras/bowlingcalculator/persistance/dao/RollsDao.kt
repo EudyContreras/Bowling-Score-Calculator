@@ -22,6 +22,12 @@ abstract class RollsDao {
         insert(rolls)
     }
 
+    @Transaction
+    open fun replaceAllFor(bowlerId: Long, rolls: List<RollEntity>) {
+        delete(bowlerId)
+        insert(rolls)
+    }
+
     @Update(onConflict = OnConflictStrategy.REPLACE)
     abstract fun update(roll: RollEntity): Int
 

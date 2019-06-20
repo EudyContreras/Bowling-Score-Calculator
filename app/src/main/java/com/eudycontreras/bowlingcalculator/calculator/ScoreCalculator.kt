@@ -1,7 +1,7 @@
 package com.eudycontreras.bowlingcalculator.calculator
 
+import com.eudycontreras.bowlingcalculator.DEFAULT_FRAME_CHANCES
 import com.eudycontreras.bowlingcalculator.DEFAULT_FRAME_COUNT
-import com.eudycontreras.bowlingcalculator.MAX_POSSIBLE_SCORE_GAME
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
 import com.eudycontreras.bowlingcalculator.calculator.elements.FrameNormal
@@ -18,7 +18,9 @@ sealed class ScoreCalculator {
 
     companion object {
 
-        fun calculate(bowler: Bowler, frames: List<Frame>, listener: ScoreStateListener?) {
+        fun calculate(bowler: Bowler, listener: ScoreStateListener?) {
+
+            val frames = bowler.frames
 
             frames.forEach {
                 it.bonusPoints = 0
@@ -43,7 +45,7 @@ sealed class ScoreCalculator {
                 bowler.getCurrentFrame(),
                 frames,
                 frames.getComputedScore(),
-                MAX_POSSIBLE_SCORE_GAME
+                ScoreSimulator.getPossibleScore(bowler)
             )
         }
 
@@ -81,7 +83,7 @@ sealed class ScoreCalculator {
                     frame.getRollBy(Frame.State.SECOND_CHANCE)?.let { rolls.add(it) }
                 }
 
-                if (rolls.size < 2) {
+                if (rolls.size < DEFAULT_FRAME_CHANCES) {
                     if ((index + 2) < DEFAULT_FRAME_COUNT) {
                         val frame = frames[index + 2]
                         frame.getRollBy(Frame.State.FIRST_CHANCE)?.let { rolls.add(it) }

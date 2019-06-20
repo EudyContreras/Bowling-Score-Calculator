@@ -1,10 +1,10 @@
 package com.eudycontreras.bowlingcalculator.repositories
 
 import androidx.annotation.WorkerThread
-import com.eudycontreras.bowlingcalculator.Application
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
 import com.eudycontreras.bowlingcalculator.calculator.elements.Roll
+import com.eudycontreras.bowlingcalculator.persistance.PersistenceManager
 import com.eudycontreras.bowlingcalculator.persistance.dao.RollsDao
 import com.eudycontreras.bowlingcalculator.persistance.entities.RollEntity
 
@@ -13,7 +13,7 @@ import com.eudycontreras.bowlingcalculator.persistance.entities.RollEntity
  */
 
 class RollRepositoryImpl(
-    application: Application,
+    manager: PersistenceManager,
     private val rollDao: RollsDao
 ) : RollRepository {
 
@@ -23,8 +23,13 @@ class RollRepositoryImpl(
     }
 
     @WorkerThread
-    override fun updateRolls(frame: Frame, rolls: List<Roll>) {
+    override fun updateRolls(rolls: List<Roll>) {
         rollDao.update(rolls.map { RollEntity.from(it) })
+    }
+
+    @WorkerThread
+    override fun updateRolls(bowlerId: Long, rolls: List<Roll>) {
+        rollDao.replaceAllFor(bowlerId, rolls.map { RollEntity.from(it) })
     }
 
     @WorkerThread

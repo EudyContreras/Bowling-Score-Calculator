@@ -21,6 +21,21 @@ abstract class BowlersDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     abstract fun update(bowler: BowlerEntity): Int
 
+    @Transaction
+    open fun replace(bowler: BowlerEntity) {
+        deleteById(bowler.id!!)
+        insert(bowler)
+    }
+
+    @Query("SELECT count(*) FROM bowlers")
+    abstract fun getCount(): Int
+
+    @Query("SELECT count(*) FROM bowlers WHERE resultId = :resultId")
+    abstract fun getCount(resultId: Long): Int
+
+    @Query("SELECT EXISTS(SELECT 1 FROM bowlers WHERE id = :bowlerId LIMIT 1)")
+    abstract fun exists(bowlerId: Long): Boolean
+
     @Query("SELECT * FROM bowlers WHERE id = :id LIMIT 1")
     abstract fun findById(id: Long): LiveData<BowlerEntity>
 

@@ -43,6 +43,8 @@ abstract class Frame : Element {
 
     fun hasChances(): Boolean = chances > 0
 
+    fun hasStarted(): Boolean = rolls.size > 0
+
     fun getRollBy(chance: Frame.State): Roll? = rolls[chance]
 
     fun areAllPinsDown(): Boolean = pins.all { it.state == Pin.State.DOWN }
