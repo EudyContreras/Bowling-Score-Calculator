@@ -11,7 +11,7 @@ interface FrameRepository {
 
     fun saveFrames(frames: List<Frame>)
 
-    fun updateFrames(bowler: Bowler, frames: List<Frame>)
+    fun updateFrames(bowlerId: Long, frames: List<Frame>)
 
     fun getFrames(bowler: Bowler): List<Frame>
 

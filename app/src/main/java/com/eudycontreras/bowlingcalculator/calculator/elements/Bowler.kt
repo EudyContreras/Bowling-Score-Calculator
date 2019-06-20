@@ -58,11 +58,12 @@ data class Bowler(
     }
 
     override fun reset() {
-        id = 0
         lastPlayedFrameIndex = DEFAULT_START_INDEX
         currentFrameIndex = DEFAULT_START_INDEX
-        frames.forEach { it.reset() }
-        frames.forEach { it.rolls.clear() }
+        frames.forEach {
+            it.reset()
+            it.rolls.clear()
+        }
     }
 
     fun performRoll(pinCount: Int, listener: ScoreStateListener? = null) {
@@ -99,7 +100,7 @@ data class Bowler(
             }
         }
 
-        ScoreCalculator.calculate(this, frames, listener)
+        ScoreCalculator.calculate(this, listener)
     }
 
     private fun handleNormalFrameThrow(pinCount: Int, roll: Roll, frame: Frame) {

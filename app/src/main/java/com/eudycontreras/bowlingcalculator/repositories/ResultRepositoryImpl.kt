@@ -3,9 +3,9 @@ package com.eudycontreras.bowlingcalculator.repositories
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import com.eudycontreras.bowlingcalculator.Application
 import com.eudycontreras.bowlingcalculator.calculator.elements.Result
 import com.eudycontreras.bowlingcalculator.extensions.switchMap
+import com.eudycontreras.bowlingcalculator.persistance.PersistenceManager
 import com.eudycontreras.bowlingcalculator.persistance.dao.ResultsDao
 import com.eudycontreras.bowlingcalculator.persistance.entities.ResultEntity
 
@@ -14,7 +14,7 @@ import com.eudycontreras.bowlingcalculator.persistance.entities.ResultEntity
  */
 
 class ResultRepositoryImpl(
-    private val application: Application,
+    private val manager: PersistenceManager,
     private val resultDao: ResultsDao
 ) : ResultRepository {
 
@@ -32,6 +32,14 @@ class ResultRepositoryImpl(
     @WorkerThread
     override fun saveResults(results: List<Result>) {
         resultDao.insert(results.map { ResultEntity.from(it) })
+    }
+
+    override fun getResult(resultId: Long): LiveData<Result> {
+        return resultDao.findById(resultId).switchMap {
+            val data = MediatorLiveData<Result>()
+            data.value = it.toResult()
+            return@switchMap data
+        }
     }
 
     override fun getResults(): LiveData<List<Result>> {

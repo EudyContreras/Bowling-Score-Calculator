@@ -12,9 +12,15 @@ interface BowlerRepository {
 
     fun saveBowler(bowler: Bowler)
 
+    fun saveBowlers(bowlers: List<Bowler>)
+
     fun updateBowler(bowler: Bowler)
 
-    fun saveBowlers(bowlers: List<Bowler>)
+    fun bowlerExists(bowlerId: Long): Boolean
+
+    fun getBowlerCount(): Int
+
+    fun getBowlerCount(resultId: Long): Int
 
     fun getBowlers(bowlerIds: LongArray): LiveData<List<Bowler>>
 

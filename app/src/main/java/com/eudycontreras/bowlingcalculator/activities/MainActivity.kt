@@ -3,6 +3,7 @@ package com.eudycontreras.bowlingcalculator.activities
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -16,7 +17,7 @@ import com.eudycontreras.bowlingcalculator.components.controllers.StatsViewContr
 import com.eudycontreras.bowlingcalculator.components.controllers.TabsViewController
 import com.eudycontreras.bowlingcalculator.extensions.app
 import com.eudycontreras.bowlingcalculator.extensions.show
-import com.eudycontreras.bowlingcalculator.runAfter
+import com.eudycontreras.bowlingcalculator.runAfterMain
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -35,7 +36,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(com.eudycontreras.bowlingcalculator.R.layout.activity_main)
 
-        setSupportActionBar(toolbar)
+        setSupportActionBar(toolbar as Toolbar)
 
         initControllers()
     }
@@ -56,12 +57,12 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         if (!created){
             created = true
-            if (app.storage.currentBowlerIds.isNotEmpty()) {
-                runAfter(DEFAULT_GRACE_PERIOD / 2) {
+            if (app.persistenceManager.hasBowlers()) {
+                runAfterMain(DEFAULT_GRACE_PERIOD / 2) {
                     onStorageFull()
                 }
             } else {
-                runAfter(DEFAULT_GRACE_PERIOD) {
+                runAfterMain(DEFAULT_GRACE_PERIOD) {
                     onStorageEmpty()
                 }
             }
@@ -71,15 +72,22 @@ class MainActivity : AppCompatActivity() {
     private fun onStorageEmpty() {
         tabsController.requestTab{
             val activeTab = tabsController.getActive()
-            app.storage.activeTab = activeTab
+            app.persistenceManager.saveActiveTab(activeTab)
             scoreController.initCalculator(it, activeTab)
         }
     }
 
     private fun onStorageFull() {
-        val bowlers = app.getBowlers(app.storage.currentBowlerIds)
+        val bowlers = app.persistenceManager.getBowlers()
+
         bowlers.observe(this, Observer {
-            val activeTab = app.storage.activeTab
+            val activeTab = app.persistenceManager.activeTab
+
+            if (it.isEmpty()) {
+                onStorageEmpty()
+                return@Observer
+            }
+
             scoreController.initCalculator(it, activeTab)
             tabsController.addTabs(it, activeTab)
         })
@@ -96,9 +104,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun saveCurrentState(bowlers: Bowlers, listener: BowlerListener = null) {
-        app.storage.activeTab = scoreController.activeTab
-        app.storage.currentBowlerIds = bowlers.map { it.id }.toLongArray()
-        app.saveBowlers(bowlers, listener)
+        app.persistenceManager.saveActiveTab(scoreController.activeTab)
+        app.persistenceManager.saveBowlers(bowlers, listener)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

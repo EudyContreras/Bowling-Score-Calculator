@@ -20,6 +20,12 @@ abstract class ResultsDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     abstract fun update(result: ResultEntity): Int
 
+    @Query("SELECT count(*) FROM results")
+    abstract fun getCount(): Int
+
+    @Query("SELECT EXISTS(SELECT 1 FROM results WHERE id = :resultId  LIMIT 1)")
+    abstract fun exists(resultId: Long): Boolean
+
     @Query(value = "SELECT * FROM results WHERE id = :id LIMIT 1")
     abstract fun findById(id: Long): LiveData<ResultEntity>
 

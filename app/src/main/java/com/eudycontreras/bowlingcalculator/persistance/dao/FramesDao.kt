@@ -1,6 +1,7 @@
 package com.eudycontreras.bowlingcalculator.persistance.dao
 
 import androidx.room.*
+import com.eudycontreras.bowlingcalculator.persistance.entities.BowlerEntity
 import com.eudycontreras.bowlingcalculator.persistance.entities.FrameEntity
 
 /**
@@ -22,16 +23,22 @@ abstract class FramesDao {
         insert(frames)
     }
 
+    @Transaction
+    open fun replaceFor(bowlerId: Long, frames: List<FrameEntity>) {
+        delete(bowlerId)
+        insert(frames)
+    }
+
     @Update(onConflict = OnConflictStrategy.REPLACE)
     abstract fun update(frame: FrameEntity): Int
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     abstract fun update(frames: List<FrameEntity>): Int
 
-    @Query(value = "SELECT * FROM frames WHERE `index` = :index AND bowlerId = :bowlerId LIMIT 1")
+    @Query("SELECT * FROM frames WHERE `index` = :index AND bowlerId = :bowlerId LIMIT 1")
     abstract fun find(bowlerId: Long, index: Int): FrameEntity
 
-    @Query(value = "SELECT * FROM frames WHERE bowlerId = :bowlerId ORDER BY `index` ASC")
+    @Query("SELECT * FROM frames WHERE bowlerId = :bowlerId ORDER BY `index` ASC")
     abstract fun findForBowler(bowlerId: Long): List<FrameEntity>
 
     @Query("SELECT * FROM frames WHERE bowlerId = -1")

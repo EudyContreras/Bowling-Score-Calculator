@@ -16,14 +16,7 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.Roll
 fun List<Roll>.sum() = map { it.totalKnockdown }.sum()
 
 fun List<Frame>.getComputedScore(): Int {
-    val scoreAccumulator = this
-        .map { it.rolls.values }
-        .flatten()
-        .sumBy { it.totalKnockdown }
-
-    val bonusAccumulator = this.map { it.bonusPoints }.sum()
-
-    return scoreAccumulator + bonusAccumulator
+    return this.sumBy { it.getTotal(false) }
 }
 
 val Activity.app: Application

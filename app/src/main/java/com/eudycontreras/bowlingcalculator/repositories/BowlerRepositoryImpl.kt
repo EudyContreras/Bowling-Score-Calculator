@@ -4,24 +4,22 @@ import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import com.eudycontreras.bowlingcalculator.Application
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Result
 import com.eudycontreras.bowlingcalculator.extensions.switchMap
+import com.eudycontreras.bowlingcalculator.fromIO
+import com.eudycontreras.bowlingcalculator.persistance.PersistenceManager
 import com.eudycontreras.bowlingcalculator.persistance.dao.BowlersDao
 import com.eudycontreras.bowlingcalculator.persistance.entities.BowlerEntity
-import com.eudycontreras.bowlingcalculator.utilities.AppExecutors
 
 /**
  * Created by eudycontreras.
  */
 
 class BowlerRepositoryImpl(
-    private val application: Application,
+    private val manager: PersistenceManager,
     private val bowlerDao: BowlersDao
 ) : BowlerRepository {
-
-    private val appExecutor: AppExecutors = application.appExecutor
 
     @WorkerThread
     override fun saveBowler(bowler: Bowler) {
@@ -33,24 +31,44 @@ class BowlerRepositoryImpl(
     }
 
     @WorkerThread
-    override fun updateBowler(bowler: Bowler) {
-        bowlerDao.update(BowlerEntity.from(bowler))
-    }
-
-    @WorkerThread
     override fun saveBowlers(bowlers: List<Bowler>) {
         bowlers.forEach {
            saveBowler(it)
         }
     }
 
+    @WorkerThread
+    override fun updateBowler(bowler: Bowler) {
+        bowlerDao.replace(BowlerEntity.from(bowler))
+    }
+
+    @WorkerThread
+    override fun bowlerExists(bowlerId: Long): Boolean {
+        return bowlerDao.exists(bowlerId)
+    }
+
+    @WorkerThread
+    override fun getBowlerCount(): Int {
+        return bowlerDao.getCount()
+    }
+
+    @WorkerThread
+    override fun getBowlerCount(resultId: Long): Int {
+        return bowlerDao.getCount(resultId)
+    }
+
     override fun getBowlers(bowlerIds: LongArray): LiveData<List<Bowler>> {
         val bowlers = MutableLiveData<List<Bowler>>()
-        appExecutor.ioThread {
+        fromIO {
             val temp = arrayListOf<Bowler>()
-            bowlerIds.forEach {
-                val bowler = bowlerDao.getById(it).toBowler()
-                bowler.frames = application.frameRepo.getFrames(bowler)
+            val count = bowlerDao.getCount()
+            for(id in bowlerIds) {
+                val exists = bowlerDao.exists(id)
+                if (!exists)
+                    continue
+
+                val bowler = bowlerDao.getById(id).toBowler()
+                bowler.frames = manager.frameRepo.getFrames(bowler)
                 temp.add(bowler)
             }
             bowlers.postValue(temp)

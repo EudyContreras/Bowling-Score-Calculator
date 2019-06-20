@@ -32,6 +32,7 @@ class TabsViewController(
     }
 
     fun addTabs(bowlers: List<Bowler>, currentIndex: Int? = null) {
+        if(bowlers.isNotEmpty())
         viewComponent.addTabs(bowlers, currentIndex)
     }
 
@@ -59,7 +60,7 @@ class TabsViewController(
             }
             if (!viewComponent.hasTabs()) {
                 val activeTab = getActive()
-                context.app.storage.activeTab = activeTab
+                context.app.persistenceManager.saveActiveTab(activeTab)
                 scoreController.initCalculator(it, activeTab)
             }
             viewComponent.addTabs(it)

@@ -15,6 +15,8 @@ interface ResultRepository {
 
     fun saveResults(results: List<Result>)
 
+    fun getResult(resultId: Long): LiveData<Result>
+
     fun getResults(): LiveData<List<Result>>
 
     fun deleteResult(result: Result)

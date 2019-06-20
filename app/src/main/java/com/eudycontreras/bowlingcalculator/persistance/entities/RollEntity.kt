@@ -11,7 +11,7 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.Roll
 
 @Entity(
     tableName = "Rolls",
-    indices = [(Index( "bowlerId", "frameIndex", "parentState", unique = true))],
+    indices = [(Index( "bowlerId", "frameIndex", "parentState"))],
     primaryKeys = ["bowlerId", "frameIndex", "parentState"]
 )
 data class RollEntity(
