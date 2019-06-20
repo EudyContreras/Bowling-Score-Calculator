@@ -5,8 +5,8 @@ import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreControlle
 import com.eudycontreras.bowlingcalculator.calculator.elements.Result
 import com.eudycontreras.bowlingcalculator.components.views.ActionsViewComponent
 import com.eudycontreras.bowlingcalculator.extensions.app
-import com.eudycontreras.bowlingcalculator.fragments.LoadResultFragment
-import com.eudycontreras.bowlingcalculator.fragments.SaveResultFragment
+import com.eudycontreras.bowlingcalculator.fragments.FragmentLoadResult
+import com.eudycontreras.bowlingcalculator.fragments.FragmentSaveResult
 import java.util.*
 
 
@@ -33,11 +33,11 @@ class ActionViewController(
     }
 
     fun handleSaveAction() {
-        context.openDialog(SaveResultFragment.instance(this))
+        context.openDialog(FragmentSaveResult.instance(this))
     }
 
     fun handleLoadAction() {
-        context.openDialog(LoadResultFragment.instance(this))
+        context.openDialog(FragmentLoadResult.instance(this))
     }
 
     fun updateActionInput(remainingPins: Int) {
@@ -54,7 +54,6 @@ class ActionViewController(
 
     fun saveCurrentResult(name: String, listener: (name: String) -> Unit) {
         val result = Result(name, Date())
-        //result.bowlers = scoreController.bowler
         context.app.saveResult(result, listener)
     }
 }

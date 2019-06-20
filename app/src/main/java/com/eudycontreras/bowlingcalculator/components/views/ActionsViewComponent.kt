@@ -9,11 +9,14 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.children
-import com.eudycontreras.bowlingcalculator.*
+import com.eudycontreras.bowlingcalculator.DEFAULT_PIN_COUNT
+import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.components.controllers.ActionViewController
 import com.eudycontreras.bowlingcalculator.extensions.addTouchAnimation
 import com.eudycontreras.bowlingcalculator.extensions.clamp
+import com.eudycontreras.bowlingcalculator.runSequential
+import com.eudycontreras.bowlingcalculator.toString
 import kotlinx.android.synthetic.main.activity_main.*
 
 /**
@@ -52,12 +55,6 @@ class ActionsViewComponent(
     }
 
     override fun setDefaultValues() {
-        loadSaveAction?.visibility = if (SHOW_SAVE_BUTTON) {
-            View.VISIBLE
-        } else {
-            View.GONE
-        }
-
         throwAction?.let { parent ->
             parent.children.forEachIndexed { index, view ->
                 val input: FrameLayout = view.findViewById(R.id.throwInput) as FrameLayout

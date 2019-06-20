@@ -4,44 +4,26 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.*
+import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.OvershootInterpolator
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.DialogFragment
 import com.eudycontreras.bowlingcalculator.R
-import com.eudycontreras.bowlingcalculator.components.controllers.ActionViewController
 import com.eudycontreras.bowlingcalculator.components.views.ViewComponent
 import com.eudycontreras.bowlingcalculator.extensions.addTouchAnimation
 import com.eudycontreras.bowlingcalculator.extensions.dimensions
-import kotlinx.android.synthetic.main.dialog_load_result.view.*
-
 
 /**
  * Created by eudycontreras.
  */
 
-class LoadResultFragment: DialogFragment(), ViewComponent {
-
-    var controller: ActionViewController? = null
-
-    private lateinit var loadDialog: ConstraintLayout
+abstract class DialogFragment: DialogFragment(), ViewComponent {
 
     companion object {
-        fun instance(controller: ActionViewController): LoadResultFragment {
-            val fragment = LoadResultFragment()
-            fragment.controller = controller
-            return fragment
-        }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        loadDialog = inflater.inflate(R.layout.dialog_load_result, container) as ConstraintLayout
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.FullScreenDialogStyle)
-        setDefaultValues()
-        registerListeners()
-
-        return loadDialog
+        val STYLE_NORMAL = 0
     }
 
     override fun onResume() {
@@ -64,16 +46,6 @@ class LoadResultFragment: DialogFragment(), ViewComponent {
         return dialog
     }
 
-    override fun setDefaultValues() {
-        assignInteraction(loadDialog.dialogLoadClear)
-    }
-
-    override fun registerListeners() {
-        loadDialog.dialogLoadClear.setOnClickListener {
-
-        }
-    }
-
     override fun assignInteraction(view: View?) {
         view?.addTouchAnimation(
             clickTarget = null,
@@ -82,5 +54,4 @@ class LoadResultFragment: DialogFragment(), ViewComponent {
             interpolatorRelease = OvershootInterpolator()
         )
     }
-
 }

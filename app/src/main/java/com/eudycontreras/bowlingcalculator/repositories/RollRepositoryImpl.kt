@@ -7,7 +7,6 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
 import com.eudycontreras.bowlingcalculator.calculator.elements.Roll
 import com.eudycontreras.bowlingcalculator.persistance.dao.RollsDao
 import com.eudycontreras.bowlingcalculator.persistance.entities.RollEntity
-import com.eudycontreras.bowlingcalculator.utilities.AppExecutors
 
 /**
  * Created by eudycontreras.
@@ -17,8 +16,6 @@ class RollRepositoryImpl(
     application: Application,
     private val rollDao: RollsDao
 ) : RollRepository {
-
-    private val appExecutor: AppExecutors = application.appExecutor
 
     @WorkerThread
     override fun saveRolls(rolls: List<Roll>) {

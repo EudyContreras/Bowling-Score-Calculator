@@ -49,7 +49,15 @@ abstract class Frame : Element {
 
     fun pinUpCount(): Int= pins.count { it.state == Pin.State.UP }
 
-    abstract fun getTotal(includeAccumulated: Boolean): Int
+    fun getTotal(includeAccumulated: Boolean): Int {
+        val sum = rolls.values.map { it.totalKnockdown }.sum()
+        val total = if (includeAccumulated) (bonusPoints + pointsFromPrevious) else bonusPoints
+        return sum + total
+    }
+
+    override fun init() {
+        reset()
+    }
 
     abstract fun resetChances()
 

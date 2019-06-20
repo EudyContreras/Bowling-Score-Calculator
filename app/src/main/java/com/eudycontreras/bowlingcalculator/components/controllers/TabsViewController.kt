@@ -6,7 +6,7 @@ import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreControlle
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.components.views.TabsViewComponent
 import com.eudycontreras.bowlingcalculator.extensions.app
-import com.eudycontreras.bowlingcalculator.fragments.CreateBowlerFragment
+import com.eudycontreras.bowlingcalculator.fragments.FragmentCreateBowler
 
 /**
  * Created by eudycontreras.
@@ -23,39 +23,45 @@ class TabsViewController(
         scoreController.tabsController = this
     }
 
-    fun createTabs(vararg bowler: Bowler) {
-        viewComponent.crateTabs(bowler.toList())
-    }
-
     fun createTabs(bowler: List<Bowler>) {
         viewComponent.crateTabs(bowler)
     }
 
     fun requestTab(listener: BowlerListener = null) {
-        context.openDialog(CreateBowlerFragment.instance(this, listener))
+        context.openDialog(FragmentCreateBowler.instance(this, listener))
     }
 
-    fun addTabs(bowlers: List<Bowler>) {
-        viewComponent.addTabs(bowlers)
+    fun addTabs(bowlers: List<Bowler>, currentIndex: Int? = null) {
+        viewComponent.addTabs(bowlers, currentIndex)
     }
 
-    fun removeTab(index: Int) {
-        viewComponent.removeTab(index)
+    fun removeTab(lastIndex: Int, index: Int, onEnd: (()-> Unit)? = null) {
+        scoreController.removeBowler(lastIndex, index, onEnd)
     }
 
     fun selectTab(index: Int) {
         viewComponent.selectTab(index)
     }
 
-    fun onTabSelection(bowlerId: Long, current: Int) {
-        scoreController.selectBowler(bowlerId)
+    fun onTabSelection(current: Int) {
+        scoreController.selectBowler(current)
     }
 
     fun createBowler(names: List<String>, listener: BowlerListener) {
         val bowlers = names.map { Bowler(it) }
 
-        context.app.saveBowlers(bowlers) {
+        context.saveCurrentState(bowlers) {
             listener?.invoke(it)
+            bowlers.forEach { bowler ->
+                if (!scoreController.bowlers.contains(bowler)) {
+                    scoreController.bowlers.add(bowler)
+                }
+            }
+            if (!viewComponent.hasTabs()) {
+                val activeTab = getActive()
+                context.app.storage.activeTab = activeTab
+                scoreController.initCalculator(it, activeTab)
+            }
             viewComponent.addTabs(it)
         }
     }

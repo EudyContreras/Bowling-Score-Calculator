@@ -1,15 +1,11 @@
 package com.eudycontreras.bowlingcalculator.fragments
 
-import android.app.Dialog
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.*
-import android.view.animation.DecelerateInterpolator
-import android.view.animation.OvershootInterpolator
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.eudycontreras.bowlingcalculator.BowlerListener
@@ -17,16 +13,13 @@ import com.eudycontreras.bowlingcalculator.MAX_ALLOWED_INPUT_FIELDS
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.adapters.InputViewAdapter
 import com.eudycontreras.bowlingcalculator.components.controllers.TabsViewController
-import com.eudycontreras.bowlingcalculator.components.views.ViewComponent
-import com.eudycontreras.bowlingcalculator.extensions.addTouchAnimation
-import com.eudycontreras.bowlingcalculator.extensions.dimensions
 import kotlinx.android.synthetic.main.dialog_create_bowlers.view.*
 
 /**
  * Created by eudycontreras.
  */
 
-class CreateBowlerFragment: DialogFragment(), ViewComponent {
+class FragmentCreateBowler: DialogFragment() {
 
     private var controller: TabsViewController? = null
 
@@ -37,8 +30,8 @@ class CreateBowlerFragment: DialogFragment(), ViewComponent {
     private lateinit var createDialog: ConstraintLayout
 
     companion object {
-        fun instance(controller: TabsViewController, listener: BowlerListener = null): CreateBowlerFragment {
-            val fragment = CreateBowlerFragment()
+        fun instance(controller: TabsViewController, listener: BowlerListener = null): FragmentCreateBowler {
+            val fragment = FragmentCreateBowler()
             fragment.listener = listener
             fragment.controller = controller
             return fragment
@@ -53,26 +46,6 @@ class CreateBowlerFragment: DialogFragment(), ViewComponent {
         registerListeners()
 
         return createDialog
-    }
-
-    override fun onResume() {
-        super.onResume()
-        dialog?.window?.let {
-            val layoutParams = it.attributes
-            layoutParams.width = activity!!.dimensions().first - (resources.getDimension(R.dimen.margin_dialog).toInt() * 2)
-            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
-            it.attributes = layoutParams
-            it.setGravity(Gravity.CENTER)
-        }
-    }
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState)
-        dialog.window?.let {
-            it.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            it.requestFeature(Window.FEATURE_NO_TITLE)
-        }
-        return dialog
     }
 
     override fun setDefaultValues() {
@@ -116,14 +89,5 @@ class CreateBowlerFragment: DialogFragment(), ViewComponent {
                 Toast.makeText(context, context?.getString(R.string.no_result_name), Toast.LENGTH_LONG).show()
             }
         }
-    }
-
-    override fun assignInteraction(view: View?) {
-        view?.addTouchAnimation(
-            clickTarget = null,
-            scale = 0.95f,
-            interpolatorPress =  DecelerateInterpolator(),
-            interpolatorRelease = OvershootInterpolator()
-        )
     }
 }

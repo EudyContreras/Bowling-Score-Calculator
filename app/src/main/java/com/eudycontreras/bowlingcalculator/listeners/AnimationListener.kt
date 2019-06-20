@@ -11,6 +11,7 @@ class AnimationListener(
     var onStart: (() -> Unit)? = null,
     var onEnd: (() -> Unit)? = null
 ) : AnimatorListenerAdapter() {
+
     override fun onAnimationStart(animation: Animator?) {
         super.onAnimationStart(animation)
         onStart?.invoke()

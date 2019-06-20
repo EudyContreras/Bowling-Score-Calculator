@@ -8,7 +8,6 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.Result
 import com.eudycontreras.bowlingcalculator.extensions.switchMap
 import com.eudycontreras.bowlingcalculator.persistance.dao.ResultsDao
 import com.eudycontreras.bowlingcalculator.persistance.entities.ResultEntity
-import com.eudycontreras.bowlingcalculator.utilities.AppExecutors
 
 /**
  * Created by eudycontreras.
@@ -18,8 +17,6 @@ class ResultRepositoryImpl(
     private val application: Application,
     private val resultDao: ResultsDao
 ) : ResultRepository {
-
-    private val appExecutor: AppExecutors = application.appExecutor
 
     @WorkerThread
     override fun saveResult(result: Result, listener: ((id: Long, name: String) -> Unit)?) {
