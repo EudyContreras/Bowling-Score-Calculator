@@ -62,23 +62,21 @@ class TabsViewComponent(
         }
     }
 
-    fun addTabs(bowlers: List<Bowler>) {
+    fun addTabs(bowlers: List<Bowler>, currentIndex: Int? = null) {
         if (bowlers.size == 1) {
-            tabAdapter.addItem(bowlers.first().run { TabViewAdapter.TabViewModel(id, name) } )
+            tabAdapter.addItem(bowlers.first().run { TabViewAdapter.TabViewModel(id, name) }, currentIndex)
             return
         }
-        tabAdapter.addItems(bowlers.map { TabViewAdapter.TabViewModel(it.id, it.name) })
-    }
-
-    fun removeTab(index: Int, onEnd: (() -> Unit)? = null) {
-        onEnd?.invoke()
+        tabAdapter.addItems(bowlers.map { TabViewAdapter.TabViewModel(it.id, it.name) }, currentIndex)
     }
 
     fun selectTab(index: Int) {
         tabAdapter.currentIndex = index
-        tabAdapter.notifyDataSetChanged()
+        tabAdapter.notifyItemChanged(index)
         scrollToIndex(index)
     }
+
+    fun hasTabs() = tabAdapter.normalTabs.isNotEmpty()
 
     fun getCurrent() = tabAdapter.currentIndex
 }

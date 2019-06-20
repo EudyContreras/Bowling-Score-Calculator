@@ -5,7 +5,6 @@ package com.eudycontreras.bowlingcalculator.calculator.listeners
  */
 
 interface BowlerActionListener {
-
     fun throwBall(pinKnockedCount: Int)
     fun onFrameSelected(frameIndex: Int)
     fun clearScore()

@@ -132,17 +132,12 @@ data class Bowler(
         if (this === other) return true
         if (other !is Bowler) return false
 
-        if (name != other.name) return false
-        if (skill != other.skill) return false
         if (id != other.id) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = name.hashCode()
-        result = 31 * result + skill.hashCode()
-        result = 31 * result + (id ?: NO_ID).toInt()
-        return result
+        return id.hashCode()
     }
 }

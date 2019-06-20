@@ -5,9 +5,9 @@
     <color name="colorPrimaryLight">#2B2B2B</color>
     <color name="colorPrimaryVeryLight">#373737</color>
 
-    <color name="colorAccent">#B71C1C</color>
-    <color name="colorAccentLight">#C62828</color>
-    <color name="colorAccentDark">#8D0E0E</color>
+    <color name="colorAccent">#006064</color>
+    <color name="colorAccentLight">#006064</color>
+    <color name="colorAccentDark">#006064</color>
 
     <color name="white">#FFF</color>
     <color name="gray">#D6D6D6</color>

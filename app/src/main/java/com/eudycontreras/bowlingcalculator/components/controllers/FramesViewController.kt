@@ -38,7 +38,8 @@ class FramesViewController(
     }
 
     fun createFrames(bowler: Bowler){
-        viewComponent.createFrames(bowler)
+        val frames = bowler.frames.toMutableList()
+        viewComponent.createFrames(frames)
     }
 
     fun updateFramesState(bowler: Bowler, current: Frame) {
@@ -55,5 +56,13 @@ class FramesViewController(
 
     fun performFrameSelection(index: Int) {
         scoreController.onFrameSelected(index)
+    }
+
+    fun setSourceFrames(bowler: Bowler?) {
+        if (bowler != null) {
+            viewComponent.setSourceFrames(bowler.frames)
+        } else {
+            viewComponent.setSourceFrames(emptyList())
+        }
     }
 }

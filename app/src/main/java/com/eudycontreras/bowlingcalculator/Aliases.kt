@@ -7,3 +7,5 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
  */
 
 typealias BowlerListener = ((names: List<Bowler>) -> Unit)?
+
+typealias Bowlers = List<Bowler>

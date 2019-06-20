@@ -38,22 +38,12 @@ data class FrameLast(override var index: Int) : Frame() {
     override val isCompleted: Boolean
         get() = !hasChances()
 
-    override fun init() {
-        reset()
-    }
-
     override fun reset() {
         pointsFromPrevious = 0
         bonusPoints = 0
         state = State.FIRST_CHANCE
         chances = DEFAULT_FRAME_CHANCES + 1
         resetPins()
-    }
-
-    override fun getTotal(includeAccumulated: Boolean): Int {
-        val sum = rolls.values.map { it.totalKnockdown }.sum()
-        val total = if (includeAccumulated) (bonusPoints + pointsFromPrevious) else bonusPoints
-        return sum + total
     }
 
     override fun resetChances() {
@@ -139,7 +129,7 @@ data class FrameLast(override var index: Int) : Frame() {
     }
 
     override fun missingRounds(): Boolean {
-        if(rolls.size < 3) {
+        if(rolls.size < DEFAULT_FRAME_CHANCES + 1) {
             return true
         }
         return false

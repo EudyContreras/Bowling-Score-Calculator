@@ -54,7 +54,7 @@ class Application : Application() {
         }
     }
 
-    fun saveBowlers(bowlers: List<Bowler>, listener: ((bowlers: List<Bowler>) -> Unit)? = null) {
+    fun saveBowlers(bowlers: List<Bowler>, listener: BowlerListener = null) {
         appExecutor.ioThread {
             bowlerRepo.saveBowlers(bowlers)
             for(bowler in bowlers) {
@@ -82,6 +82,17 @@ class Application : Application() {
                         var results = it
                     }
                 }
+            }
+        }
+    }
+
+    fun removeBowler(bowler: Bowler, function: (() -> Unit)?) {
+        appExecutor.ioThread {
+            rollRepo.delete(bowler)
+            frameRepo.deleteFrames(bowler)
+            bowlerRepo.deleteBowler(bowler)
+            appExecutor.mainThread {
+                function?.invoke()
             }
         }
     }

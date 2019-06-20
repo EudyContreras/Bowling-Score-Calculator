@@ -9,7 +9,7 @@ import com.eudycontreras.bowlingcalculator.components.views.StatsViewComponent
  */
 
 class StatsViewController(
-    private val context: MainActivity,
+    context: MainActivity,
     scoreController: ScoreController
 ) {
 

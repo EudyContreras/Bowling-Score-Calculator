@@ -38,15 +38,6 @@ data class FrameNormal(override var index: Int) : Frame() {
     override val isCompleted: Boolean
         get() = !hasChances()
 
-    override fun init() {
-        reset()
-    }
-    override fun getTotal(includeAccumulated: Boolean): Int {
-        val sum = rolls.values.map { it.totalKnockdown }.sum()
-        val total = if (includeAccumulated) (bonusPoints + pointsFromPrevious) else bonusPoints
-        return sum + total
-    }
-
     override fun reset() {
         pointsFromPrevious = 0
         bonusPoints = 0
@@ -125,7 +116,7 @@ data class FrameNormal(override var index: Int) : Frame() {
     }
 
     override fun missingRounds(): Boolean {
-        if(rolls.size < 2) {
+        if(rolls.size < DEFAULT_FRAME_CHANCES) {
             if (!rolls.values.any { it.result == Roll.Result.STRIKE }) {
                 return true
             }

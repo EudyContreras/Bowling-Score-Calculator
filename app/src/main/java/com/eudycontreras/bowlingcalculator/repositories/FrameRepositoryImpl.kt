@@ -6,7 +6,6 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
 import com.eudycontreras.bowlingcalculator.persistance.dao.FramesDao
 import com.eudycontreras.bowlingcalculator.persistance.entities.FrameEntity
-import com.eudycontreras.bowlingcalculator.utilities.AppExecutors
 
 /**
  * Created by eudycontreras.
@@ -16,8 +15,6 @@ class FrameRepositoryImpl(
     private val application: Application,
     private val frameDao: FramesDao
 ) : FrameRepository {
-
-    private val appExecutor: AppExecutors = application.appExecutor
 
     @WorkerThread
     override fun saveFrames(frames: List<Frame>) {

@@ -104,6 +104,13 @@ class FrameViewAdapter(
         }
     }
 
+    fun changeSource(items: List<Frame>) {
+        this.lastReference = null
+        this.items.clear()
+        this.items.addAll(items)
+        this.notifyDataSetChanged()
+    }
+
     class FrameViewHolder(private val view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
 
         private val frameIndex: TextView = view.frameIndex
@@ -181,7 +188,11 @@ class FrameViewAdapter(
         }
 
         internal fun resetValues() {
+
             adapter?.let {
+                if (it.items.isEmpty()){
+                    frame = null
+                }
                 view.animateColor(it.white, it.semiWhite, 0L)
                 disableMarkSelection(this, it)
                 frame?.let {frame ->

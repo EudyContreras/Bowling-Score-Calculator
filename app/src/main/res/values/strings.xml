@@ -17,4 +17,5 @@
     <string name="no_result_name">No name given!</string>
     <string name="create_bowler">Enter bowler\'s name</string>
     <string name="max_input_count_reached">Max allowed reached!</string>
+    <string name="max_bowler_count_reached">Max 10 bowlers allowed</string>
 </resources>

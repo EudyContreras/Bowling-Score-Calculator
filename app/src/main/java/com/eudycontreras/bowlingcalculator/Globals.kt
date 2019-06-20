@@ -1,5 +1,7 @@
 package com.eudycontreras.bowlingcalculator
 
+import android.os.Handler
+
 
 /**
  * Created by eudycontreras.
@@ -7,6 +9,10 @@ package com.eudycontreras.bowlingcalculator
 
 fun <T> toString(element: T): String {
     return element.toString()
+}
+
+fun runAfter(delay: Long, action: ()-> Unit) {
+    Handler().postDelayed(action,delay)
 }
 
 fun runSequential(delay: Long, times: Int, applyAction: (index: Int) -> Unit) {

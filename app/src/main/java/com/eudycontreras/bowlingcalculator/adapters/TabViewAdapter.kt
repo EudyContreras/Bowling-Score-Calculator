@@ -37,20 +37,36 @@ class TabViewAdapter(
 
     internal var currentIndex: Int = DEFAULT_START_INDEX
 
-    fun addItem(item: TabViewModel) {
+    val normalTabs: List<TabViewModel>
+        get() = items.filter { it.type == ViewType.NORMAL_TAB }
+
+    sealed class Values {
+        companion object {
+            const val alpha = 0.4f
+            const val duration = 150L
+            val translateY = 4.dp
+            val translateZ = (-10).dp
+        }
+    }
+
+    fun addItem(item: TabViewModel, selectedIndex: Int? = null) {
         lastTab?.let { reference ->
             if (!reference.isEnqueued) {
                 (reference.get() as TabViewAdapter.TabViewHolderNormal?)?.deactivateTab()
             }
         }
         this.items.add(currentIndex, item)
-        notifyItemInserted(currentIndex)
 
-        currentIndex = this.items.size - 2
+        currentIndex = selectedIndex?:this.items.size - 2
         lastTab = null
+
+        notifyItemInserted(currentIndex)
+        viewComponent.controller.onTabSelection(currentIndex)
     }
 
-    fun addItems(items: List<TabViewModel>) {
+    fun addItems(items: List<TabViewModel>, selectedIndex: Int? = null) {
+        if (items.isEmpty())
+            return
 
         lastTab?.let { reference ->
             if (!reference.isEnqueued) {
@@ -62,19 +78,17 @@ class TabViewAdapter(
             this.items.add(currentIndex, it)
         }
 
-        currentIndex = this.items.size - 2
+        currentIndex = selectedIndex?:this.items.size - 2
         lastTab = null
 
         notifyDataSetChanged()
+
         viewComponent.scrollToIndex(this.items.size - 1)
+        viewComponent.controller.onTabSelection(currentIndex)
     }
 
     fun removeItem(index: Int) {
         items.removeAt(index)
-    }
-
-    fun removeItem(item: TabViewModel) {
-        items.remove(item)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -162,6 +176,8 @@ class TabViewAdapter(
 
         private var model: TabViewModel? = null
 
+        private var removed = false
+
         init {
             resetValues()
             registerListeners()
@@ -171,30 +187,32 @@ class TabViewAdapter(
             tabItem.setOnClickListener(this)
 
             tabAction.setOnClickListener {
-                removeTab()
+                if (!removed) {
+                    removeTab()
+                }
             }
         }
 
         override fun onClick(view: View?) {
-            model?.let { model ->
-                if (currentIndex != layoutPosition) {
-                    currentIndex = layoutPosition
-                }
-                viewComponent.controller.onTabSelection(model.bowlerId, layoutPosition)
-                lastTab?.let { reference ->
-                    if (!reference.isEnqueued) {
-                        (reference.get() as TabViewHolderNormal?)?.deactivateTab()
-                    }
-                }
-                activateTab()
+            if (currentIndex == layoutPosition) {
+                return
             }
+            currentIndex = layoutPosition
+            viewComponent.controller.onTabSelection(layoutPosition)
+            lastTab?.let { reference ->
+                if (!reference.isEnqueued) {
+                    (reference.get() as TabViewHolderNormal?)?.deactivateTab()
+                }
+            }
+            activateTab()
         }
 
         override fun resetValues() {
+            this.removed = false
             this.tabAction.detach()
-            this.tabItem.alpha = 0.5f
-            this.tabItem.translationY = 4.dp
-            this.tabItem.translationZ = (-10).dp
+            this.tabItem.alpha = Values.alpha
+            this.tabItem.translationY = Values.translateY
+            this.tabItem.translationZ = Values.translateZ
         }
 
         override fun performBinding(model: TabViewModel) {
@@ -215,37 +233,39 @@ class TabViewAdapter(
                 .setListener(null)
                 .translationY(0f)
                 .translationZ(0.dp)
-                .setDuration(150)
+                .setDuration(Values.duration)
                 .start()
         }
 
         fun deactivateTab() {
             this.tabAction.detach()
             this.tabItem.animate()
-                .alpha(0.5f)
+                .alpha(Values.alpha)
                 .setListener(null)
-                .translationY(4.dp)
-                .translationZ((-10).dp)
-                .setDuration(150)
+                .translationY(Values.translateY)
+                .translationZ(Values.translateZ)
+                .setDuration(Values.duration)
                 .start()
         }
 
         private fun animateRemoval(onEnd: ()-> Unit) {
             this.tabItem.animate()
                 .alpha(0f)
-                .translationZ((-10).dp)
-                .setDuration(100)
+                .translationZ(Values.translateZ)
+                .setDuration(Values.duration)
                 .setListener(AnimationListener(onEnd = onEnd))
                 .start()
         }
 
         private fun removeTab() {
-            viewComponent.removeTab(layoutPosition) {
-                currentIndex = if (layoutPosition == itemCount - 2) {
-                    layoutPosition - 1
-                } else {
-                    layoutPosition
-                }
+            val lastTabIndex = currentIndex
+            removed = true
+            currentIndex = if (layoutPosition == (itemCount - 2) && layoutPosition != 0) {
+                layoutPosition - 1
+            } else {
+                layoutPosition
+            }
+            viewComponent.controller.removeTab(lastTabIndex, currentIndex) {
                 animateRemoval {
                     removeItem(layoutPosition)
                     notifyItemRemoved(layoutPosition)

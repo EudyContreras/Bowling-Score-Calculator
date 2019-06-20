@@ -8,7 +8,7 @@ import android.widget.EditText
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.eudycontreras.bowlingcalculator.R
-import com.eudycontreras.bowlingcalculator.fragments.CreateBowlerFragment
+import com.eudycontreras.bowlingcalculator.fragments.FragmentCreateBowler
 
 
 /**
@@ -17,7 +17,7 @@ import com.eudycontreras.bowlingcalculator.fragments.CreateBowlerFragment
 
 class InputViewAdapter(
     private val context: Context?,
-    private val createFragment: CreateBowlerFragment
+    private val createFragmentCreateBowler: FragmentCreateBowler
 ) : RecyclerView.Adapter<InputViewAdapter.InputViewHolder>() {
 
     private val items: MutableList<InputViewModel> = MutableList(1) { InputViewModel() }
@@ -67,7 +67,7 @@ class InputViewAdapter(
         }
 
         private fun registerListeners() {
-            createFragment.assignInteraction(delete)
+            createFragmentCreateBowler.assignInteraction(delete)
 
             delete.setOnClickListener {
                 removeItem(layoutPosition)
