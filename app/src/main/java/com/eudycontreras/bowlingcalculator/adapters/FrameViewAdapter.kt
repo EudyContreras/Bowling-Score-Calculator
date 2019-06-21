@@ -13,6 +13,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.eudycontreras.bowlingcalculator.DEFAULT_FRAME_COUNT
 import com.eudycontreras.bowlingcalculator.DEFAULT_START_INDEX
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
@@ -39,7 +40,7 @@ class FrameViewAdapter(
     private val items: ArrayList<Frame>
 ) : RecyclerView.Adapter<FrameViewAdapter.FrameViewHolder>() {
 
-    internal val viewHolders: Array<FrameViewHolder?> = arrayOfNulls(10)
+    internal val viewHolders: Array<FrameViewHolder?> = arrayOfNulls(DEFAULT_FRAME_COUNT)
 
     internal val missIcon: Drawable? = ContextCompat.getDrawable(context, R.drawable.ic_result_miss)
     internal val spareIcon: Drawable? = ContextCompat.getDrawable(context, R.drawable.ic_result_spare)

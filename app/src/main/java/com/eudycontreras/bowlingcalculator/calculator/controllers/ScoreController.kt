@@ -18,7 +18,9 @@ import com.eudycontreras.bowlingcalculator.extensions.getComputedScore
 
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
+ * @since June 21 2019
  */
 
 class ScoreController(private val activity: MainActivity) : ScoreStateListener, BowlerActionListener{
@@ -49,8 +51,6 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
 
         onScoreUpdated(
             bowler,
-            bowler.getCurrentFrame(),
-            bowler.frames,
             bowler.frames.getComputedScore(),
             MAX_POSSIBLE_SCORE_GAME
         )
@@ -92,7 +92,9 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
         allowRedoChance(bowler.getCurrentFrame(), Frame.State.FIRST_CHANCE)
     }
 
-    override fun onScoreUpdated(bowler: Bowler, current: Frame, frames: List<Frame>, totalScore: Int, totalPossible: Int) {
+    override fun onScoreUpdated(bowler: Bowler, totalScore: Int, totalPossible: Int) {
+        val current: Frame = bowler.getCurrentFrame()
+
         framesController.updateFramesState(bowler, current)
         statsController.updateTotalScore(totalScore)
         statsController.updateMaxPossibleScore(totalPossible)
@@ -118,8 +120,6 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
 
             onScoreUpdated(
                 bowler,
-                bowler.getCurrentFrame(),
-                bowler.frames,
                 bowler.frames.getComputedScore(),
                 MAX_POSSIBLE_SCORE_GAME
             )

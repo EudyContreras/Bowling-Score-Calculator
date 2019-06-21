@@ -14,6 +14,7 @@ import java.lang.reflect.Type
  */
 
 class FrameTypeAdapter : JsonDeserializer<Frame>, JsonSerializer<Frame>{
+
     @Throws(JsonParseException::class)
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Frame? {
         val jsonObject = json.asJsonObject

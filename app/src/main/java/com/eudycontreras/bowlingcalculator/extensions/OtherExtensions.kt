@@ -8,6 +8,7 @@ import androidx.lifecycle.Transformations
 import com.eudycontreras.bowlingcalculator.Application
 import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
 import com.eudycontreras.bowlingcalculator.calculator.elements.Roll
+import com.eudycontreras.bowlingcalculator.gson
 
 /**
  * Created by eudycontreras.
@@ -41,4 +42,8 @@ fun <T> List<T>.asLiveData(): MediatorLiveData<List<T>> {
     val livaData = MediatorLiveData<List<T>>()
     livaData.value = this
     return livaData
+}
+
+inline fun <reified T> T.clone(): T {
+    return gson.fromJson(gson.toJson(this, T::class.java), T::class.java)
 }

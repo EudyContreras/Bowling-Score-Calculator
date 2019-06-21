@@ -51,10 +51,11 @@ abstract class Frame : Element {
 
     fun pinUpCount(): Int= pins.count { it.state == Pin.State.UP }
 
-    fun getTotal(includeAccumulated: Boolean): Int {
-        val sum = rolls.values.map { it.totalKnockdown }.sum()
-        val total = if (includeAccumulated) (bonusPoints + pointsFromPrevious) else bonusPoints
-        return sum + total
+    fun getTotal(includeAccumulated: Boolean = false, includeBonus: Boolean = true): Int {
+        var sum = rolls.values.map { it.totalKnockdown }.sum()
+        sum += if (includeAccumulated) pointsFromPrevious else 0
+        sum += if (includeBonus) bonusPoints else 0
+        return sum
     }
 
     override fun init() {
