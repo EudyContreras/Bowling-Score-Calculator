@@ -1,11 +1,21 @@
 package com.eudycontreras.bowlingcalculator
 
+import com.eudycontreras.bowlingcalculator.adapters.FrameTypeAdapter
+import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import kotlinx.coroutines.*
 
 
 /**
  * Created by eudycontreras.
  */
+
+val gson: Gson by lazy{
+    GsonBuilder()
+        .registerTypeAdapter(Frame::class.java, FrameTypeAdapter())
+        .create()
+}
 
 fun <T> toString(element: T): String {
     return element.toString()
@@ -37,6 +47,18 @@ fun fromIO(task: (()-> Unit)?): Job {
 
 fun fromScopeIO(task: ((CoroutineScope)-> Unit)?): Job {
     return GlobalScope.launch(Dispatchers.IO) {
+        task?.invoke(this)
+    }
+}
+
+fun fromWorker(task: (()-> Unit)?): Job {
+    return GlobalScope.launch(Dispatchers.Default) {
+        task?.invoke()
+    }
+}
+
+fun fromScopeWorker(task: ((CoroutineScope)-> Unit)?): Job {
+    return GlobalScope.launch(Dispatchers.Default) {
         task?.invoke(this)
     }
 }

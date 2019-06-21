@@ -6,6 +6,7 @@ import com.eudycontreras.bowlingcalculator.NO_ID
 import com.eudycontreras.bowlingcalculator.calculator.ScoreCalculator
 import com.eudycontreras.bowlingcalculator.calculator.listeners.ScoreStateListener
 import com.eudycontreras.bowlingcalculator.extensions.clamp
+import com.eudycontreras.bowlingcalculator.fromWorker
 
 
 /**
@@ -67,40 +68,46 @@ data class Bowler(
     }
 
     fun performRoll(pinCount: Int, listener: ScoreStateListener? = null) {
+        performRoll(pinCount, listener, false)
+    }
 
-        val roll = Roll(bowlerId = this.id, totalKnockdown = pinCount)
+    fun performRoll(pinCount: Int, listener: ScoreStateListener? = null, fromSimulation: Boolean = false) {
 
-        var currentFrame = getCurrentFrame()
+        fromWorker {
+            val roll = Roll(bowlerId = this.id, totalKnockdown = pinCount)
 
-        if (!currentFrame.hasChances()) {
-            if (currentFrame is FrameLast) {
-                if (!currentFrame.isCompleted) {
-                    currentFrame.reset()
+            var currentFrame = getCurrentFrame()
+
+            if (!currentFrame.hasChances()) {
+                if (currentFrame is FrameLast) {
+                    if (!currentFrame.isCompleted) {
+                        currentFrame.reset()
+                    }
                 }
             }
-        }
 
-        if (currentFrame is FrameNormal) {
-            handleNormalFrameThrow(pinCount, roll, currentFrame)
-        } else {
-            handleLastFrameThrow(pinCount, roll, currentFrame)
-        }
-
-        currentFrame.updateState(roll)
-
-        if (!currentFrame.hasChances()) {
-            moveToNextFrame()
-            currentFrame = getCurrentFrame()
-            if(currentFrame is FrameLast) {
-                if (!currentFrame.isCompleted) {
-                    currentFrame.reset()
-                }
+            if (currentFrame is FrameNormal) {
+                handleNormalFrameThrow(pinCount, roll, currentFrame)
             } else {
-                currentFrame.reset()
+                handleLastFrameThrow(pinCount, roll, currentFrame)
             }
-        }
 
-        ScoreCalculator.calculate(this, listener)
+            currentFrame.updateState(roll)
+
+            if (!currentFrame.hasChances()) {
+                moveToNextFrame()
+                currentFrame = getCurrentFrame()
+                if (currentFrame is FrameLast) {
+                    if (!currentFrame.isCompleted) {
+                        currentFrame.reset()
+                    }
+                } else {
+                    currentFrame.reset()
+                }
+            }
+
+            ScoreCalculator.calculateScore(this, listener, fromSimulation)
+        }
     }
 
     private fun handleNormalFrameThrow(pinCount: Int, roll: Roll, frame: Frame) {

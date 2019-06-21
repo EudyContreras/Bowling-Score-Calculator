@@ -20,7 +20,6 @@ import com.eudycontreras.bowlingcalculator.extensions.show
 import com.eudycontreras.bowlingcalculator.runAfterMain
 import kotlinx.android.synthetic.main.activity_main.*
 
-
 class MainActivity : AppCompatActivity() {
 
     private lateinit var scoreController: ScoreController

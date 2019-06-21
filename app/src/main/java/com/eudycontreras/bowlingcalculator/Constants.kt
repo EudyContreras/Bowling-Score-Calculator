@@ -6,6 +6,8 @@ package com.eudycontreras.bowlingcalculator
 
 const val NO_ID = -1L
 
+const val ZERO = 0
+
 const val DB_VERSION = 4
 
 const val MAX_ALLOWED_INPUT_FIELDS = 8

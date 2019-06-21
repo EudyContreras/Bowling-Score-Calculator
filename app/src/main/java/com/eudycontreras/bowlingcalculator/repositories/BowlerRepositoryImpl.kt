@@ -61,7 +61,6 @@ class BowlerRepositoryImpl(
         val bowlers = MutableLiveData<List<Bowler>>()
         fromIO {
             val temp = arrayListOf<Bowler>()
-            val count = bowlerDao.getCount()
             for(id in bowlerIds) {
                 val exists = bowlerDao.exists(id)
                 if (!exists)
