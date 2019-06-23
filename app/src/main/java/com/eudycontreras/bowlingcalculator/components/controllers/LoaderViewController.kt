@@ -16,14 +16,6 @@ class LoaderViewController(
         scoreController.loaderController = this
     }
 
-    fun bindLoader() {
-
-    }
-
-    fun unbindLoader() {
-
-    }
-
     fun showLoader() {
         viewComponent.showLoader()
     }

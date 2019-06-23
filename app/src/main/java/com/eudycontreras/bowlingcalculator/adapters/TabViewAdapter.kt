@@ -50,7 +50,7 @@ class TabViewAdapter(
         }
     }
 
-    fun addItem(item: TabViewModel, selectedIndex: Int? = null) {
+    fun addItem(item: TabViewModel, selectedIndex: Int? = null, manual: Boolean = false) {
         lastTab?.let { reference ->
             if (!reference.isEnqueued) {
                 (reference.get() as TabViewAdapter.TabViewHolderNormal?)?.deactivateTab()
@@ -62,10 +62,10 @@ class TabViewAdapter(
         lastTab = null
 
         notifyItemInserted(currentIndex)
-        viewComponent.controller.onTabSelection(currentIndex)
+        viewComponent.controller.onTabSelection(currentIndex, manual)
     }
 
-    fun addItems(items: List<TabViewModel>, selectedIndex: Int? = null) {
+    fun addItems(items: List<TabViewModel>, selectedIndex: Int? = null, manual: Boolean = false) {
         if (items.isEmpty())
             return
 
@@ -77,15 +77,14 @@ class TabViewAdapter(
 
         items.asReversed().forEach {
             this.items.add(currentIndex, it)
+            notifyItemInserted(currentIndex)
         }
 
         currentIndex = selectedIndex?:this.items.size - 2
         lastTab = null
 
-        notifyDataSetChanged()
-
-        viewComponent.scrollToIndex(this.items.size - 1)
-        viewComponent.controller.onTabSelection(currentIndex)
+        viewComponent.scrollToIndex(currentIndex)
+        viewComponent.controller.onTabSelection(currentIndex, manual)
     }
 
     fun removeItem(index: Int) {
@@ -163,7 +162,7 @@ class TabViewAdapter(
         override fun onClick(view: View?) {
             model?.let {
                 currentIndex = layoutPosition
-                viewComponent.controller.requestTab()
+                viewComponent.controller.requestTab(true)
             }
         }
     }
@@ -206,7 +205,7 @@ class TabViewAdapter(
                 return
             }
             currentIndex = layoutPosition
-            viewComponent.controller.onTabSelection(layoutPosition)
+            viewComponent.controller.onTabSelection(layoutPosition, true)
             lastTab?.let { reference ->
                 if (!reference.isEnqueued) {
                     (reference.get() as TabViewHolderNormal?)?.deactivateTab()

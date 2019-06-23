@@ -14,6 +14,7 @@ import com.eudycontreras.bowlingcalculator.utilities.MAX_POSSIBLE_SCORE_GAME
 import com.eudycontreras.bowlingcalculator.utilities.extensions.app
 import com.eudycontreras.bowlingcalculator.utilities.extensions.getComputedScore
 import com.eudycontreras.bowlingcalculator.utilities.extensions.getPossibleScore
+import com.eudycontreras.bowlingcalculator.utilities.runAfterMain
 
 
 /**
@@ -37,7 +38,7 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
     val bowler: Bowler
         get() = bowlers[activeTab]
 
-    fun initCalculator(bowlers: List<Bowler>, activeTab: Int) {
+    fun initCalculator(bowlers: List<Bowler>, activeTab: Int, newBowler: Boolean = false) {
         this.bowlers = ArrayList(bowlers)
         this.activeTab = activeTab
 
@@ -45,15 +46,12 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
             return
 
         framesController.createFrames(bowler)
-        framesController.setSourceFrames(bowler)
-        actionController.revealPins()
-        framesController.revealFrames()
 
-        onScoreUpdated(
-            bowler,
-            bowler.getComputedScore(),
-            bowler.getPossibleScore()
-        )
+        if (!bowler.hasStarted()) {
+            actionController.revealPins()
+        }
+
+        framesController.revealFrames()
     }
 
     private fun allowRedoChance(frame: Frame, chance: Frame.State) {
@@ -79,7 +77,7 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
         statsController.updateTotalScore(0)
         statsController.updateMaxPossibleScore(MAX_POSSIBLE_SCORE_GAME)
         statsController.setCurrentFrame(bowler.currentFrameIndex + 1)
-        actionController.updateActionInput(DEFAULT_PIN_COUNT)
+        actionController.updateActionInput(DEFAULT_PIN_COUNT, 300)
         framesController.resetFrames()
 
         activity.app.persistenceManager.resetBowler(bowler)
@@ -88,7 +86,7 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
     override fun onFrameSelected(frameIndex: Int) {
         bowler.currentFrameIndex = frameIndex
         statsController.setCurrentFrame(frameIndex + 1)
-        actionController.updateActionInput(bowler.getCurrentFrame().pinUpCount())
+        actionController.updateActionInput(bowler.getCurrentFrame().pinUpCount(), 300)
         allowRedoChance(bowler.getCurrentFrame(), Frame.State.FIRST_CHANCE)
     }
 
@@ -100,6 +98,7 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
         statsController.updateMaxPossibleScore(totalPossible)
         statsController.setCurrentFrame(current.index + 1)
         actionController.updateActionInput(current.pinUpCount())
+
         if (current is FrameLast) {
             if (current.isCompleted) {
                 actionController.deactivateAllInput()
@@ -108,7 +107,7 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
         }
     }
 
-    fun selectBowler(tabIndex: Int) {
+    fun selectBowler(tabIndex: Int, manual: Boolean) {
         activeTab = tabIndex
         activity.app.persistenceManager.saveActiveTab(activeTab)
 
@@ -117,16 +116,21 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
         framesController.setSourceFrames(bowler)
 
         if (bowler != null) {
-            onScoreUpdated(
-                bowler,
-                bowler.getComputedScore(),
-                bowler.getPossibleScore()
-            )
+            if (bowler.hasStarted() || manual) {
+                onScoreUpdated(
+                    bowler,
+                    bowler.getComputedScore(),
+                    bowler.getPossibleScore()
+                )
+            }
         } else {
             skeletonController.setState(SkeletonViewComponent.EmptyState.Default(activity) {
-                tabsController.requestTab()
+                tabsController.requestTab(true)
             })
-            skeletonController.revealState()
+            runAfterMain(250) {
+                skeletonController.revealState()
+            }
+
             statsController.updateTotalScore(0)
             statsController.updateMaxPossibleScore(MAX_POSSIBLE_SCORE_GAME)
             statsController.setCurrentFrame(DEFAULT_START_INDEX + 1)
@@ -138,11 +142,13 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
         activity.app.persistenceManager.saveActiveTab(index)
         activeTab = index
 
+        //TODO("find out what the error is")
+
         val bowler = bowlers.removeAt(lastIndex)
 
         activity.app.persistenceManager.removeBowler(bowler) {
             onEnd?.invoke()
-            selectBowler(index)
+            selectBowler(index, true)
         }
     }
 }

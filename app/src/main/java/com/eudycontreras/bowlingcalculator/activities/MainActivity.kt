@@ -18,8 +18,6 @@ import com.eudycontreras.bowlingcalculator.utilities.runAfterMain
 import kotlinx.android.synthetic.main.activity_main.*
 
 
-
-
 /**
  * @Project BowlingCalculator
  * @author Eudy Contreras.
@@ -82,7 +80,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onStorageEmpty() {
-        tabsController.requestTab{
+        tabsController.requestTab(false){
             val activeTab = tabsController.getActive()
             app.persistenceManager.saveActiveTab(activeTab)
             scoreController.initCalculator(it, activeTab)
@@ -102,7 +100,7 @@ class MainActivity : AppCompatActivity() {
 
             loaderController.hideLoader()
             scoreController.initCalculator(it, activeTab)
-            tabsController.addTabs(it, activeTab)
+            tabsController.addTabs(it, activeTab, false)
         })
     }
 

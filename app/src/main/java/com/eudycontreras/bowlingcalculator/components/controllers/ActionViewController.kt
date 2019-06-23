@@ -42,12 +42,16 @@ class ActionViewController(
         context.openDialog(FragmentLoadResult.instance(this))
     }
 
-    fun updateActionInput(remainingPins: Int) {
-        viewComponent.setAvailablePins(remainingPins)
+    fun updateActionInput(remainingPins: Int, duration: Long = 400) {
+        viewComponent.setAvailablePins(remainingPins, duration)
     }
 
     fun deactivateAllInput() {
-        viewComponent.setAvailablePins(-1)
+        viewComponent.setAvailablePins(-1, 450)
+    }
+
+    fun resetPins() {
+        viewComponent.setDefaultValues()
     }
 
     fun revealPins() {

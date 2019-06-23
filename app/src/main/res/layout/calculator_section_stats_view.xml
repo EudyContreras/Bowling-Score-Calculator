@@ -34,7 +34,7 @@
         <TextView
                 android:id="@+id/currentFrameValue"
                 android:layout_width="0dp"
-                android:layout_height="25dp"
+                android:layout_height="22dp"
                 android:text="0"
                 android:textSize="16sp"
                 android:fontFamily="sans-serif-black"
@@ -73,7 +73,7 @@
         <TextView
                 android:id="@+id/totalScoreValue"
                 android:layout_width="0dp"
-                android:layout_height="25dp"
+                android:layout_height="22dp"
                 android:text="0"
                 android:textSize="16sp"
                 android:fontFamily="sans-serif-black"
@@ -112,7 +112,7 @@
         <TextView
                 android:id="@+id/maxPossibleValue"
                 android:layout_width="0dp"
-                android:layout_height="25dp"
+                android:layout_height="22dp"
                 android:text="0"
                 android:textSize="16sp"
                 android:fontFamily="sans-serif-black"

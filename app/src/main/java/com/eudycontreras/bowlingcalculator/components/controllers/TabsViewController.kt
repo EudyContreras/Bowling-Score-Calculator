@@ -29,21 +29,21 @@ class TabsViewController(
         viewComponent.crateTabs(bowler)
     }
 
-    fun requestTab(listener: BowlerListener = null) {
+    fun requestTab(manual: Boolean, listener: BowlerListener = null) {
         val onDismiss = {
             if (!context.app.persistenceManager.hasBowlers()) {
-                scoreController.skeletonController.setState(SkeletonViewComponent.EmptyState.Default(context) { requestTab() })
+                scoreController.skeletonController.setState(SkeletonViewComponent.EmptyState.Default(context) { requestTab(true) })
                 scoreController.skeletonController.revealState()
             } else {
                 scoreController.skeletonController.concealState()
             }
         }
-        context.openDialog(FragmentCreateBowler.instance(this, listener, onDismiss))
+        context.openDialog(FragmentCreateBowler.instance(this, manual, listener, onDismiss))
     }
 
-    fun addTabs(bowlers: List<Bowler>, currentIndex: Int? = null) {
+    fun addTabs(bowlers: List<Bowler>, currentIndex: Int? = null, manual: Boolean) {
         if(bowlers.isNotEmpty())
-        viewComponent.addTabs(bowlers, currentIndex)
+        viewComponent.addTabs(bowlers, currentIndex, manual)
     }
 
     fun removeTab(lastIndex: Int, index: Int, onEnd: (()-> Unit)? = null) {
@@ -54,11 +54,11 @@ class TabsViewController(
         viewComponent.selectTab(index)
     }
 
-    fun onTabSelection(current: Int) {
-        scoreController.selectBowler(current)
+    fun onTabSelection(current: Int, manual: Boolean = false) {
+        scoreController.selectBowler(current, manual)
     }
 
-    fun createBowler(names: List<String>, listener: BowlerListener) {
+    fun createBowler(names: List<String>, manual: Boolean, listener: BowlerListener) {
         val bowlers = names.map { Bowler(it) }
 
         context.saveCurrentState(bowlers) {
@@ -70,10 +70,11 @@ class TabsViewController(
             }
             if (!viewComponent.hasTabs()) {
                 val activeTab = getActive()
+                scoreController.initCalculator(it, activeTab, true)
                 context.app.persistenceManager.saveActiveTab(activeTab)
-                scoreController.initCalculator(it, activeTab)
             }
-            viewComponent.addTabs(it)
+
+            viewComponent.addTabs(it,null, manual)
         }
     }
 

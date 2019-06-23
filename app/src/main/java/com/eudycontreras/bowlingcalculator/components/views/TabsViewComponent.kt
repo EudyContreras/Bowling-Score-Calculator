@@ -63,12 +63,12 @@ class TabsViewComponent(
         }
     }
 
-    fun addTabs(bowlers: List<Bowler>, currentIndex: Int? = null) {
+    fun addTabs(bowlers: List<Bowler>, currentIndex: Int? = null, manual: Boolean = false) {
         if (bowlers.size == 1) {
-            tabAdapter.addItem(bowlers.first().run { TabViewAdapter.TabViewModel(id, name) }, currentIndex)
+            tabAdapter.addItem(bowlers.first().run { TabViewAdapter.TabViewModel(id, name) }, currentIndex, manual)
             return
         }
-        tabAdapter.addItems(bowlers.map { TabViewAdapter.TabViewModel(it.id, it.name) }, currentIndex)
+        tabAdapter.addItems(bowlers.map { TabViewAdapter.TabViewModel(it.id, it.name) }, currentIndex, manual)
     }
 
     fun selectTab(index: Int) {

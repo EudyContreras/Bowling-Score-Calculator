@@ -51,6 +51,10 @@ data class Bowler(
             .clamp(DEFAULT_START_INDEX, DEFAULT_FRAME_COUNT - 1)
     }
 
+    fun hasStarted(): Boolean {
+        return currentFrameIndex > 0 || getCurrentFrame().hasStarted()
+    }
+
     fun getCurrentFrame() = frames[currentFrameIndex]
 
     override fun init() {

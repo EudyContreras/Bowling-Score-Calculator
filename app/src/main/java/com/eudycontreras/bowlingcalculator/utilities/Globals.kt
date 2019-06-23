@@ -75,10 +75,10 @@ fun runSequential(delay: Long, times: Int, applyAction: (index: Int) -> Unit) {
     if (times == 0)
         return
 
-    GlobalScope.launch {
+    GlobalScope.launch(Dispatchers.Main.immediate) {
         for (counter in 0 until times) {
-            applyAction(counter)
             delay(delay)
+            applyAction(counter)
         }
     }
 }

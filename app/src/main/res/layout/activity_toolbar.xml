@@ -24,7 +24,7 @@
                   android:layout_marginEnd="@dimen/margin_medium"
                   android:background="@drawable/img_logo"/>
             <TextView
-                    android:visibility="invisible"
+                    android:visibility="visible"
                     android:id="@+id/toolbarTitle"
                     android:text="@string/app_name"
                     android:textAppearance="@style/Base.TextAppearance.Widget.AppCompat.Toolbar.Title"

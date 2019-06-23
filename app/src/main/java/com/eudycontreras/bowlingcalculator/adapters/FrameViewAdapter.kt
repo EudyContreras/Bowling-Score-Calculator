@@ -96,14 +96,14 @@ class FrameViewAdapter(
         currentIndex = DEFAULT_START_INDEX
         adjustViewPort(0)
         runSequential(80, viewHolders.size) {
-            context.runOnUiThread { viewHolders[it]?.resetCell(resetFlipSpeed) }
+            viewHolders[it]?.resetCell(resetFlipSpeed)
         }
     }
 
     internal fun revealAllFrames() {
         adjustViewPort(0)
         runSequential(120, viewHolders.size) {
-            context.runOnUiThread { viewHolders[it]?.revealCell(revealSpeed, this) }
+            viewHolders[it]?.revealCell(revealSpeed, this)
         }
     }
 
@@ -369,8 +369,11 @@ class FrameViewAdapter(
                     animateColor(it.semiWhite, it.white, duration)
                     animate()
                         .setListener(null)
+                        .scaleX(1f)
+                        .scaleY(1f)
                         .translationZ(4.dp)
                         .translationY((-1).dp)
+                        .alpha(1f)
                         .setDuration(duration)
                         .start()
                 }

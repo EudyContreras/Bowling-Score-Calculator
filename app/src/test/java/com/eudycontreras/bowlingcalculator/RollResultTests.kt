@@ -30,7 +30,7 @@ class RollResultTests {
         bowler.performRoll(other.first)
         bowler.performRoll(other.second)
 
-        val totalPoints = bowler.frames.getComputedScore()
+        val totalPoints = bowler.getComputedScore()
 
         assert(totalPoints == 38)
     }
@@ -46,7 +46,7 @@ class RollResultTests {
             bowler.performRoll(strike)
         }
 
-        val totalPoints = bowler.frames.getComputedScore()
+        val totalPoints = bowler.getComputedScore()
 
         assert(totalPoints == 300)
     }

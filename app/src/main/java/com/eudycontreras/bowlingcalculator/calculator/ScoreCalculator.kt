@@ -14,18 +14,18 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.next
 import com.eudycontreras.bowlingcalculator.utilities.extensions.previous
 import com.eudycontreras.bowlingcalculator.utilities.extensions.sum
 
-/************************************************************************
+/***********************************************************************
  *
- *  #############     ####     ####     ##########      #####      #####
- *  #############     ####     ####     ############     ####      ####
- *  ####              ####     ####     ####     ####     ####    ####
- *  ####              ####     ####     ####      ####     ####  ####
- *  #############     ####     ####     ####      ####      ########
- *  #############     ####     ####     ####      ####        ####
- *  ####              ####     ####     ####      ####        ####
- *  ####              #####   #####     ####     ####         ####
- *  #############      ###########      ############          ####
- *  #############        #######        ##########            ####
+ * #############     ####     ####     ##########      #####      #####
+ * #############     ####     ####     ############     ####      ####
+ * ####              ####     ####     ####     ####     ####    ####
+ * ####              ####     ####     ####      ####     ####  ####
+ * #############     ####     ####     ####      ####      ########
+ * #############     ####     ####     ####      ####        ####
+ * ####              ####     ####     ####      ####        ####
+ * ####              #####   #####     ####     ####         ####
+ * #############      ###########      ############          ####
+ * #############        #######        ##########            ####
  *
  * ######################   Class description  #########################
  *
@@ -53,7 +53,7 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.sum
  * @author Eudy Contreras.
  * @since June 21 2019
  *
- ************************************************************************/
+ *********************************************************************/
 
 sealed class ScoreCalculator {
 
@@ -186,6 +186,9 @@ sealed class ScoreCalculator {
          * @return the final total score for said bowler after simulation
          */
         private fun simulateWith(reference: Bowler): Int {
+
+            //TODO(Find out how to make it work with the last frames)
+
             val bowler = reference.clone()
             var counter = bowler.currentFrameIndex
 
