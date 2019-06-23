@@ -1,4 +1,4 @@
-package com.eudycontreras.bowlingcalculator.extensions
+package com.eudycontreras.bowlingcalculator.utilities.extensions
 
 import android.animation.ValueAnimator
 import android.content.res.ColorStateList
@@ -61,6 +61,7 @@ fun View.addTouchAnimation(
     durationRelease: Long = 200,
     scale: Float = 0.97f,
     depth: Float = 0f,
+    originalDepth: Float = -1F,
     interpolatorPress: Interpolator? = null,
     interpolatorRelease: Interpolator? = null,
     directFeedback: Boolean = true
@@ -78,11 +79,13 @@ fun View.addTouchAnimation(
         }
     )
 
-    val lastDepth = this.translationZ
+    val lastDepth = if (originalDepth == -1F) this.translationZ else originalDepth
+
     this.setOnTouchListener { _, motionEvent ->
         when (motionEvent.action) {
             MotionEvent.ACTION_DOWN -> {
                 this.animate()
+                    .setStartDelay(0)
                     .setInterpolator(interpolatorPress)
                     .setListener(null)
                     .translationZ(depth)
@@ -93,6 +96,7 @@ fun View.addTouchAnimation(
             }
             MotionEvent.ACTION_UP -> {
                 this.animate()
+                    .setStartDelay(0)
                     .setInterpolator(interpolatorRelease)
                     .setListener(releaseListener)
                     .translationZ(lastDepth)
@@ -107,6 +111,7 @@ fun View.addTouchAnimation(
             }
             MotionEvent.ACTION_MOVE -> {
                 this.animate()
+                    .setStartDelay(0)
                     .setInterpolator(interpolatorRelease)
                     .setListener(null)
                     .translationZ(lastDepth)
@@ -117,6 +122,7 @@ fun View.addTouchAnimation(
             }
             MotionEvent.ACTION_CANCEL -> {
                 this.animate()
+                    .setStartDelay(0)
                     .setInterpolator(interpolatorRelease)
                     .setListener(null)
                     .translationZ(lastDepth)

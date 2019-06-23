@@ -1,14 +1,12 @@
-package com.eudycontreras.bowlingcalculator.extensions
+package com.eudycontreras.bowlingcalculator.utilities.extensions
 
-import android.app.Activity
-import android.util.DisplayMetrics
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Transformations
-import com.eudycontreras.bowlingcalculator.Application
-import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
+import com.eudycontreras.bowlingcalculator.calculator.ScoreCalculator
+import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Roll
-import com.eudycontreras.bowlingcalculator.gson
+import com.eudycontreras.bowlingcalculator.utilities.gson
 
 /**
  * @Project BowlingCalculator
@@ -17,25 +15,15 @@ import com.eudycontreras.bowlingcalculator.gson
 
 fun List<Roll>.sum() = map { it.totalKnockdown }.sum()
 
-fun List<Frame>.getComputedScore(): Int {
-    return this.sumBy { it.getTotal(false) }
+fun Bowler.getComputedScore(): Int {
+    return ScoreCalculator.getTotalScore(this)
 }
 
-val Activity.app: Application
-    get() = application as Application
-
-fun Activity.dimensions(): Pair<Int, Int> {
-    val displayMetrics = DisplayMetrics()
-
-    windowManager.defaultDisplay.getMetrics(displayMetrics)
-
-    val width = displayMetrics.widthPixels
-    val height = displayMetrics.heightPixels
-
-    return Pair(width, height)
+fun Bowler.getPossibleScore(): Int {
+    return ScoreCalculator.getPossibleScore(this)
 }
 
-fun <X, Y> LiveData<X>.switchMap(func: (X) -> LiveData<Y>): LiveData<Y> {
+fun <X, Y> LiveData<X>.switchMap(func : (X) -> LiveData<Y>): LiveData<Y> {
     return Transformations.switchMap(this, func)
 }
 

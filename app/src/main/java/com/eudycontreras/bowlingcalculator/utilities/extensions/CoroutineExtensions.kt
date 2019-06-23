@@ -1,4 +1,4 @@
-package com.eudycontreras.bowlingcalculator.extensions
+package com.eudycontreras.bowlingcalculator.utilities.extensions
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

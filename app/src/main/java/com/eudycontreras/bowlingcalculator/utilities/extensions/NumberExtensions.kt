@@ -1,4 +1,4 @@
-package com.eudycontreras.bowlingcalculator.extensions
+package com.eudycontreras.bowlingcalculator.utilities.extensions
 
 import android.content.res.Resources
 
