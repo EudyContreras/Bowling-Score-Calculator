@@ -1,4 +1,4 @@
-package com.eudycontreras.bowlingcalculator
+package com.eudycontreras.bowlingcalculator.utilities
 
 import com.eudycontreras.bowlingcalculator.adapters.FrameTypeAdapter
 import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
@@ -8,10 +8,11 @@ import kotlinx.coroutines.*
 
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
-val gson: Gson by lazy{
+val gson: Gson by lazy {
     GsonBuilder()
         .registerTypeAdapter(Frame::class.java, FrameTypeAdapter())
         .create()

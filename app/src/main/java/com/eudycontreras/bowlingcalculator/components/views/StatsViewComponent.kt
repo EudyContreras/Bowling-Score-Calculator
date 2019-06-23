@@ -2,16 +2,17 @@ package com.eudycontreras.bowlingcalculator.components.views
 
 import android.view.View
 import android.widget.TextView
-import com.eudycontreras.bowlingcalculator.DEFAULT_START_INDEX
+import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_START_INDEX
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.components.controllers.StatsViewController
-import com.eudycontreras.bowlingcalculator.toString
+import com.eudycontreras.bowlingcalculator.utilities.toString
 import kotlinx.android.synthetic.main.activity_main.*
 
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 class StatsViewComponent(
@@ -37,7 +38,8 @@ class StatsViewComponent(
             View.GONE
         }
 
-        currentFrameStat?.text = toString(DEFAULT_START_INDEX + 1)
+        currentFrameStat?.text =
+            toString(DEFAULT_START_INDEX + 1)
     }
 
     override fun registerListeners() {}

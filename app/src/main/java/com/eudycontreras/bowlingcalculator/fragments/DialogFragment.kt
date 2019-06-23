@@ -13,11 +13,12 @@ import android.view.animation.OvershootInterpolator
 import androidx.fragment.app.DialogFragment
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.components.views.ViewComponent
-import com.eudycontreras.bowlingcalculator.extensions.addTouchAnimation
-import com.eudycontreras.bowlingcalculator.extensions.dimensions
+import com.eudycontreras.bowlingcalculator.utilities.extensions.addTouchAnimation
+import com.eudycontreras.bowlingcalculator.utilities.extensions.dimensions
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 abstract class DialogFragment: DialogFragment(), ViewComponent {

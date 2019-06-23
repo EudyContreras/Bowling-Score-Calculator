@@ -1,7 +1,7 @@
 package com.eudycontreras.bowlingcalculator.persistance
 
 import androidx.lifecycle.LiveData
-import com.eudycontreras.bowlingcalculator.*
+import com.eudycontreras.bowlingcalculator.Application
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Result
 import com.eudycontreras.bowlingcalculator.persistance.primitive.PrimitiveStorage
@@ -10,14 +10,15 @@ import com.eudycontreras.bowlingcalculator.repositories.BowlerRepositoryImpl
 import com.eudycontreras.bowlingcalculator.repositories.FrameRepositoryImpl
 import com.eudycontreras.bowlingcalculator.repositories.ResultRepositoryImpl
 import com.eudycontreras.bowlingcalculator.repositories.RollRepositoryImpl
+import com.eudycontreras.bowlingcalculator.utilities.BowlerListener
+import com.eudycontreras.bowlingcalculator.utilities.fromIO
+import com.eudycontreras.bowlingcalculator.utilities.fromMain
+import com.eudycontreras.bowlingcalculator.utilities.fromScopeIO
 
-/******************************************************************
- *
- *
- *
+/**
+ * @Project BowlingCalculator
  * @author Eudy Contreras.
- * @since 6/20/19
- ******************************************************************/
+ */
 
 class PersistenceManager(
     application: Application

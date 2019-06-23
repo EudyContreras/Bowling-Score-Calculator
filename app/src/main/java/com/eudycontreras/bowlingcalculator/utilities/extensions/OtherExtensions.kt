@@ -11,7 +11,8 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.Roll
 import com.eudycontreras.bowlingcalculator.gson
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 fun List<Roll>.sum() = map { it.totalKnockdown }.sum()

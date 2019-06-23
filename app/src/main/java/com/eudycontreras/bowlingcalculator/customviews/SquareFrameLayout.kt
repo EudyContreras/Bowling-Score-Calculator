@@ -5,7 +5,8 @@ import android.util.AttributeSet
 import android.widget.FrameLayout
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 class SquareFrameLayout : FrameLayout {

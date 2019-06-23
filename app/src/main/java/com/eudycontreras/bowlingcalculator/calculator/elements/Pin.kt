@@ -1,9 +1,9 @@
 package com.eudycontreras.bowlingcalculator.calculator.elements
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
-
 
 data class Pin(var state: State = State.UP) : Element {
 

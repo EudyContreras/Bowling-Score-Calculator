@@ -4,13 +4,14 @@ import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.eudycontreras.bowlingcalculator.calculator.elements.Result
-import com.eudycontreras.bowlingcalculator.extensions.switchMap
+import com.eudycontreras.bowlingcalculator.utilities.extensions.switchMap
 import com.eudycontreras.bowlingcalculator.persistance.PersistenceManager
 import com.eudycontreras.bowlingcalculator.persistance.dao.ResultsDao
 import com.eudycontreras.bowlingcalculator.persistance.entities.ResultEntity
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 class ResultRepositoryImpl(

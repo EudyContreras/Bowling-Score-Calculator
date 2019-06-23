@@ -1,30 +1,30 @@
 package com.eudycontreras.bowlingcalculator.calculator.controllers
 
-import com.eudycontreras.bowlingcalculator.DEFAULT_PIN_COUNT
-import com.eudycontreras.bowlingcalculator.DEFAULT_START_INDEX
-import com.eudycontreras.bowlingcalculator.MAX_POSSIBLE_SCORE_GAME
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
 import com.eudycontreras.bowlingcalculator.calculator.elements.FrameLast
 import com.eudycontreras.bowlingcalculator.calculator.listeners.BowlerActionListener
 import com.eudycontreras.bowlingcalculator.calculator.listeners.ScoreStateListener
-import com.eudycontreras.bowlingcalculator.components.controllers.ActionViewController
-import com.eudycontreras.bowlingcalculator.components.controllers.FramesViewController
-import com.eudycontreras.bowlingcalculator.components.controllers.StatsViewController
-import com.eudycontreras.bowlingcalculator.components.controllers.TabsViewController
-import com.eudycontreras.bowlingcalculator.extensions.app
-import com.eudycontreras.bowlingcalculator.extensions.getComputedScore
+import com.eudycontreras.bowlingcalculator.components.controllers.*
+import com.eudycontreras.bowlingcalculator.components.views.SkeletonViewComponent
+import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_PIN_COUNT
+import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_START_INDEX
+import com.eudycontreras.bowlingcalculator.utilities.MAX_POSSIBLE_SCORE_GAME
+import com.eudycontreras.bowlingcalculator.utilities.extensions.app
+import com.eudycontreras.bowlingcalculator.utilities.extensions.getComputedScore
+import com.eudycontreras.bowlingcalculator.utilities.extensions.getPossibleScore
 
 
 /**
  * @Project BowlingCalculator
  * @author Eudy Contreras.
- * @since June 21 2019
  */
 
 class ScoreController(private val activity: MainActivity) : ScoreStateListener, BowlerActionListener{
 
+    lateinit var loaderController: LoaderViewController
+    lateinit var skeletonController: SkeletonViewController
     lateinit var actionController: ActionViewController
     lateinit var framesController: FramesViewController
     lateinit var statsController: StatsViewController
@@ -51,8 +51,8 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
 
         onScoreUpdated(
             bowler,
-            bowler.frames.getComputedScore(),
-            MAX_POSSIBLE_SCORE_GAME
+            bowler.getComputedScore(),
+            bowler.getPossibleScore()
         )
     }
 
@@ -117,13 +117,16 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
         framesController.setSourceFrames(bowler)
 
         if (bowler != null) {
-
             onScoreUpdated(
                 bowler,
-                bowler.frames.getComputedScore(),
-                MAX_POSSIBLE_SCORE_GAME
+                bowler.getComputedScore(),
+                bowler.getPossibleScore()
             )
         } else {
+            skeletonController.setState(SkeletonViewComponent.EmptyState.Default(activity) {
+                tabsController.requestTab()
+            })
+            skeletonController.revealState()
             statsController.updateTotalScore(0)
             statsController.updateMaxPossibleScore(MAX_POSSIBLE_SCORE_GAME)
             statsController.setCurrentFrame(DEFAULT_START_INDEX + 1)

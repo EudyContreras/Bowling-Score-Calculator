@@ -5,7 +5,8 @@ import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreControlle
 import com.eudycontreras.bowlingcalculator.components.views.StatsViewComponent
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 class StatsViewController(

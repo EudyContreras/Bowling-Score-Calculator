@@ -4,7 +4,8 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 class AnimationListener(

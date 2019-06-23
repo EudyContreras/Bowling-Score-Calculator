@@ -10,21 +10,22 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
-import com.eudycontreras.bowlingcalculator.DEFAULT_START_INDEX
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.components.views.TabsViewComponent
-import com.eudycontreras.bowlingcalculator.extensions.addTouchAnimation
-import com.eudycontreras.bowlingcalculator.extensions.attach
-import com.eudycontreras.bowlingcalculator.extensions.detach
-import com.eudycontreras.bowlingcalculator.extensions.dp
 import com.eudycontreras.bowlingcalculator.listeners.AnimationListener
+import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_START_INDEX
+import com.eudycontreras.bowlingcalculator.utilities.extensions.addTouchAnimation
+import com.eudycontreras.bowlingcalculator.utilities.extensions.attach
+import com.eudycontreras.bowlingcalculator.utilities.extensions.detach
+import com.eudycontreras.bowlingcalculator.utilities.extensions.dp
 import kotlinx.android.synthetic.main.item_tab_view.view.*
 import java.lang.ref.WeakReference
 
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 class TabViewAdapter(
@@ -74,7 +75,7 @@ class TabViewAdapter(
             }
         }
 
-        items.forEach {
+        items.asReversed().forEach {
             this.items.add(currentIndex, it)
         }
 
@@ -181,6 +182,13 @@ class TabViewAdapter(
         init {
             resetValues()
             registerListeners()
+
+            this.tabItem.addTouchAnimation(
+                clickTarget = null,
+                depth = (-8).dp,
+                interpolatorPress = DecelerateInterpolator(),
+                interpolatorRelease = OvershootInterpolator()
+            )
         }
 
         override fun registerListeners(){

@@ -1,9 +1,10 @@
 package com.eudycontreras.bowlingcalculator.calculator.elements
 
-import com.eudycontreras.bowlingcalculator.DEFAULT_FRAME_CHANCES
+import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_FRAME_CHANCES
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 abstract class Frame : Element {
@@ -58,6 +59,16 @@ abstract class Frame : Element {
         return sum
     }
 
+    protected fun knockPins(count: Int) {
+        pins.filter { it.state == Pin.State.UP }
+            .take(count)
+            .forEach { it.state = Pin.State.DOWN }
+    }
+
+    fun resetPins() {
+        pins.forEach { it.state = Pin.State.UP }
+    }
+
     override fun init() {
         reset()
     }
@@ -77,14 +88,4 @@ abstract class Frame : Element {
     abstract fun missingRounds(): Boolean
 
     abstract fun handleEditedFrame(roll: Roll)
-
-    protected fun knockPins(count: Int) {
-        pins.filter { it.state == Pin.State.UP }
-            .take(count)
-            .forEach { it.state = Pin.State.DOWN }
-    }
-
-    fun resetPins() {
-        pins.forEach { it.state = Pin.State.UP }
-    }
 }

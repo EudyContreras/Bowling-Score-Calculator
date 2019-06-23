@@ -1,7 +1,8 @@
 package com.eudycontreras.bowlingcalculator.calculator.listeners
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 interface BowlerActionListener {

@@ -1,12 +1,13 @@
 package com.eudycontreras.bowlingcalculator.calculator.elements
 
-import com.eudycontreras.bowlingcalculator.NO_ID
+import com.eudycontreras.bowlingcalculator.utilities.NO_ID
 import java.util.*
 import kotlin.collections.ArrayList
 
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 data class Result (

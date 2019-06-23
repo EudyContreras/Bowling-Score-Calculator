@@ -12,7 +12,8 @@ import com.eudycontreras.bowlingcalculator.components.controllers.FramesViewCont
 import kotlinx.android.synthetic.main.activity_main.*
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 class FramesViewComponent(

@@ -3,8 +3,10 @@ package com.eudycontreras.bowlingcalculator.components.views
 import android.view.View
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
+
 interface ViewComponent {
     fun setDefaultValues()
     fun registerListeners()

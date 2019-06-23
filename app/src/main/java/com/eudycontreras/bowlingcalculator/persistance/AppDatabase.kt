@@ -6,7 +6,6 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.eudycontreras.bowlingcalculator.DB_VERSION
 import com.eudycontreras.bowlingcalculator.persistance.dao.BowlersDao
 import com.eudycontreras.bowlingcalculator.persistance.dao.FramesDao
 import com.eudycontreras.bowlingcalculator.persistance.dao.ResultsDao
@@ -15,6 +14,7 @@ import com.eudycontreras.bowlingcalculator.persistance.entities.BowlerEntity
 import com.eudycontreras.bowlingcalculator.persistance.entities.FrameEntity
 import com.eudycontreras.bowlingcalculator.persistance.entities.ResultEntity
 import com.eudycontreras.bowlingcalculator.persistance.entities.RollEntity
+import com.eudycontreras.bowlingcalculator.utilities.DB_VERSION
 
 /**
  * App database, defining the different DAOs
@@ -22,8 +22,9 @@ import com.eudycontreras.bowlingcalculator.persistance.entities.RollEntity
  * Exports the schema of each version to $projectDir/schemas/
  * The path is defined in app/build.gradle
  *
- * Created by eudycontreras.
- */
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
+*/
 private const val DATABASE_NAME = "bowling_calculator.db"
 
 @Database(

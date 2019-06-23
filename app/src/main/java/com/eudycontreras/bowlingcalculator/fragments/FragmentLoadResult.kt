@@ -11,7 +11,8 @@ import kotlinx.android.synthetic.main.dialog_load_result.view.*
 
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 class FragmentLoadResult: DialogFragment() {
