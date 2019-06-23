@@ -9,18 +9,19 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.children
-import com.eudycontreras.bowlingcalculator.DEFAULT_PIN_COUNT
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.components.controllers.ActionViewController
-import com.eudycontreras.bowlingcalculator.extensions.addTouchAnimation
-import com.eudycontreras.bowlingcalculator.extensions.clamp
-import com.eudycontreras.bowlingcalculator.runSequential
-import com.eudycontreras.bowlingcalculator.toString
+import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_PIN_COUNT
+import com.eudycontreras.bowlingcalculator.utilities.extensions.addTouchAnimation
+import com.eudycontreras.bowlingcalculator.utilities.extensions.clamp
+import com.eudycontreras.bowlingcalculator.utilities.runSequential
+import com.eudycontreras.bowlingcalculator.utilities.toString
 import kotlinx.android.synthetic.main.activity_main.*
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 class ActionsViewComponent(
@@ -127,7 +128,7 @@ class ActionsViewComponent(
                         .setInterpolator(OvershootInterpolator())
                         .setDuration(duration)
                         .start()
-                    leftIndex = (leftIndex - 1).clamp(0,4)
+                    leftIndex = (leftIndex - 1).clamp(0, 4)
                 }
                 context.runOnUiThread {
                     val view = parent.getChildAt(rightIndex)
@@ -139,7 +140,7 @@ class ActionsViewComponent(
                         .setInterpolator(OvershootInterpolator())
                         .setDuration(duration)
                         .start()
-                    rightIndex = (rightIndex + 1).clamp(5,9)
+                    rightIndex = (rightIndex + 1).clamp(5, 9)
                 }
             }
         }

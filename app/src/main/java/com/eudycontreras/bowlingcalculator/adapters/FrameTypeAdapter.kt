@@ -10,7 +10,8 @@ import java.lang.reflect.Type
 
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 class FrameTypeAdapter : JsonDeserializer<Frame>, JsonSerializer<Frame>{

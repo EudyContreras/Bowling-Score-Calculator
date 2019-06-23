@@ -12,7 +12,8 @@ import kotlinx.android.synthetic.main.dialog_save_result.*
 import kotlinx.android.synthetic.main.dialog_save_result.view.*
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 class FragmentSaveResult: DialogFragment() {

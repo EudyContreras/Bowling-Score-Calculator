@@ -1,7 +1,7 @@
 package com.eudycontreras.bowlingcalculator
 
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
-import com.eudycontreras.bowlingcalculator.extensions.getComputedScore
+import com.eudycontreras.bowlingcalculator.utilities.extensions.getComputedScore
 import org.junit.Test
 
 /**

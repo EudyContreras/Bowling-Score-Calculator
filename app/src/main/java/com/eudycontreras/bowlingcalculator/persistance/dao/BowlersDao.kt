@@ -6,7 +6,8 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.persistance.entities.BowlerEntity
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 @Dao

@@ -12,7 +12,8 @@ import com.eudycontreras.bowlingcalculator.fragments.FragmentCreateBowler
 
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 class InputViewAdapter(

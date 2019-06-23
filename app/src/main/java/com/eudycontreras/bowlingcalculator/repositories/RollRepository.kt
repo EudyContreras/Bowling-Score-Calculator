@@ -5,7 +5,8 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
 import com.eudycontreras.bowlingcalculator.calculator.elements.Roll
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 interface RollRepository {

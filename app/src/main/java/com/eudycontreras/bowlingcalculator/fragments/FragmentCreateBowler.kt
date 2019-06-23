@@ -1,5 +1,6 @@
 package com.eudycontreras.bowlingcalculator.fragments
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,15 +9,16 @@ import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.eudycontreras.bowlingcalculator.BowlerListener
-import com.eudycontreras.bowlingcalculator.MAX_ALLOWED_INPUT_FIELDS
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.adapters.InputViewAdapter
 import com.eudycontreras.bowlingcalculator.components.controllers.TabsViewController
+import com.eudycontreras.bowlingcalculator.utilities.BowlerListener
+import com.eudycontreras.bowlingcalculator.utilities.MAX_ALLOWED_INPUT_FIELDS
 import kotlinx.android.synthetic.main.dialog_create_bowlers.view.*
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 class FragmentCreateBowler: DialogFragment() {
@@ -25,14 +27,16 @@ class FragmentCreateBowler: DialogFragment() {
 
     private var adapter: InputViewAdapter? = null
 
-    private var listener: BowlerListener = null
+    private var bowlerListener: BowlerListener = null
+    private var dismissListener: (() -> Unit)? = null
 
     private lateinit var createDialog: ConstraintLayout
 
     companion object {
-        fun instance(controller: TabsViewController, listener: BowlerListener = null): FragmentCreateBowler {
+        fun instance(controller: TabsViewController, listener: BowlerListener = null, onDismiss: (() -> Unit)? = null): FragmentCreateBowler {
             val fragment = FragmentCreateBowler()
-            fragment.listener = listener
+            fragment.bowlerListener = listener
+            fragment.dismissListener = onDismiss
             fragment.controller = controller
             return fragment
         }
@@ -78,16 +82,21 @@ class FragmentCreateBowler: DialogFragment() {
         }
 
         createDialog.dialogCreateSubmit.setOnClickListener {
-            val names = adapter!!.getItems()
+            val names = adapter!!.getItems().asReversed()
 
             if(!names.isEmpty()) {
                 controller?.createBowler(names) {
-                    listener?.invoke(it)
+                    bowlerListener?.invoke(it)
                     dismiss()
                 }
             } else {
                 Toast.makeText(context, context?.getString(R.string.no_result_name), Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        dismissListener?.invoke()
     }
 }

@@ -1,11 +1,11 @@
 package com.eudycontreras.bowlingcalculator.persistance.dao
 
 import androidx.room.*
-import com.eudycontreras.bowlingcalculator.persistance.entities.BowlerEntity
 import com.eudycontreras.bowlingcalculator.persistance.entities.FrameEntity
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 @Dao

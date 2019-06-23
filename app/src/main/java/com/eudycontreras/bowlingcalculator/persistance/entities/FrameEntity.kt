@@ -8,7 +8,8 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.FrameNormal
 import com.eudycontreras.bowlingcalculator.calculator.elements.Pin
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 @Entity(

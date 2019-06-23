@@ -6,14 +6,15 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Result
-import com.eudycontreras.bowlingcalculator.extensions.switchMap
-import com.eudycontreras.bowlingcalculator.fromIO
 import com.eudycontreras.bowlingcalculator.persistance.PersistenceManager
 import com.eudycontreras.bowlingcalculator.persistance.dao.BowlersDao
 import com.eudycontreras.bowlingcalculator.persistance.entities.BowlerEntity
+import com.eudycontreras.bowlingcalculator.utilities.extensions.switchMap
+import com.eudycontreras.bowlingcalculator.utilities.fromIO
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 class BowlerRepositoryImpl(
@@ -61,7 +62,7 @@ class BowlerRepositoryImpl(
         val bowlers = MutableLiveData<List<Bowler>>()
         fromIO {
             val temp = arrayListOf<Bowler>()
-            for(id in bowlerIds) {
+            for (id in bowlerIds) {
                 val exists = bowlerDao.exists(id)
                 if (!exists)
                     continue

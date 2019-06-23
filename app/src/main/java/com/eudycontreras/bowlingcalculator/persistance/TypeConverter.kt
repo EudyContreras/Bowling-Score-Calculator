@@ -8,7 +8,8 @@ import java.util.*
 
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 class TypeConverter {

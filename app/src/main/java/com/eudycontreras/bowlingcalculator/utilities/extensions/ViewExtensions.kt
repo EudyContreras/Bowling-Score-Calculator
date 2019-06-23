@@ -8,7 +8,8 @@ import android.view.animation.Interpolator
 import com.eudycontreras.bowlingcalculator.listeners.AnimationListener
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 fun View.detach() {

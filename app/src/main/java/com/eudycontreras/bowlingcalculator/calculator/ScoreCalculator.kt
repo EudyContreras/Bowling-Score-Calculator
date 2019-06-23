@@ -1,15 +1,18 @@
 package com.eudycontreras.bowlingcalculator.calculator
 
-import com.eudycontreras.bowlingcalculator.*
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
 import com.eudycontreras.bowlingcalculator.calculator.elements.FrameNormal
 import com.eudycontreras.bowlingcalculator.calculator.elements.Roll
 import com.eudycontreras.bowlingcalculator.calculator.listeners.ScoreStateListener
-import com.eudycontreras.bowlingcalculator.extensions.clone
-import com.eudycontreras.bowlingcalculator.extensions.next
-import com.eudycontreras.bowlingcalculator.extensions.previous
-import com.eudycontreras.bowlingcalculator.extensions.sum
+import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_FRAME_CHANCES
+import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_FRAME_COUNT
+import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_PIN_COUNT
+import com.eudycontreras.bowlingcalculator.utilities.ZERO
+import com.eudycontreras.bowlingcalculator.utilities.extensions.clone
+import com.eudycontreras.bowlingcalculator.utilities.extensions.next
+import com.eudycontreras.bowlingcalculator.utilities.extensions.previous
+import com.eudycontreras.bowlingcalculator.utilities.extensions.sum
 
 /************************************************************************
  *
@@ -95,9 +98,7 @@ sealed class ScoreCalculator {
             val totalScore = getTotalScore(bowler)
             val possibleScore = getPossibleScore(bowler)
 
-            fromMain {
-                listener?.onScoreUpdated(bowler, totalScore, possibleScore)
-            }
+            listener?.onScoreUpdated(bowler, totalScore, possibleScore)
         }
 
         /**
@@ -210,7 +211,7 @@ sealed class ScoreCalculator {
          *
          * @return The total sum of the score achieved on each frame
          */
-        private fun getTotalScore(bowler: Bowler): Int {
+        fun getTotalScore(bowler: Bowler): Int {
             return bowler.frames.sumBy { it.getTotal(false) }
         }
 
@@ -222,7 +223,7 @@ sealed class ScoreCalculator {
          *
          * @return The total simulated best possible score
          */
-        private fun getPossibleScore(bowler: Bowler): Int {
+        fun getPossibleScore(bowler: Bowler): Int {
             return simulateWith(bowler)
         }
     }

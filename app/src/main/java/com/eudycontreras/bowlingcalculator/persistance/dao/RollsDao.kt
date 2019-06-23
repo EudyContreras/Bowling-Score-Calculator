@@ -4,7 +4,8 @@ import androidx.room.*
 import com.eudycontreras.bowlingcalculator.persistance.entities.RollEntity
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 @Dao

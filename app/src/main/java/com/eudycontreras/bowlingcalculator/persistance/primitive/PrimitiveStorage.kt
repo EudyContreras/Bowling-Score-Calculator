@@ -1,7 +1,8 @@
 package com.eudycontreras.bowlingcalculator.persistance.primitive
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 interface PrimitiveStorage {

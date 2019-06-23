@@ -9,7 +9,8 @@ import com.eudycontreras.bowlingcalculator.persistance.dao.RollsDao
 import com.eudycontreras.bowlingcalculator.persistance.entities.RollEntity
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 class RollRepositoryImpl(

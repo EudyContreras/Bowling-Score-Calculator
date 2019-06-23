@@ -2,13 +2,14 @@ package com.eudycontreras.bowlingcalculator.persistance.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.eudycontreras.bowlingcalculator.NO_ID
+import com.eudycontreras.bowlingcalculator.utilities.NO_ID
 import com.eudycontreras.bowlingcalculator.calculator.elements.Result
 import java.util.*
 
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 @Entity(tableName = "Results")

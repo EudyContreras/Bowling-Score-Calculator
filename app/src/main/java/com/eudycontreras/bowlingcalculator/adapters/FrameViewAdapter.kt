@@ -13,25 +13,27 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.eudycontreras.bowlingcalculator.DEFAULT_FRAME_COUNT
-import com.eudycontreras.bowlingcalculator.DEFAULT_START_INDEX
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
 import com.eudycontreras.bowlingcalculator.calculator.elements.FrameLast
 import com.eudycontreras.bowlingcalculator.calculator.elements.FrameNormal
 import com.eudycontreras.bowlingcalculator.calculator.elements.Roll
 import com.eudycontreras.bowlingcalculator.components.views.FramesViewComponent
-import com.eudycontreras.bowlingcalculator.extensions.animateColor
-import com.eudycontreras.bowlingcalculator.extensions.dp
-import com.eudycontreras.bowlingcalculator.extensions.hide
-import com.eudycontreras.bowlingcalculator.extensions.show
-import com.eudycontreras.bowlingcalculator.runSequential
+import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_FRAME_COUNT
+import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_START_INDEX
+import com.eudycontreras.bowlingcalculator.utilities.extensions.animateColor
+import com.eudycontreras.bowlingcalculator.utilities.extensions.dp
+import com.eudycontreras.bowlingcalculator.utilities.extensions.hide
+import com.eudycontreras.bowlingcalculator.utilities.extensions.show
+import com.eudycontreras.bowlingcalculator.utilities.runSequential
 import kotlinx.android.synthetic.main.item_frame_view.view.*
 import kotlinx.android.synthetic.main.item_frame_view_mark.view.*
 import java.lang.ref.WeakReference
 
+
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 class FrameViewAdapter(

@@ -7,23 +7,30 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import com.eudycontreras.bowlingcalculator.BowlerListener
-import com.eudycontreras.bowlingcalculator.Bowlers
-import com.eudycontreras.bowlingcalculator.DEFAULT_GRACE_PERIOD
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
-import com.eudycontreras.bowlingcalculator.components.controllers.ActionViewController
-import com.eudycontreras.bowlingcalculator.components.controllers.FramesViewController
-import com.eudycontreras.bowlingcalculator.components.controllers.StatsViewController
-import com.eudycontreras.bowlingcalculator.components.controllers.TabsViewController
-import com.eudycontreras.bowlingcalculator.extensions.app
-import com.eudycontreras.bowlingcalculator.extensions.show
-import com.eudycontreras.bowlingcalculator.runAfterMain
+import com.eudycontreras.bowlingcalculator.components.controllers.*
+import com.eudycontreras.bowlingcalculator.utilities.BowlerListener
+import com.eudycontreras.bowlingcalculator.utilities.Bowlers
+import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_GRACE_PERIOD
+import com.eudycontreras.bowlingcalculator.utilities.extensions.app
+import com.eudycontreras.bowlingcalculator.utilities.extensions.show
+import com.eudycontreras.bowlingcalculator.utilities.runAfterMain
 import kotlinx.android.synthetic.main.activity_main.*
+
+
+
+
+/**
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
+ */
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var scoreController: ScoreController
 
+    private lateinit var skeletonController: SkeletonViewController
+    private lateinit var loaderController: LoaderViewController
     private lateinit var framesController: FramesViewController
     private lateinit var actionController: ActionViewController
     private lateinit var statsController: StatsViewController
@@ -44,12 +51,18 @@ class MainActivity : AppCompatActivity() {
 
         scoreController = ScoreController(this)
 
+        skeletonController = SkeletonViewController(this, scoreController)
+        loaderController = LoaderViewController(this, scoreController)
         framesController = FramesViewController(this, scoreController)
         actionController = ActionViewController(this, scoreController)
         statsController = StatsViewController(this, scoreController)
         tabsController = TabsViewController(this, scoreController)
 
         tabsController.createTabs(emptyList())
+
+        if (app.persistenceManager.hasBowlers()) {
+            loaderController.showLoader()
+        }
     }
 
     override fun onResume() {
@@ -78,15 +91,16 @@ class MainActivity : AppCompatActivity() {
 
     private fun onStorageFull() {
         val bowlers = app.persistenceManager.getBowlers()
+        val activeTab = app.persistenceManager.activeTab
 
         bowlers.observe(this, Observer {
-            val activeTab = app.persistenceManager.activeTab
 
             if (it.isEmpty()) {
                 onStorageEmpty()
                 return@Observer
             }
 
+            loaderController.hideLoader()
             scoreController.initCalculator(it, activeTab)
             tabsController.addTabs(it, activeTab)
         })

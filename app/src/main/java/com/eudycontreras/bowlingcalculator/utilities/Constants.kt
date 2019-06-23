@@ -1,7 +1,8 @@
-package com.eudycontreras.bowlingcalculator
+package com.eudycontreras.bowlingcalculator.utilities
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 const val NO_ID = -1L

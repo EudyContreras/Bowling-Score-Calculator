@@ -9,7 +9,8 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 class PrimitiveStorageImpl(context: Context) :

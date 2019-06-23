@@ -3,8 +3,10 @@ package com.eudycontreras.bowlingcalculator.calculator.elements
 import java.io.Serializable
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
+
 interface Element : Serializable {
     fun init()
     fun reset()

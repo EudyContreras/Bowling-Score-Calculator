@@ -1,6 +1,6 @@
 package com.eudycontreras.bowlingcalculator.calculator.elements
 
-import com.eudycontreras.bowlingcalculator.DEFAULT_PIN_COUNT
+import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_PIN_COUNT
 
 
 /**
@@ -9,6 +9,8 @@ import com.eudycontreras.bowlingcalculator.DEFAULT_PIN_COUNT
  *
  * @property result the result that the roll yielded
  * @constructor Creates a bowling roll
+ *
+ * @Project BowlingCalculator
  * @author Eudy Contreras
  */
 data class Roll(

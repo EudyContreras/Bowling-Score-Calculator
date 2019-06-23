@@ -18,4 +18,8 @@
     <string name="create_bowler">Enter bowler\'s name</string>
     <string name="max_input_count_reached">Max allowed reached!</string>
     <string name="max_bowler_count_reached">Max 10 bowlers allowed</string>
+    <string name="empty_state_add_bowler_title">No results to show!</string>
+    <string name="empty_state_add_bowler_body">There seem to be no result to show! Create a bowler in order to see their
+        results here.
+    </string>
 </resources>

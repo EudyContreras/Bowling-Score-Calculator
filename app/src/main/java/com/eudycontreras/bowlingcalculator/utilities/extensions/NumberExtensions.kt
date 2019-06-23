@@ -3,7 +3,8 @@ package com.eudycontreras.bowlingcalculator.extensions
 import android.content.res.Resources
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 val Int.dp: Float

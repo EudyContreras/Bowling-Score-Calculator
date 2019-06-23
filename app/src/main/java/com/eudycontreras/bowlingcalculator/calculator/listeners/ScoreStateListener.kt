@@ -3,7 +3,8 @@ package com.eudycontreras.bowlingcalculator.calculator.listeners
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 interface ScoreStateListener {

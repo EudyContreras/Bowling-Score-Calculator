@@ -5,13 +5,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.withContext
 
-/******************************************************************
- *
- *
- *
+/**
+ * @Project BowlingCalculator
  * @author Eudy Contreras.
- * @since 6/20/19
- ******************************************************************/
+ */
 
 suspend fun CoroutineScope.fromMain(action: (()-> Unit)?) {
     action?.let { task ->

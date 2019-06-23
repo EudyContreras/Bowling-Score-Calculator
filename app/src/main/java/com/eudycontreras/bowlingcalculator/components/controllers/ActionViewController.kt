@@ -4,15 +4,17 @@ import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.calculator.elements.Result
 import com.eudycontreras.bowlingcalculator.components.views.ActionsViewComponent
-import com.eudycontreras.bowlingcalculator.extensions.app
 import com.eudycontreras.bowlingcalculator.fragments.FragmentLoadResult
 import com.eudycontreras.bowlingcalculator.fragments.FragmentSaveResult
+import com.eudycontreras.bowlingcalculator.utilities.extensions.app
 import java.util.*
 
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
+
 class ActionViewController(
     private val context: MainActivity,
     private val scoreController: ScoreController

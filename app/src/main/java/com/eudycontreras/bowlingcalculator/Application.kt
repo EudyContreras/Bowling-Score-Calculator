@@ -4,8 +4,10 @@ import android.app.Application
 import com.eudycontreras.bowlingcalculator.persistance.PersistenceManager
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
+
 class Application : Application() {
 
     lateinit var persistenceManager: PersistenceManager

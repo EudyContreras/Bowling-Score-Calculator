@@ -22,4 +22,19 @@
     <dimen name="actionIcon_small">20dp</dimen>
 
     <dimen name="mark">40dp</dimen>
+
+    <dimen name="spacing_x_small">2dp</dimen>
+    <dimen name="spacing_small">4dp</dimen>
+    <dimen name="spacing_medium">8dp</dimen>
+    <dimen name="spacing_normal">12dp</dimen>
+    <dimen name="spacing_large">16dp</dimen>
+    <dimen name="spacing_extra_large">24dp</dimen>
+    <dimen name="spacing_extra_extra_large">32dp</dimen>
+
+    <dimen name="state_icon_size_default">110dp</dimen>
+    <dimen name="state_icon_size_large">160dp</dimen>
+    <dimen name="state_icon_title_spacing">32dp</dimen>
+    <dimen name="state_body_button_spacing">56dp</dimen>
+
+    <dimen name="default_icon_size_medium">40dp</dimen>
 </resources>

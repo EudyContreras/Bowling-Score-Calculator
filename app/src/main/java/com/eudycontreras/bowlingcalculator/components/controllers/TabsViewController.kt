@@ -1,15 +1,17 @@
 package com.eudycontreras.bowlingcalculator.components.controllers
 
-import com.eudycontreras.bowlingcalculator.BowlerListener
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
+import com.eudycontreras.bowlingcalculator.components.views.SkeletonViewComponent
 import com.eudycontreras.bowlingcalculator.components.views.TabsViewComponent
-import com.eudycontreras.bowlingcalculator.extensions.app
 import com.eudycontreras.bowlingcalculator.fragments.FragmentCreateBowler
+import com.eudycontreras.bowlingcalculator.utilities.BowlerListener
+import com.eudycontreras.bowlingcalculator.utilities.extensions.app
 
 /**
- * Created by eudycontreras.
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
  */
 
 class TabsViewController(
@@ -28,7 +30,15 @@ class TabsViewController(
     }
 
     fun requestTab(listener: BowlerListener = null) {
-        context.openDialog(FragmentCreateBowler.instance(this, listener))
+        val onDismiss = {
+            if (!context.app.persistenceManager.hasBowlers()) {
+                scoreController.skeletonController.setState(SkeletonViewComponent.EmptyState.Default(context) { requestTab() })
+                scoreController.skeletonController.revealState()
+            } else {
+                scoreController.skeletonController.concealState()
+            }
+        }
+        context.openDialog(FragmentCreateBowler.instance(this, listener, onDismiss))
     }
 
     fun addTabs(bowlers: List<Bowler>, currentIndex: Int? = null) {
