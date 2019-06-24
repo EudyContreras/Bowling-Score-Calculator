@@ -21,6 +21,7 @@
             <View android:layout_width="30dp"
                   android:layout_height="30dp"
                   android:layout_gravity="start"
+                  android:visibility="gone"
                   android:layout_marginEnd="@dimen/margin_medium"
                   android:background="@drawable/img_logo"/>
             <TextView
@@ -37,13 +38,15 @@
 
         <FrameLayout
                 android:id="@+id/toolbarMenu"
-                android:layout_marginEnd="@dimen/margin"
+                android:backgroundTint="@color/colorAccent"
+                android:background="@drawable/shape_circle"
+                android:layout_marginEnd="@dimen/margin_large"
                 android:layout_gravity="end|center"
-                android:layout_width="40dp"
-                android:layout_height="40dp">
+                android:layout_width="32dp"
+                android:layout_height="32dp">
             <View
                     android:layout_gravity="center"
-                    android:background="@drawable/ic_menu"
+                    android:background="@drawable/img_logo"
                     android:layout_width="24dp"
                     android:layout_height="24dp"/>
         </FrameLayout>

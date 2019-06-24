@@ -14,11 +14,9 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.eudycontreras.bowlingcalculator.R
-import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
-import com.eudycontreras.bowlingcalculator.calculator.elements.FrameLast
-import com.eudycontreras.bowlingcalculator.calculator.elements.FrameNormal
-import com.eudycontreras.bowlingcalculator.calculator.elements.Roll
+import com.eudycontreras.bowlingcalculator.calculator.elements.*
 import com.eudycontreras.bowlingcalculator.components.views.FramesViewComponent
+import com.eudycontreras.bowlingcalculator.listeners.AnimationListener
 import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_FRAME_COUNT
 import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_START_INDEX
 import com.eudycontreras.bowlingcalculator.utilities.extensions.animateColor
@@ -62,6 +60,16 @@ class FrameViewAdapter(
     private var resetFlipSpeed: Long = 500
     private var revealSpeed: Long = 200
 
+    private var revealingBowler: Long = -1
+
+    private var revealed: HashMap<Int, Boolean> = HashMap(DEFAULT_FRAME_COUNT)
+
+    internal data class RevealedInfo(val index: Int, var revealed: Boolean)
+
+    init {
+        (0..DEFAULT_FRAME_COUNT).forEach { revealed[it] = false }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FrameViewHolder {
         return FrameViewHolder(LayoutInflater.from(context).inflate(R.layout.item_frame_view, parent, false))
     }
@@ -100,9 +108,11 @@ class FrameViewAdapter(
         }
     }
 
-    internal fun revealAllFrames() {
+    internal fun revealAllFrames(bowler: Bowler) {
+        revealingBowler = bowler.id
         adjustViewPort(0)
         runSequential(120, viewHolders.size) {
+            revealed[it] = true
             viewHolders[it]?.revealCell(revealSpeed, this)
         }
     }
@@ -186,7 +196,7 @@ class FrameViewAdapter(
             adapter: FrameViewAdapter
         ) {
             frame?.let {
-                animateFrameReveal(flipSpeed, adapter)
+                animateFrameReveal(it, flipSpeed, adapter)
             }
         }
 
@@ -250,8 +260,15 @@ class FrameViewAdapter(
             frameScore.text = frame.getTotal(true).toString()
 
             if (frame.index == adapter.currentIndex) {
-                adapter.lastReference = WeakReference(this)
-                bringCurrentToFront(frame, adapter)
+                if (adapter.revealingBowler != frame.bowlerId) {
+                    adapter.lastReference = WeakReference(this)
+                    bringCurrentToFront(frame, adapter)
+                } else {
+                    if (adapter.revealed.getValue(frame.index)) {
+                        adapter.lastReference = WeakReference(this)
+                        bringCurrentToFront(frame, adapter)
+                    }
+                }
             } else if (frame.index == adapter.currentIndex - 1) {
                 adapter.lastSelected?.let {
                     if (frame.index == it) {
@@ -338,20 +355,18 @@ class FrameViewAdapter(
 
         private fun bringCurrentToFront(frame: Frame, adapter: FrameViewAdapter) {
             if (adapter.viewComponent.controller.canSelect(frame.index)) {
-                if (adapter.currentIndex == frame.index) {
-                    if (adapter.lastSelected == null) {
-                        bringCurrentToFront(view) { processMarkerSelection(frame, adapter ) }
-                    } else {
-                        adapter.lastSelected?.let {
-                            if (it == frame.index) {
-                                view.translationZ = 4.dp
-                                view.translationY = (-1).dp
-                                view.backgroundTintList = ColorStateList.valueOf(adapter.white)
-                                adapter.lastSelected = frame.index
-                                processMarkerSelection(frame, adapter )
-                            } else {
-                                bringCurrentToFront(view) { processMarkerSelection(frame, adapter ) }
-                            }
+                if (adapter.lastSelected == null) {
+                    bringCurrentToFront(view) { processMarkerSelection(frame, adapter ) }
+                } else {
+                    adapter.lastSelected?.let {
+                        if (it == frame.index) {
+                            view.translationZ = 4.dp
+                            view.translationY = (-1).dp
+                            view.backgroundTintList = ColorStateList.valueOf(adapter.white)
+                            adapter.lastSelected = frame.index
+                            processMarkerSelection(frame, adapter )
+                        } else {
+                            bringCurrentToFront(view) { processMarkerSelection(frame, adapter ) }
                         }
                     }
                 }
@@ -424,20 +439,26 @@ class FrameViewAdapter(
         }
 
         private fun animateFrameReveal(
+            frame: Frame,
             duration: Long,
             adapter: FrameViewAdapter
         ) {
             var translateY = 0f
             var translateZ = 0f
 
-            frame?.let {
-                if (adapter.currentIndex == it.index) {
-                    translateY = (-1).dp
-                    translateZ = 4.dp
+            if (adapter.currentIndex == frame.index) {
+                translateY = (-1).dp
+                translateZ = 4.dp
+            }
+            val onEnd: (() -> Unit)? = {
+                if (frame.index == adapter.currentIndex) {
+                    adapter.lastReference = WeakReference(this)
+                    bringCurrentToFront(frame, adapter)
                 }
             }
 
             view.animate()
+                .setListener(AnimationListener(onEnd = onEnd))
                 .setInterpolator(DecelerateInterpolator())
                 .setDuration(duration)
                 .translationZ(translateZ)

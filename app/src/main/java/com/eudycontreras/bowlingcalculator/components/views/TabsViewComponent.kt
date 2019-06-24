@@ -1,6 +1,7 @@
 package com.eudycontreras.bowlingcalculator.components.views
 
 import android.view.View
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
@@ -9,6 +10,7 @@ import com.eudycontreras.bowlingcalculator.adapters.TabViewAdapter
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.components.controllers.TabsViewController
 import kotlinx.android.synthetic.main.activity_main.*
+
 
 /**
  * @Project BowlingCalculator
@@ -58,6 +60,9 @@ class TabsViewComponent(
         tabAdapter = TabViewAdapter(context, this, list)
 
         tabRecycler?.let {
+            val itemAnimator = DefaultItemAnimator()
+            itemAnimator.removeDuration = 40
+            it.itemAnimator = itemAnimator
             it.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
             it.adapter = tabAdapter
         }

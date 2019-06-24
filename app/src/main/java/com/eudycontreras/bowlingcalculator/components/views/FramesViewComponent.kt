@@ -1,5 +1,6 @@
 package com.eudycontreras.bowlingcalculator.components.views
 
+import android.util.DisplayMetrics
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
@@ -9,6 +10,7 @@ import com.eudycontreras.bowlingcalculator.adapters.FrameViewAdapter
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
 import com.eudycontreras.bowlingcalculator.components.controllers.FramesViewController
+import com.eudycontreras.bowlingcalculator.utilities.SCROLLER_MILLI_PER_INCH
 import kotlinx.android.synthetic.main.activity_main.*
 
 /**
@@ -28,6 +30,9 @@ class FramesViewComponent(
     private var smoothScroller: LinearSmoothScroller = object : LinearSmoothScroller(context) {
         override fun getVerticalSnapPreference(): Int {
             return LinearSmoothScroller.SNAP_TO_START
+        }
+        override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
+            return SCROLLER_MILLI_PER_INCH / displayMetrics.densityDpi
         }
     }
 
@@ -65,8 +70,8 @@ class FramesViewComponent(
         frameAdapter.resetAllFrames()
     }
 
-    fun revealFrames() {
-        frameAdapter.revealAllFrames()
+    fun revealFrames(bowler: Bowler) {
+        frameAdapter.revealAllFrames(bowler)
     }
 
     fun updateFrames(bowler: Bowler, current: Frame) {

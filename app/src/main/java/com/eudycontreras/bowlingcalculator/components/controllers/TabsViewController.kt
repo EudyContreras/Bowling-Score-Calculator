@@ -70,7 +70,7 @@ class TabsViewController(
             }
             if (!viewComponent.hasTabs()) {
                 val activeTab = getActive()
-                scoreController.initCalculator(it, activeTab, true)
+                scoreController.initCalculator(it, activeTab)
                 context.app.persistenceManager.saveActiveTab(activeTab)
             }
 

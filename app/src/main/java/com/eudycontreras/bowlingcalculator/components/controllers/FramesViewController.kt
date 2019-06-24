@@ -51,8 +51,8 @@ class FramesViewController(
         viewComponent.resetFrames()
     }
 
-    fun revealFrames() {
-        viewComponent.revealFrames()
+    fun revealFrames(bowler: Bowler) {
+        viewComponent.revealFrames(bowler)
     }
 
     fun performFrameSelection(index: Int) {

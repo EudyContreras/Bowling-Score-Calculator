@@ -1,0 +1,5 @@
+Todo:
+    Make sure that the states are being saved properly with unit tests
+    Look through the code and assure there are not methods that are not called twice
+    Include the last frame into the simulation
+

@@ -38,7 +38,7 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
     val bowler: Bowler
         get() = bowlers[activeTab]
 
-    fun initCalculator(bowlers: List<Bowler>, activeTab: Int, newBowler: Boolean = false) {
+    fun initCalculator(bowlers: List<Bowler>, activeTab: Int) {
         this.bowlers = ArrayList(bowlers)
         this.activeTab = activeTab
 
@@ -51,7 +51,7 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
             actionController.revealPins()
         }
 
-        framesController.revealFrames()
+        framesController.revealFrames(bowler)
     }
 
     private fun allowRedoChance(frame: Frame, chance: Frame.State) {
