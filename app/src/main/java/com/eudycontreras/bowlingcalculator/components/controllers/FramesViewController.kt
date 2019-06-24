@@ -59,11 +59,14 @@ class FramesViewController(
         scoreController.onFrameSelected(index)
     }
 
-    fun setSourceFrames(bowler: Bowler?) {
+    fun setSourceFrames(bowler: Bowler?, onEnd: (() -> Unit)? = null) {
         if (bowler != null) {
             viewComponent.setSourceFrames(bowler.frames)
         } else {
-            viewComponent.setSourceFrames(emptyList())
+            viewComponent.concealFrames {
+                onEnd?.invoke()
+                viewComponent.setSourceFrames(emptyList())
+            }
         }
     }
 }

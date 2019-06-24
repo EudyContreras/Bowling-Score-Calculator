@@ -82,3 +82,31 @@ fun runSequential(delay: Long, times: Int, applyAction: (index: Int) -> Unit) {
         }
     }
 }
+
+fun runSequential(delay: Long, times: Int, onEnd: (() -> Unit)? = null, applyAction: (index: Int) -> Unit) {
+    if (times == 0)
+        return
+
+    GlobalScope.launch(Dispatchers.Main.immediate) {
+        for (counter in 0 until times) {
+            delay(delay)
+            applyAction(counter)
+        }
+        delay(delay * 2)
+        onEnd?.invoke()
+    }
+}
+
+fun runSequentialReversed(delay: Long, times: Int, onEnd: (() -> Unit)? = null, applyAction: (index: Int) -> Unit) {
+    if (times == 0)
+        return
+
+    GlobalScope.launch(Dispatchers.Main.immediate) {
+        for (counter in (times - 1) downTo  0) {
+            delay(delay)
+            applyAction(counter)
+        }
+        delay(delay * 2)
+        onEnd?.invoke()
+    }
+}

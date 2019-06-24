@@ -44,7 +44,8 @@ class TabViewAdapter(
     sealed class Values {
         companion object {
             const val alpha = 0.4f
-            const val duration = 150L
+            const val changeDuration = 400L
+            const val removeDuration = 200L
             val translateY = 4.dp
             val translateZ = (-10).dp
         }
@@ -56,13 +57,16 @@ class TabViewAdapter(
                 (reference.get() as TabViewAdapter.TabViewHolderNormal?)?.deactivateTab()
             }
         }
+
+        val isManual = manual && items.size > 1
+
         this.items.add(currentIndex, item)
 
         currentIndex = selectedIndex?:this.items.size - 2
         lastTab = null
 
         notifyItemInserted(currentIndex)
-        viewComponent.controller.onTabSelection(currentIndex, manual)
+        viewComponent.controller.onTabSelection(currentIndex, isManual)
     }
 
     fun addItems(items: List<TabViewModel>, selectedIndex: Int? = null, manual: Boolean = false) {
@@ -75,6 +79,8 @@ class TabViewAdapter(
             }
         }
 
+        val isManual = manual && this.items.size > 1
+
         items.asReversed().forEach {
             this.items.add(currentIndex, it)
             notifyItemInserted(currentIndex)
@@ -84,7 +90,7 @@ class TabViewAdapter(
         lastTab = null
 
         viewComponent.scrollToIndex(currentIndex)
-        viewComponent.controller.onTabSelection(currentIndex, manual)
+        viewComponent.controller.onTabSelection(currentIndex, isManual)
     }
 
     fun removeItem(index: Int) {
@@ -240,7 +246,7 @@ class TabViewAdapter(
                 .setListener(null)
                 .translationY(0f)
                 .translationZ(0.dp)
-                .setDuration(Values.duration)
+                .setDuration(Values.changeDuration)
                 .start()
         }
 
@@ -251,7 +257,7 @@ class TabViewAdapter(
                 .setListener(null)
                 .translationY(Values.translateY)
                 .translationZ(Values.translateZ)
-                .setDuration(Values.duration)
+                .setDuration(Values.changeDuration)
                 .start()
         }
 
@@ -259,7 +265,7 @@ class TabViewAdapter(
             this.tabItem.animate()
                 .alpha(0f)
                 .translationZ(Values.translateZ)
-                .setDuration(Values.duration)
+                .setDuration(Values.removeDuration)
                 .setListener(AnimationListener(onEnd = onEnd))
                 .start()
         }

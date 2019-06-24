@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
+import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -23,6 +24,7 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.animateColor
 import com.eudycontreras.bowlingcalculator.utilities.extensions.dp
 import com.eudycontreras.bowlingcalculator.utilities.extensions.hide
 import com.eudycontreras.bowlingcalculator.utilities.extensions.show
+import com.eudycontreras.bowlingcalculator.utilities.runAfterMain
 import com.eudycontreras.bowlingcalculator.utilities.runSequential
 import kotlinx.android.synthetic.main.item_frame_view.view.*
 import kotlinx.android.synthetic.main.item_frame_view_mark.view.*
@@ -58,13 +60,12 @@ class FrameViewAdapter(
     internal var lastSelected: Int? = null
 
     private var resetFlipSpeed: Long = 500
-    private var revealSpeed: Long = 200
+    private var revealSpeed: Long = 220
+    private var concealSpeed: Long = 220
 
     private var revealingBowler: Long = -1
 
     private var revealed: HashMap<Int, Boolean> = HashMap(DEFAULT_FRAME_COUNT)
-
-    internal data class RevealedInfo(val index: Int, var revealed: Boolean)
 
     init {
         (0..DEFAULT_FRAME_COUNT).forEach { revealed[it] = false }
@@ -103,7 +104,7 @@ class FrameViewAdapter(
         lastReference = null
         currentIndex = DEFAULT_START_INDEX
         adjustViewPort(0)
-        runSequential(80, viewHolders.size) {
+        runSequential(100, viewHolders.size) {
             viewHolders[it]?.resetCell(resetFlipSpeed)
         }
     }
@@ -111,10 +112,18 @@ class FrameViewAdapter(
     internal fun revealAllFrames(bowler: Bowler) {
         revealingBowler = bowler.id
         adjustViewPort(0)
-        runSequential(120, viewHolders.size) {
+        runSequential(100, viewHolders.size) {
             revealed[it] = true
             viewHolders[it]?.revealCell(revealSpeed, this)
         }
+    }
+
+    fun concealFrames(onEnd: () -> Unit) {
+        for (it in 0 until viewHolders.size) {
+            revealed[it] = false
+            viewHolders[it]?.concealCell(concealSpeed)
+        }
+        runAfterMain(concealSpeed, onEnd)
     }
 
     fun changeSource(items: List<Frame>) {
@@ -191,6 +200,10 @@ class FrameViewAdapter(
             }
         }
 
+        fun concealCell(concealSpeed: Long) {
+            animateFrameConceal(concealSpeed)
+        }
+
         fun revealCell(
             flipSpeed: Long,
             adapter: FrameViewAdapter
@@ -248,7 +261,7 @@ class FrameViewAdapter(
 
             if (!adapter.viewHolders.any { holder -> holder?.layoutPosition == frame.index }) {
                 view.translationZ = 30.dp
-                view.translationY = (-20).dp
+                view.translationY = (-50).dp
                 view.scaleX = 1.3f
                 view.scaleY = 1.3f
                 view.alpha = 0f
@@ -436,6 +449,15 @@ class FrameViewAdapter(
                 }
             }
             animateMarkUnselected(viewHolder.roundExtraMark, adapter)
+        }
+
+        private fun animateFrameConceal(duration: Long) {
+            view.animate()
+                .setListener(null)
+                .setInterpolator(LinearInterpolator())
+                .setDuration(duration)
+                .alpha(0f)
+                .start()
         }
 
         private fun animateFrameReveal(

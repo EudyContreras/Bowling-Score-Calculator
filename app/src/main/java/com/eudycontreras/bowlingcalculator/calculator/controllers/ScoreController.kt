@@ -113,9 +113,8 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
 
         val bowler: Bowler? = if (bowlers.isEmpty()) null else bowler
 
-        framesController.setSourceFrames(bowler)
-
         if (bowler != null) {
+            framesController.setSourceFrames(bowler)
             if (bowler.hasStarted() || manual) {
                 onScoreUpdated(
                     bowler,
@@ -124,17 +123,19 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
                 )
             }
         } else {
-            skeletonController.setState(SkeletonViewComponent.EmptyState.Default(activity) {
-                tabsController.requestTab(true)
-            })
-            runAfterMain(250) {
-                skeletonController.revealState()
-            }
+            framesController.setSourceFrames(bowler) {
+                runAfterMain(250) {
+                    skeletonController.setState(SkeletonViewComponent.EmptyState.Default(activity) {
+                        tabsController.requestTab(true)
+                    })
+                    skeletonController.revealState()
+                }
 
-            statsController.updateTotalScore(0)
-            statsController.updateMaxPossibleScore(MAX_POSSIBLE_SCORE_GAME)
-            statsController.setCurrentFrame(DEFAULT_START_INDEX + 1)
-            actionController.deactivateAllInput()
+                statsController.updateTotalScore(0)
+                statsController.updateMaxPossibleScore(MAX_POSSIBLE_SCORE_GAME)
+                statsController.setCurrentFrame(DEFAULT_START_INDEX + 1)
+                actionController.deactivateAllInput()
+            }
         }
     }
 

@@ -118,7 +118,10 @@ class ActionsViewComponent(
         throwAction?.let { parent ->
             var leftIndex = (parent.childCount / 2) - 1
             var rightIndex = parent.childCount / 2
-            runSequential(delay, parent.childCount - 1) {
+            val onEnd = {
+                activateStrike(strikeAction)
+            }
+            runSequential(delay, parent.childCount - 1, onEnd) {
                 val viewLeft = parent.getChildAt(leftIndex).findViewById<FrameLayout>(R.id.throwInput)
                 viewLeft.isEnabled = true
                 viewLeft.animate()

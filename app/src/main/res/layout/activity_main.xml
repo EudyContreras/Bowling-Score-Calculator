@@ -68,15 +68,6 @@
                 android:layout_height="64dp"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
-
-        <include
-                layout="@layout/calculator_section_menu_view"
-                android:visibility="gone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
-
         <FrameLayout
                 android:id="@+id/fragmentContainer"
                 android:elevation="1dp"
