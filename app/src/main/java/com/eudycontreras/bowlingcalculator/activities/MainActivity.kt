@@ -5,7 +5,6 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.components.controllers.*
@@ -13,12 +12,13 @@ import com.eudycontreras.bowlingcalculator.utilities.BowlerListener
 import com.eudycontreras.bowlingcalculator.utilities.Bowlers
 import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_GRACE_PERIOD
 import com.eudycontreras.bowlingcalculator.utilities.extensions.app
-import com.eudycontreras.bowlingcalculator.utilities.extensions.show
 import com.eudycontreras.bowlingcalculator.utilities.runAfterMain
 import kotlinx.android.synthetic.main.activity_main.*
 
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
  */
@@ -80,11 +80,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onStorageEmpty() {
-        tabsController.requestTab(false){
-            val activeTab = tabsController.getActive()
-            app.persistenceManager.saveActiveTab(activeTab)
-            scoreController.initCalculator(it, activeTab)
-        }
+        tabsController.onTabRequested(false)
     }
 
     private fun onStorageFull() {
@@ -92,7 +88,6 @@ class MainActivity : AppCompatActivity() {
         val activeTab = app.persistenceManager.activeTab
 
         bowlers.observe(this, Observer {
-
             if (it.isEmpty()) {
                 onStorageEmpty()
                 return@Observer
@@ -128,21 +123,6 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    fun addFragment(fragment: Fragment, containerId: Int) {
-        if (supportFragmentManager.fragments.contains(fragment)) {
-            return
-        }
-
-        fragmentContainer.show()
-
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-
-        fragmentTransaction.setCustomAnimations(0, 0, 0, 0)
-        fragmentTransaction.add(containerId, fragment, Fragment::class.java.simpleName)
-        fragmentTransaction.addToBackStack(null)
-        fragmentTransaction.commit()
-    }
-
     fun openDialog(fragment: DialogFragment) {
         val prev = supportFragmentManager.findFragmentByTag(fragment::class.java.simpleName)
 
@@ -154,14 +134,5 @@ class MainActivity : AppCompatActivity() {
 
         fragmentTransaction.addToBackStack(null)
         fragment.show(fragmentTransaction, fragment::class.java.simpleName)
-    }
-
-    fun removeFragment(fragment: Fragment) {
-
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-
-        fragmentTransaction.setCustomAnimations(0, 0, 0, 0)
-        fragmentTransaction.remove(fragment)
-        fragmentTransaction.commitAllowingStateLoss()
     }
 }

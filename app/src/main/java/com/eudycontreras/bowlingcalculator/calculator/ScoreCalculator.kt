@@ -5,10 +5,7 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
 import com.eudycontreras.bowlingcalculator.calculator.elements.FrameNormal
 import com.eudycontreras.bowlingcalculator.calculator.elements.Roll
 import com.eudycontreras.bowlingcalculator.calculator.listeners.ScoreStateListener
-import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_FRAME_CHANCES
-import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_FRAME_COUNT
-import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_PIN_COUNT
-import com.eudycontreras.bowlingcalculator.utilities.ZERO
+import com.eudycontreras.bowlingcalculator.utilities.*
 import com.eudycontreras.bowlingcalculator.utilities.extensions.clone
 import com.eudycontreras.bowlingcalculator.utilities.extensions.next
 import com.eudycontreras.bowlingcalculator.utilities.extensions.previous
@@ -187,7 +184,10 @@ sealed class ScoreCalculator {
          */
         private fun simulateWith(reference: Bowler): Int {
 
-            //TODO(Find out how to make it work with the last frames)
+            if (!reference.hasStarted()) {
+                return MAX_POSSIBLE_SCORE_GAME
+            }
+            //TODO(Include the last frame in the simulation)
 
             val bowler = reference.clone()
             var counter = bowler.currentFrameIndex
@@ -215,6 +215,9 @@ sealed class ScoreCalculator {
          * @return The total sum of the score achieved on each frame
          */
         fun getTotalScore(bowler: Bowler): Int {
+            if (!bowler.hasStarted()) {
+                return 0
+            }
             return bowler.frames.sumBy { it.getTotal(false) }
         }
 

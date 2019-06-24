@@ -1,5 +1,6 @@
 package com.eudycontreras.bowlingcalculator.components.controllers
 
+import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
@@ -7,7 +8,9 @@ import com.eudycontreras.bowlingcalculator.components.views.SkeletonViewComponen
 import com.eudycontreras.bowlingcalculator.components.views.TabsViewComponent
 import com.eudycontreras.bowlingcalculator.fragments.FragmentCreateBowler
 import com.eudycontreras.bowlingcalculator.utilities.BowlerListener
+import com.eudycontreras.bowlingcalculator.utilities.DuplicateBowlerException
 import com.eudycontreras.bowlingcalculator.utilities.extensions.app
+import com.eudycontreras.bowlingcalculator.utilities.extensions.string
 
 /**
  * @Project BowlingCalculator
@@ -25,14 +28,13 @@ class TabsViewController(
         scoreController.tabsController = this
     }
 
-    fun createTabs(bowler: List<Bowler>) {
-        viewComponent.crateTabs(bowler)
-    }
 
-    fun requestTab(manual: Boolean, listener: BowlerListener = null) {
+    fun onTabRequested(manual: Boolean, listener: BowlerListener = null) {
         val onDismiss = {
             if (!context.app.persistenceManager.hasBowlers()) {
-                scoreController.skeletonController.setState(SkeletonViewComponent.EmptyState.Default(context) { requestTab(true) })
+                scoreController.skeletonController.setState(SkeletonViewComponent.EmptyState.Default(context) {
+                    onTabRequested(true)
+                })
                 scoreController.skeletonController.revealState()
             } else {
                 scoreController.skeletonController.concealState()
@@ -41,31 +43,37 @@ class TabsViewController(
         context.openDialog(FragmentCreateBowler.instance(this, manual, listener, onDismiss))
     }
 
-    fun addTabs(bowlers: List<Bowler>, currentIndex: Int? = null, manual: Boolean) {
-        if(bowlers.isNotEmpty())
-        viewComponent.addTabs(bowlers, currentIndex, manual)
-    }
-
-    fun removeTab(lastIndex: Int, index: Int, onEnd: (()-> Unit)? = null) {
+    fun requestTabRemoval(lastIndex: Int, index: Int, onEnd: (()-> Unit)? = null) {
         scoreController.removeBowler(lastIndex, index, onEnd)
-    }
-
-    fun selectTab(index: Int) {
-        viewComponent.selectTab(index)
     }
 
     fun onTabSelection(current: Int, manual: Boolean = false) {
         scoreController.selectBowler(current, manual)
     }
 
+    fun selectTab(index: Int) {
+        viewComponent.selectTab(index)
+    }
+
+
+    fun addTabs(bowlers: List<Bowler>, currentIndex: Int? = null, manual: Boolean) {
+        if(bowlers.isNotEmpty())
+            viewComponent.addTabs(bowlers, currentIndex, manual)
+    }
+
+    fun createTabs(bowler: List<Bowler>) {
+        viewComponent.crateTabs(bowler)
+    }
+
     fun createBowler(names: List<String>, manual: Boolean, listener: BowlerListener) {
         val bowlers = names.map { Bowler(it) }
 
         context.saveCurrentState(bowlers) {
-            listener?.invoke(it)
             bowlers.forEach { bowler ->
-                if (!scoreController.bowlers.contains(bowler)) {
+                if (scoreController.bowlers.isEmpty() || !scoreController.bowlers.contains(bowler)) {
                     scoreController.bowlers.add(bowler)
+                } else {
+                    throw DuplicateBowlerException(context.string(R.string.exception_bowler_exists))
                 }
             }
             if (!viewComponent.hasTabs()) {
@@ -74,11 +82,12 @@ class TabsViewController(
                 context.app.persistenceManager.saveActiveTab(activeTab)
             }
 
-            viewComponent.addTabs(it,null, manual)
+            listener?.invoke(it)
+            viewComponent.addTabs(it, null, manual)
         }
     }
 
-    fun getActive(): Int {
+    private fun getActive(): Int {
         return viewComponent.getCurrent()
     }
 }

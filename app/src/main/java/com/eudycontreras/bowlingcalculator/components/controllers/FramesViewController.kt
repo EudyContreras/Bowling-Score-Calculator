@@ -22,20 +22,8 @@ class FramesViewController(
         scoreController.framesController = this
     }
 
-    fun canSelect(wantedIndex: Int, lastIndex: Int? = null): Boolean {
-        val canProceed = scoreController.bowler.lastPlayedFrameIndex >= wantedIndex
-
-        if (lastIndex != null) {
-            val frame: Frame = scoreController.bowler.frames[lastIndex]
-
-            val inProgress = frame.inProgress
-
-            if (inProgress && frame.missingRounds()) {
-                return false
-            }
-            return canProceed
-        }
-        return canProceed
+    fun checkCanSelectFrame(wantedIndex: Int, lastIndex: Int? = null): Boolean {
+        return scoreController.canSelectFrame(wantedIndex, lastIndex)
     }
 
     fun createFrames(bowler: Bowler){
@@ -55,7 +43,7 @@ class FramesViewController(
         viewComponent.revealFrames(bowler)
     }
 
-    fun performFrameSelection(index: Int) {
+    fun selectFrame(index: Int) {
         scoreController.onFrameSelected(index)
     }
 

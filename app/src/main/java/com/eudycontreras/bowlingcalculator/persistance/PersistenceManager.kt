@@ -11,9 +11,12 @@ import com.eudycontreras.bowlingcalculator.repositories.FrameRepositoryImpl
 import com.eudycontreras.bowlingcalculator.repositories.ResultRepositoryImpl
 import com.eudycontreras.bowlingcalculator.repositories.RollRepositoryImpl
 import com.eudycontreras.bowlingcalculator.utilities.BowlerListener
-import com.eudycontreras.bowlingcalculator.utilities.fromIO
-import com.eudycontreras.bowlingcalculator.utilities.fromMain
+import com.eudycontreras.bowlingcalculator.utilities.extensions.fromMain
 import com.eudycontreras.bowlingcalculator.utilities.fromScopeIO
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * @Project BowlingCalculator
@@ -36,32 +39,43 @@ class PersistenceManager(
         get() = storage.activeTab
 
     fun updateBowler(bowler: Bowler, onEnd: (() -> Unit)? = null) {
-        fromIO {
+        GlobalScope.launch(Dispatchers.IO) {
             bowlerRepo.updateBowler(bowler)
             frameRepo.updateFrames(bowler.id, bowler.frames)
             rollRepo.updateRolls(bowler.id, bowler.frames.flatMap { it.rolls.values })
-            fromMain(onEnd)
+
+            withContext(Dispatchers.Main.immediate) {
+                onEnd?.invoke()
+            }
         }
     }
 
-    fun resetBowler(bowler: Bowler, onEnd: (() -> Unit)? = null) {
-        fromIO {
+    fun resetBowler(bowler: Bowler, onEnd: ((Bowler) -> Unit)? = null) {
+        GlobalScope.launch(Dispatchers.IO) {
             bowlerRepo.updateBowler(bowler)
             frameRepo.updateFrames(bowler.id, bowler.frames)
             rollRepo.delete(bowler)
-            fromMain(onEnd)
+
+            withContext(Dispatchers.Main.immediate) {
+                onEnd?.invoke(bowler)
+            }
         }
     }
 
     fun saveBowlers(bowlers: List<Bowler>, listener: BowlerListener = null) {
-        fromIO {
+        GlobalScope.launch(Dispatchers.IO) {
             bowlerRepo.saveBowlers(bowlers)
-            storage.currentBowlerIds = bowlers.map { it.id }.toLongArray()
+
             for (bowler in bowlers) {
                 frameRepo.saveFrames(bowler.frames)
                 rollRepo.saveRolls(bowler.frames.flatMap { it.rolls.values })
             }
-            fromMain(bowlers, listener)
+
+            saveActiveBowlersIds(bowlers.map { it.id }.toLongArray())
+
+            withContext(Dispatchers.Main.immediate) {
+                listener?.invoke(bowlers)
+            }
         }
     }
 
@@ -74,29 +88,41 @@ class PersistenceManager(
                     frameRepo.saveFrames(bowler.frames)
                     rollRepo.saveRolls(bowler.frames.flatMap { it.rolls.values })
                 }
-                fromMain {
+                it.fromMain {
                     listener?.invoke(name)
                     resultRepo.getResults().observeForever {
-                        var results = it
+
                     }
                 }
             }
         }
     }
 
-    fun removeBowler(bowler: Bowler, function: (() -> Unit)?) {
-        fromIO {
-            val filtered = storage.currentBowlerIds.filter { it != bowler.id }
-            storage.currentBowlerIds = filtered.toLongArray()
+    fun removeBowler(bowler: Bowler, function: ((Bowler) -> Unit)?) {
+        GlobalScope.launch(Dispatchers.IO) {
+
+            val filtered = storage.currentBowlerIds.filter { id -> id != bowler.id }
+
             rollRepo.delete(bowler)
             frameRepo.deleteFrames(bowler)
             bowlerRepo.deleteBowler(bowler)
-            fromMain(function)
+
+            saveActiveBowlersIds(filtered.toLongArray())
+
+            withContext(Dispatchers.Main.immediate) {
+                function?.invoke(bowler)
+            }
         }
     }
 
-    fun saveActiveTab(activeTab: Int) {
+    @Synchronized fun saveActiveTab(activeTab: Int): Int {
         storage.activeTab = activeTab
+        return activeTab
+    }
+
+    @Synchronized fun saveActiveBowlersIds(bowlerIds: LongArray): LongArray {
+        storage.currentBowlerIds = bowlerIds
+        return bowlerIds
     }
 
     fun getBowlers(): LiveData<List<Bowler>> {

@@ -11,6 +11,9 @@ import com.eudycontreras.bowlingcalculator.persistance.dao.BowlersDao
 import com.eudycontreras.bowlingcalculator.persistance.entities.BowlerEntity
 import com.eudycontreras.bowlingcalculator.utilities.extensions.switchMap
 import com.eudycontreras.bowlingcalculator.utilities.fromIO
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 /**
  * @Project BowlingCalculator
@@ -60,7 +63,7 @@ class BowlerRepositoryImpl(
 
     override fun getBowlers(bowlerIds: LongArray): LiveData<List<Bowler>> {
         val bowlers = MutableLiveData<List<Bowler>>()
-        fromIO {
+        GlobalScope.launch(Dispatchers.IO) {
             val temp = arrayListOf<Bowler>()
             for (id in bowlerIds) {
                 val exists = bowlerDao.exists(id)

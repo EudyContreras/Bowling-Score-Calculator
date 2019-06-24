@@ -168,7 +168,7 @@ class TabViewAdapter(
         override fun onClick(view: View?) {
             model?.let {
                 currentIndex = layoutPosition
-                viewComponent.controller.requestTab(true)
+                viewComponent.controller.onTabRequested(true)
             }
         }
     }
@@ -278,13 +278,14 @@ class TabViewAdapter(
             } else {
                 layoutPosition
             }
-            viewComponent.controller.removeTab(lastTabIndex, currentIndex) {
+            val onRemoved = {
                 animateRemoval {
                     removeItem(layoutPosition)
                     notifyItemRemoved(layoutPosition)
                     notifyItemChanged(currentIndex)
                 }
             }
+            viewComponent.controller.requestTabRemoval(lastTabIndex, layoutPosition, onRemoved)
         }
     }
 

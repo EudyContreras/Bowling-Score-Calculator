@@ -81,6 +81,7 @@
         </FrameLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+   
     <LinearLayout
             android:id="@+id/emptyStateTextContainer"
             android:orientation="vertical"

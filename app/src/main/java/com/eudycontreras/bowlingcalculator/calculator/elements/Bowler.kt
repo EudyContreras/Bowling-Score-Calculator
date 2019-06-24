@@ -28,6 +28,8 @@ data class Bowler(
 
     var resultId: Long = NO_ID
 
+    @Transient var activeBowler: Boolean = false
+
     var frames: List<Frame> = List(DEFAULT_FRAME_COUNT) { i ->
         if (i < DEFAULT_FRAME_COUNT - 1) {
             FrameNormal(i)

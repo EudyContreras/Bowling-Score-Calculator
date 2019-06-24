@@ -170,8 +170,8 @@ class FrameViewAdapter(
                     if (it.currentIndex != frame.index) {
                         it.currentIndex = frame.index
                         it.lastSelected?.let { last ->
-                            if (it.viewComponent.controller.canSelect(frame.index, last)) {
-                                it.viewComponent.controller.performFrameSelection(frame.index)
+                            if (it.viewComponent.controller.checkCanSelectFrame(frame.index, last)) {
+                                it.viewComponent.controller.selectFrame(frame.index)
                                 it.lastReference?.let { reference ->
                                     if (!reference.isEnqueued) {
                                         sendLastToBack(reference.get(), it)
@@ -184,7 +184,7 @@ class FrameViewAdapter(
                         return
                     }
                     if(frame is FrameLast && frame.isCompleted) {
-                        it.viewComponent.controller.performFrameSelection(frame.index)
+                        it.viewComponent.controller.selectFrame(frame.index)
                         bringCurrentToFront(frame, it)
                     }
                 }
@@ -367,7 +367,7 @@ class FrameViewAdapter(
         }
 
         private fun bringCurrentToFront(frame: Frame, adapter: FrameViewAdapter) {
-            if (adapter.viewComponent.controller.canSelect(frame.index)) {
+            if (adapter.viewComponent.controller.checkCanSelectFrame(frame.index)) {
                 if (adapter.lastSelected == null) {
                     bringCurrentToFront(view) { processMarkerSelection(frame, adapter ) }
                 } else {

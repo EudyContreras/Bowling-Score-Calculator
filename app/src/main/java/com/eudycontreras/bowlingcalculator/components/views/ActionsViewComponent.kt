@@ -9,6 +9,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.children
+import androidx.lifecycle.ViewModel
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.components.controllers.ActionViewController
@@ -27,7 +28,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 class ActionsViewComponent(
     private val context: MainActivity,
     private val controller: ActionViewController
-) : ViewComponent {
+) : ViewComponent, ViewModel() {
 
     private var remainingPins: Int = DEFAULT_PIN_COUNT
 
@@ -80,25 +81,25 @@ class ActionsViewComponent(
         throwAction?.let { parent ->
             parent.children.forEachIndexed { index, view ->
                 view.findViewById<FrameLayout>(R.id.throwInput).setOnClickListener {
-                    controller.handleThrowActions(index)
+                    controller.performThrow(index)
                 }
             }
         }
 
         strikeAction?.setOnClickListener {
-            controller.handleThrowActions(DEFAULT_PIN_COUNT)
+            controller.performThrow(DEFAULT_PIN_COUNT)
         }
 
         resetAction?.setOnClickListener {
-            controller.handleResetAction()
+            controller.performReset()
         }
 
         loadAction?.setOnClickListener {
-            controller.handleLoadAction()
+            controller.loadResult()
         }
 
         saveAction?.setOnClickListener {
-            controller.handleSaveAction()
+            controller.saveResult()
         }
     }
 

@@ -5,9 +5,9 @@ import android.graphics.drawable.Drawable
 import android.util.DisplayMetrics
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import com.eudycontreras.bowlingcalculator.Application
-import com.eudycontreras.bowlingcalculator.R
 
 val Activity.app: Application
     get() = application as Application
@@ -28,5 +28,9 @@ fun Activity.drawable(@DrawableRes iconResId: Int): Drawable {
 }
 
 fun Activity.color(@ColorRes colorResId: Int): Int {
-    return ContextCompat.getColor(this, R.color.colorAccent)
+    return ContextCompat.getColor(this, colorResId)
+}
+
+fun Activity.string(@StringRes stringResId: Int): String {
+    return resources.getString(stringResId)
 }
