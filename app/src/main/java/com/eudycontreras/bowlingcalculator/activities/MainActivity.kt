@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun onStorageFull() {
         val bowlers = app.persistenceManager.getBowlers()
-        val activeTab = app.persistenceManager.activeTab
+        val activeTab = app.persistenceManager.getActiveTab()
 
         bowlers.observe(this, Observer {
             if (it.isEmpty()) {
@@ -101,16 +101,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        saveCurrentState(scoreController.bowlers)
+        saveCurrentState(scoreController.bowlers, scoreController.activeTab)
     }
 
-    override fun onPause() {
-        super.onPause()
-        saveCurrentState(scoreController.bowlers)
-    }
-
-    fun saveCurrentState(bowlers: Bowlers, listener: BowlerListener = null) {
-        app.persistenceManager.saveActiveTab(scoreController.activeTab)
+    fun saveCurrentState(bowlers: Bowlers, activeTab: Int, listener: BowlerListener = null) {
+        app.persistenceManager.saveActiveTab(activeTab)
         app.persistenceManager.saveBowlers(bowlers, listener)
     }
 

@@ -43,7 +43,7 @@ class TabViewAdapter(
 
     sealed class Values {
         companion object {
-            const val alpha = 0.4f
+            const val alpha = 0.6f
             const val changeDuration = 400L
             const val removeDuration = 200L
             val translateY = 4.dp
@@ -84,6 +84,9 @@ class TabViewAdapter(
         items.asReversed().forEach {
             this.items.add(currentIndex, it)
             notifyItemInserted(currentIndex)
+            if (currentIndex > 0) {
+                notifyItemChanged(currentIndex - 1)
+            }
         }
 
         currentIndex = selectedIndex?:this.items.size - 2
@@ -242,10 +245,10 @@ class TabViewAdapter(
             lastTab = WeakReference(this)
             this.tabAction.attach()
             this.tabItem.animate()
-                .alpha(1f)
                 .setListener(null)
+                .alpha(1f)
                 .translationY(0f)
-                .translationZ(0.dp)
+                .translationZ(0f)
                 .setDuration(Values.changeDuration)
                 .start()
         }
@@ -253,8 +256,8 @@ class TabViewAdapter(
         fun deactivateTab() {
             this.tabAction.detach()
             this.tabItem.animate()
-                .alpha(Values.alpha)
                 .setListener(null)
+                .alpha(Values.alpha)
                 .translationY(Values.translateY)
                 .translationZ(Values.translateZ)
                 .setDuration(Values.changeDuration)
@@ -285,7 +288,7 @@ class TabViewAdapter(
                     notifyItemChanged(currentIndex)
                 }
             }
-            viewComponent.controller.requestTabRemoval(lastTabIndex, layoutPosition, onRemoved)
+            viewComponent.controller.requestTabRemoval(lastTabIndex, currentIndex, onRemoved)
         }
     }
 

@@ -67,8 +67,9 @@ class TabsViewController(
 
     fun createBowler(names: List<String>, manual: Boolean, listener: BowlerListener) {
         val bowlers = names.map { Bowler(it) }
+        val activeTab = scoreController.saveActiveTab(getActive() + (names.size - 1))
 
-        context.saveCurrentState(bowlers) {
+        context.saveCurrentState(bowlers, activeTab) {
             bowlers.forEach { bowler ->
                 if (scoreController.bowlers.isEmpty() || !scoreController.bowlers.contains(bowler)) {
                     scoreController.bowlers.add(bowler)
@@ -77,13 +78,11 @@ class TabsViewController(
                 }
             }
             if (!viewComponent.hasTabs()) {
-                val activeTab = getActive()
                 scoreController.initCalculator(it, activeTab)
-                context.app.persistenceManager.saveActiveTab(activeTab)
             }
 
             listener?.invoke(it)
-            viewComponent.addTabs(it, null, manual)
+            viewComponent.addTabs(it, activeTab, manual)
         }
     }
 

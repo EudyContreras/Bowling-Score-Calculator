@@ -1,4 +1,10 @@
-Todo:
+TODO PRIORITY 1:
+
     Include the last frame into the simulation
     Add more unit tests
+
+TODO PRIORITY 2:
+
+    Add the indicator lib and use it
+    Add the reveal dialog lib and use it
 

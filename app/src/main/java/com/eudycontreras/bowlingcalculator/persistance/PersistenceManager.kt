@@ -35,9 +35,6 @@ class PersistenceManager(
     val resultRepo = ResultRepositoryImpl(this, appDatabase.result)
     val rollRepo = RollRepositoryImpl(this, appDatabase.roll)
 
-    val activeTab: Int
-        get() = storage.activeTab
-
     fun updateBowler(bowler: Bowler, onEnd: (() -> Unit)? = null) {
         GlobalScope.launch(Dispatchers.IO) {
             bowlerRepo.updateBowler(bowler)
@@ -137,4 +134,6 @@ class PersistenceManager(
     fun hasBowlers(): Boolean {
         return storage.currentBowlerIds.isNotEmpty()
     }
+
+    fun getActiveTab(): Int = storage.activeTab
 }

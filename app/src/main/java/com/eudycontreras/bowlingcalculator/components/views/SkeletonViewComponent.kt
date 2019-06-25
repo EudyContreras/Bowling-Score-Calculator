@@ -194,7 +194,7 @@ class SkeletonViewComponent(
         abstract val showActionButton: Boolean
 
         class Default(context: Activity, override val action: (() -> Unit)? = null) : EmptyState() {
-            override val icon: Drawable = context.drawable(R.drawable.img_logo)
+            override val icon: Drawable = context.drawable(R.drawable.img_bowling_logo_alt)
             override val actionColor: Int = context.color(R.color.colorAccentLight)
             override val shapeColor: Int = context.color(R.color.colorPrimary)
             override val titleIcon: Drawable = context.drawable(R.drawable.ic_add_bowler)

@@ -115,7 +115,7 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
     }
 
     fun selectBowler(tabIndex: Int, manual: Boolean) {
-        activeTab = activity.app.persistenceManager.saveActiveTab(tabIndex)
+        saveActiveTab(tabIndex)
 
         val bowler: Bowler? = if (bowlers.isEmpty()) null else bowler
 
@@ -145,13 +145,13 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
         }
     }
 
-    fun removeBowler(lastIndex: Int, index: Int, onEnd: (() -> Unit)?) {
+    fun removeBowler(lastIndex: Int, current: Int, onEnd: (() -> Unit)?) {
 
         val onBowlerRemoved: ((Bowler) -> Unit)? = {
-            activeTab = activity.app.persistenceManager.saveActiveTab(index)
+            saveActiveTab(current)
 
             bowlers.remove(it)
-            selectBowler(index, true)
+            selectBowler(current, true)
             onEnd?.invoke()
         }
 
@@ -172,5 +172,10 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
             return canProceed
         }
         return canProceed
+    }
+
+    fun saveActiveTab(index: Int): Int {
+        activeTab = index
+        return activity.app.persistenceManager.saveActiveTab(index)
     }
 }

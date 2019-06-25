@@ -82,7 +82,12 @@ class TabsViewComponent(
         scrollToIndex(index)
     }
 
-    fun hasTabs() = tabAdapter.normalTabs.isNotEmpty()
+    fun setCurrent(index: Int) {
+        tabAdapter.currentIndex = index
+    }
 
     fun getCurrent() = tabAdapter.currentIndex
+
+    fun hasTabs() = tabAdapter.normalTabs.isNotEmpty()
+
 }
