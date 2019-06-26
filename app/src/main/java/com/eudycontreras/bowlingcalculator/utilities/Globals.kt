@@ -22,6 +22,19 @@ fun <T> toString(element: T): String {
     return element.toString()
 }
 
+inline fun <reified X,reified Y> doWith(first: X?, second: Y?, capsule: (X,Y) -> Unit) {
+    if (first != null && second != null) {
+        return capsule.invoke(first, second)
+    }
+}
+
+inline fun <reified X,reified Y,reified Z> doWith(first: X?, second: Y?, third: Z?, capsule: (X,Y,Z) -> Unit) {
+    if (first != null && second != null && third != null) {
+        return capsule.invoke(first, second, third)
+    }
+    throw NullParameterException("")
+}
+
 fun fromMain(task: (()-> Unit)?): Job {
     return GlobalScope.launch(Dispatchers.Main.immediate) {
         task?.invoke()

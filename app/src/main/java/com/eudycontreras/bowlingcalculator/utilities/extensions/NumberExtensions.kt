@@ -1,5 +1,6 @@
 package com.eudycontreras.bowlingcalculator.utilities.extensions
 
+import android.content.res.ColorStateList
 import android.content.res.Resources
 
 /**
@@ -20,4 +21,8 @@ fun Int.previous(shift: Int = 1): Int {
 
 fun Int.clamp(min: Int, max: Int): Int {
     return if (this < min) min else if (this > max) max else this
+}
+
+fun Int.toStateList(): ColorStateList {
+    return ColorStateList.valueOf(this)
 }

@@ -150,3 +150,7 @@ fun View.animateColor(from: Int, to: Int, duration: Long) {
     }
     colorAnimation.start()
 }
+
+fun View.animateColor(from: ColorStateList, to: ColorStateList, duration: Long) {
+    this.animateColor(from.defaultColor, to.defaultColor, duration)
+}

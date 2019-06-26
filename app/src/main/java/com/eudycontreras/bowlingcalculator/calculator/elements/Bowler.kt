@@ -105,6 +105,8 @@ data class Bowler(
             if (currentFrame is FrameLast) {
                 if (!currentFrame.isCompleted) {
                     currentFrame.reset()
+                } else {
+                    currentFrame.isEditing = true
                 }
             } else {
                 currentFrame.reset()

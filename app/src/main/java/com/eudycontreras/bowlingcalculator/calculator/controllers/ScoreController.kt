@@ -46,9 +46,9 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
             return
 
         framesController.createFrames(bowler)
+        framesController.revealFrames(bowler)
 
         if (!bowler.hasStarted()) {
-            framesController.revealFrames(bowler)
             actionController.revealPins()
         } else {
             val current: Frame = bowler.getCurrentFrame()
@@ -107,9 +107,8 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
         actionController.updateActionInput(current.pinUpCount())
 
         if (current is FrameLast) {
-            if (current.isCompleted) {
+            if (current.isCompleted && !current.isEditing) {
                 actionController.deactivateAllInput()
-                return
             }
         }
     }
@@ -169,7 +168,6 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
             if (inProgress && frame.missingRounds()) {
                 return false
             }
-            return canProceed
         }
         return canProceed
     }

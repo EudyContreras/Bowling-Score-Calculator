@@ -2,12 +2,13 @@
 <androidx.appcompat.widget.Toolbar
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/toolbar"
         android:background="@color/colorAccent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="2dp"
         android:translationZ="12dp"
+        android:layout_marginStart="0dp"
+        app:titleMarginStart="0dp"
         app:title="@string/app_name"
         app:layout_constraintTop_toTopOf="parent">
     <FrameLayout
@@ -19,21 +20,13 @@
                 android:layout_gravity="center_vertical|start"
                 android:orientation="horizontal">
 
-            <FrameLayout
+            <View
                     android:visibility="visible"
-                    android:backgroundTint="@color/transparent"
-                    android:background="@drawable/shape_circle"
                     android:layout_marginEnd="@dimen/margin_large"
                     android:layout_gravity="end|center"
-                    android:layout_width="42dp"
-                    android:layout_height="42dp">
-                <View
-                        android:translationX="1dp"
-                        android:layout_gravity="center"
-                        android:background="@drawable/img_bowling_logo_alt"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"/>
-            </FrameLayout>
+                    android:background="@drawable/img_bowling_logo_alt"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"/>
             <TextView
                     android:visibility="visible"
                     android:id="@+id/toolbarTitle"

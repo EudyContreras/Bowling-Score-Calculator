@@ -2,18 +2,26 @@ package com.eudycontreras.bowlingcalculator.activities
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.ViewGroup
+import android.view.animation.DecelerateInterpolator
+import android.view.animation.OvershootInterpolator
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
+import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.components.controllers.*
 import com.eudycontreras.bowlingcalculator.utilities.BowlerListener
 import com.eudycontreras.bowlingcalculator.utilities.Bowlers
 import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_GRACE_PERIOD
+import com.eudycontreras.bowlingcalculator.utilities.extensions.addTouchAnimation
 import com.eudycontreras.bowlingcalculator.utilities.extensions.app
 import com.eudycontreras.bowlingcalculator.utilities.runAfterMain
+import com.eudycontreras.indicatoreffectlib.views.IndicatorView
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_toolbar.view.*
 
 
 /**
@@ -34,6 +42,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var statsController: StatsViewController
     private lateinit var tabsController: TabsViewController
 
+    lateinit var indicator: IndicatorView
     private var created = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +51,8 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(toolbar as Toolbar)
 
+        initIndicator()
+        registerListeners()
         initControllers()
     }
 
@@ -60,6 +71,39 @@ class MainActivity : AppCompatActivity() {
 
         if (app.persistenceManager.hasBowlers()) {
             loaderController.showLoader()
+        }
+    }
+
+    private fun initIndicator() {
+        indicator = IndicatorView(this, findViewById<ViewGroup>(R.id.root))
+        indicator.indicatorType = IndicatorView.INDICATOR_TYPE_AROUND
+        indicator.indicatorColor = ContextCompat.getColor(this, R.color.colorAccentLight)
+        indicator.indicatorStrokeColor = ContextCompat.getColor(this, R.color.colorAccentLight)
+        indicator.indicatorColorStart = ContextCompat.getColor(this, R.color.white)
+        indicator.indicatorColorEnd = ContextCompat.getColor(this, R.color.colorAccentLight)
+        indicator.indicatorCount = 3
+        indicator.indicatorMinOpacity = 0f
+        indicator.indicatorMaxOpacity = 1f
+        indicator.indicatorRepeatMode = IndicatorView.REPEAT_MODE_RESTART
+        indicator.indicatorRepeats = IndicatorView.INFINITE_REPEATS
+        indicator.indicatorDuration = 4000
+        indicator.indicatorStrokeWidth = 0f
+        indicator.isShowBorderStroke = false
+        indicator.revealDuration = 500
+        indicator.revealDuration = 0
+        indicator.isUseColorInterpolation = false
+    }
+
+    private fun registerListeners() {
+        toolbar.toolbarMenu.addTouchAnimation(
+            clickTarget = null,
+            scale = 0.95f,
+            interpolatorPress = DecelerateInterpolator(),
+            interpolatorRelease = OvershootInterpolator()
+        )
+
+        toolbar.toolbarMenu.setOnClickListener {
+
         }
     }
 

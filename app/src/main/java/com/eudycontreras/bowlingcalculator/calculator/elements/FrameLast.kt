@@ -15,6 +15,8 @@ data class FrameLast(override var index: Int) : Frame() {
         const val FRAME_LAST: String = "FrameLast"
     }
 
+    @Transient var isEditing: Boolean = false
+
     override var bowlerId: Long = NO_ID
 
     override val type: String = FRAME_LAST
@@ -40,6 +42,7 @@ data class FrameLast(override var index: Int) : Frame() {
         get() = !hasChances()
 
     override fun reset() {
+        isEditing = false
         pointsFromPrevious = 0
         bonusPoints = 0
         state = State.FIRST_CHANCE

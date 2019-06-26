@@ -123,6 +123,12 @@ class SkeletonViewComponent(
         action.animate()
             .scaleY(1f)
             .scaleX(1f)
+            .setListener(AnimationListener(onEnd = {
+                if (!context.indicator.isAnimationRunning) {
+                    context.indicator.setTarget(action, 2.4f, 0.5f)
+                    context.indicator.startIndicatorAnimation(0)
+                }
+            }))
             .translationZ(12.dp)
             .setStartDelay(duration - 50)
             .setDuration(duration)
@@ -151,6 +157,10 @@ class SkeletonViewComponent(
             parent.visibility = View.INVISIBLE
             onEnd?.invoke()
             showing = false
+        }
+
+        if (context.indicator.isAnimationRunning) {
+            context.indicator.stopIndicatorAnimation(200)
         }
 
         iconContainer.animate()
