@@ -88,8 +88,13 @@ class FrameViewAdapter(
             return
         }
 
-        if ((index > (itemCount / 2)) || index == DEFAULT_START_INDEX) {
-            this.viewComponent.scrollToIndex(index)
+        if (index > (itemCount / 2)) {
+            this.viewComponent.scrollToIndex(itemCount - 1)
+            return
+        }
+
+        if (index < (itemCount / 2)) {
+            this.viewComponent.scrollToIndex(DEFAULT_START_INDEX)
         }
     }
 
@@ -169,6 +174,7 @@ class FrameViewAdapter(
                     return
                 }
                 if(frame is FrameLast && frame.isCompleted) {
+                    frame.isEditing = true
                     adapter.viewComponent.controller.selectFrame(frame.index)
                     bringCurrentToFront(frame, adapter)
                 }
@@ -176,13 +182,6 @@ class FrameViewAdapter(
         }
 
         internal fun resetValues(adapter: FrameViewAdapter) {
-
-            frame?.let {
-                if (it is FrameNormal) {
-                    roundExtraMark.hide()
-                }
-            }
-
             view.scaleX = 1f
             view.scaleY = 1f
             view.translationZ = 0f
@@ -213,6 +212,12 @@ class FrameViewAdapter(
             roundExtraMarkText.text = ""
 
             frameScore.text = "0"
+
+            frame?.let {
+                if (it is FrameNormal) {
+                    roundExtraMark.hide()
+                }
+            }
         }
 
         internal fun performBinding(adapter: FrameViewAdapter, frame: Frame) {
@@ -349,6 +354,9 @@ class FrameViewAdapter(
             if (!adapter.viewComponent.controller.checkCanSelectFrame(frame.index))
                 return
 
+            if (frame.isCompleted)
+                return
+
             if (adapter.lastSelected == frame.index) {
                 view.translationZ = 4.dp
                 view.translationY = (-1).dp
@@ -443,13 +451,13 @@ class FrameViewAdapter(
             }
 
             val onEnd: (() -> Unit)? = {
-                if (frame.index == adapter.currentIndex) {
+                if (frame.index == adapter.currentIndex && !frame.isCompleted) {
                     bringCurrentToFront(frame, adapter)
                 }
             }
 
             itemView.animate()
-                .setListener(AnimationListener(onEnd))
+                .setListener(AnimationListener(onEnd = onEnd))
                 .setInterpolator(DecelerateInterpolator())
                 .setDuration(duration)
                 .translationZ(translateZ)

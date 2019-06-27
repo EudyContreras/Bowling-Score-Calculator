@@ -87,7 +87,7 @@ class FragmentCreateBowler: DialogFragment() {
         createDialog.dialogCreateSubmit.setOnClickListener {
             val names = adapter!!.getItems().asReversed()
 
-            if(!names.isEmpty()) {
+            if(names.isNotEmpty()) {
                 controller?.createBowler(names, manualRequest) {
                     bowlerListener?.invoke(it)
                     dismiss()

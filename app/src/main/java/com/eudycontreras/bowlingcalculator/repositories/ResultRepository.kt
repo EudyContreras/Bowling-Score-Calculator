@@ -10,17 +10,17 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.Result
 
 interface ResultRepository {
 
-    fun saveResult(result: Result, listener: ((id: Long, name: String) -> Unit)? = null)
+    suspend fun saveResult(result: Result)
 
-    fun updateResult(result: Result)
+    suspend fun updateResult(result: Result)
 
-    fun saveResults(results: List<Result>)
+    suspend fun saveResults(results: List<Result>)
 
     fun getResult(resultId: Long): LiveData<Result>
 
     fun getResults(): LiveData<List<Result>>
 
-    fun deleteResult(result: Result)
+    suspend fun deleteResult(result: Result)
 
-    fun deleteAll()
+    suspend fun deleteAll()
 }

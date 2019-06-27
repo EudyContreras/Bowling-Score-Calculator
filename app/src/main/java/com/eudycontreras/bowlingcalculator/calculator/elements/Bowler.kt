@@ -6,6 +6,7 @@ import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_FRAME_COUNT
 import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_START_INDEX
 import com.eudycontreras.bowlingcalculator.utilities.NO_ID
 import com.eudycontreras.bowlingcalculator.utilities.extensions.clamp
+import com.eudycontreras.bowlingcalculator.utilities.extensions.doWhen
 
 /**
  * @Project BowlingCalculator
@@ -73,6 +74,7 @@ data class Bowler(
         }
     }
 
+
     fun performRoll(pinCount: Int, listener: ScoreStateListener? = null) {
         performRoll(pinCount, listener, false)
     }
@@ -83,18 +85,13 @@ data class Bowler(
 
         var currentFrame = getCurrentFrame()
 
-        if (!currentFrame.hasChances()) {
-            if (currentFrame is FrameLast) {
-                if (!currentFrame.isCompleted) {
-                    currentFrame.reset()
-                }
-            }
+        currentFrame.doWhen( { !hasChances() and (this is FrameLast) and !isCompleted } ) {
+            it.reset()
         }
 
-        if (currentFrame is FrameNormal) {
-            handleNormalFrameThrow(pinCount, roll, currentFrame)
-        } else {
-            handleLastFrameThrow(pinCount, roll, currentFrame)
+        when (currentFrame) {
+            is FrameNormal -> handleNormalFrameThrow(pinCount, roll, currentFrame)
+            else -> handleLastFrameThrow(pinCount, roll, currentFrame)
         }
 
         currentFrame.updateState(roll)
@@ -106,7 +103,7 @@ data class Bowler(
                 if (!currentFrame.isCompleted) {
                     currentFrame.reset()
                 } else {
-                    currentFrame.isEditing = true
+                    currentFrame.isEditing = false
                 }
             } else {
                 currentFrame.reset()
@@ -136,7 +133,16 @@ data class Bowler(
             }
             Frame.State.EXTRA_CHANCE -> {
                 val lastRoll = frame.getRollBy(Frame.State.SECOND_CHANCE)
-                Roll.Result.from(lastRoll, pinCount)
+
+                if (lastRoll != null) {
+                    if (lastRoll.result == Roll.Result.SPARE || lastRoll.result == Roll.Result.STRIKE) {
+                        Roll.Result.from(null, pinCount)
+                    } else {
+                        Roll.Result.from(lastRoll, pinCount)
+                    }
+                } else {
+                    Roll.Result.from(lastRoll, pinCount)
+                }
             }
             else -> Roll.Result.UNKNOWN
         }

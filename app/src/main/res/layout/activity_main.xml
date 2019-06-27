@@ -22,7 +22,7 @@
                 layout="@layout/calculator_section_tabs_view"
                 android:id="@+id/tabsArea"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="42dp"
                 android:layout_marginBottom="@dimen/margin"
                 app:layout_constraintTop_toBottomOf="@id/toolbar"/>
 
@@ -32,16 +32,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:background="@color/background"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/statsArea"
                 app:layout_constraintBottom_toTopOf="@id/throwAction">
             <include
-                    layout="@layout/empty_state_main"
-                    android:id="@+id/emptyStateArea"
+                    layout="@layout/calculator_section_frames_view"
+                    android:id="@+id/framesArea"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
             <include
-                    layout="@layout/calculator_section_frames_view"
-                    android:id="@+id/framesArea"
+                    layout="@layout/empty_state_main"
+                    android:id="@+id/emptyStateArea"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
         </FrameLayout>
@@ -50,7 +52,7 @@
                 layout="@layout/calculator_section_stats_view"
                 android:id="@+id/statsArea"
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="50dp"
                 app:layout_constraintTop_toBottomOf="@+id/tabsArea"
                 app:layout_constraintBottom_toTopOf="@id/contentArea"/>
 

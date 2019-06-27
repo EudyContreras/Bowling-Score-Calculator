@@ -111,16 +111,19 @@ class SkeletonViewComponent(
             onEnd?.invoke()
             showing = true
         }
+
         iconContainer.animate()
+            .alpha(1f)
             .scaleY(1f)
             .scaleX(1f)
             .translationZ(4.dp)
             .setDuration(duration)
             .setInterpolator(OvershootInterpolator())
-            .setListener(AnimationListener(endAction))
+            .setListener(AnimationListener(onEnd = endAction))
             .start()
 
         action.animate()
+            .alpha(1f)
             .scaleY(1f)
             .scaleX(1f)
             .setListener(AnimationListener(onEnd = {
@@ -154,9 +157,9 @@ class SkeletonViewComponent(
         val duration = 400L
 
         val endAction = {
-            parent.visibility = View.INVISIBLE
             onEnd?.invoke()
             showing = false
+            parent.visibility = View.INVISIBLE
         }
 
         if (context.indicator.isAnimationRunning) {
@@ -164,17 +167,18 @@ class SkeletonViewComponent(
         }
 
         iconContainer.animate()
-            .scaleY(0f)
-            .scaleX(0f)
+            .scaleY(0.6f)
+            .scaleX(0.6f)
+            .alpha(0f)
             .translationZ(0f)
             .setDuration(duration)
             .setInterpolator(DecelerateInterpolator())
-            .setListener(AnimationListener(endAction))
+            .setListener(AnimationListener(onEnd = endAction))
             .start()
 
         action.animate()
-            .scaleY(0f)
-            .scaleX(0f)
+            .setListener(null)
+            .alpha(0f)
             .translationZ(4.dp)
             .setStartDelay(0)
             .setDuration(duration)

@@ -65,6 +65,7 @@ abstract class AppDatabase : RoomDatabase() {
                 synchronized(AppDatabase::class) {
                     instance = Room.databaseBuilder(context, AppDatabase::class.java, DATABASE_NAME)
                         .fallbackToDestructiveMigration()
+                        .allowMainThreadQueries()
                         .build()
                 }
             }

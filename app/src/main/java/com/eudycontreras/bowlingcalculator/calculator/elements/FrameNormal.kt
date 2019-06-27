@@ -97,9 +97,9 @@ data class FrameNormal(override var index: Int) : Frame() {
             assignState(chances)
         }
 
-        if (!rolls.containsKey(state)) {
-            roll.parentState = state
-        } else {
+        roll.parentState = state
+
+        if (rolls.containsKey(state)) {
             handleEditedFrame(roll)
         }
 
@@ -138,15 +138,6 @@ data class FrameNormal(override var index: Int) : Frame() {
                         rolls[State.SECOND_CHANCE] = second
                     }
                 }
-            }
-            State.SECOND_CHANCE -> {
-                val first = rolls.getValue(State.FIRST_CHANCE)
-                first.result = Roll.Result.from(roll, first.totalKnockdown)
-
-                if (first.result == Roll.Result.SPARE) {
-                    first.result = Roll.Result.NORMAL
-                }
-                rolls[State.FIRST_CHANCE] = first
             }
             else -> { }
         }

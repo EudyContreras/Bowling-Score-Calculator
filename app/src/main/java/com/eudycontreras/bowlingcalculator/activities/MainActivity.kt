@@ -144,19 +144,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        val bowlers = scoreController.bowlers
+        suspend { app.persistenceManager.updateBowlers(bowlers) }
         super.onDestroy()
-        saveCurrentState(scoreController.bowlers, scoreController.activeTab)
     }
 
-    fun saveCurrentState(bowlers: Bowlers, activeTab: Int, listener: BowlerListener = null) {
-        app.persistenceManager.saveActiveTab(activeTab)
+    fun saveCurrentState(bowlers: Bowlers, listener: BowlerListener = null) {
         app.persistenceManager.saveBowlers(bowlers, listener)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
 
-        if (id == com.eudycontreras.bowlingcalculator.R.id.action_settings) {
+        if (id == R.id.action_settings) {
             return true
         }
         return super.onOptionsItemSelected(item)

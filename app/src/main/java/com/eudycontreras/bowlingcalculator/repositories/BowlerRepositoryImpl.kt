@@ -1,5 +1,6 @@
 package com.eudycontreras.bowlingcalculator.repositories
 
+import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -10,7 +11,6 @@ import com.eudycontreras.bowlingcalculator.persistance.PersistenceManager
 import com.eudycontreras.bowlingcalculator.persistance.dao.BowlersDao
 import com.eudycontreras.bowlingcalculator.persistance.entities.BowlerEntity
 import com.eudycontreras.bowlingcalculator.utilities.extensions.switchMap
-import com.eudycontreras.bowlingcalculator.utilities.fromIO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -26,7 +26,7 @@ class BowlerRepositoryImpl(
 ) : BowlerRepository {
 
     @WorkerThread
-    override fun saveBowler(bowler: Bowler) {
+    override suspend fun saveBowler(bowler: Bowler) {
         val id = bowlerDao.insert(BowlerEntity.from(bowler))
         bowler.id = id
         bowler.frames.forEach {
@@ -35,32 +35,38 @@ class BowlerRepositoryImpl(
     }
 
     @WorkerThread
-    override fun saveBowlers(bowlers: List<Bowler>) {
+    override suspend fun saveBowlers(bowlers: List<Bowler>) {
         bowlers.forEach {
            saveBowler(it)
         }
     }
 
     @WorkerThread
-    override fun updateBowler(bowler: Bowler) {
+    override suspend fun updateBowler(bowler: Bowler) {
         bowlerDao.replace(BowlerEntity.from(bowler))
     }
 
     @WorkerThread
-    override fun bowlerExists(bowlerId: Long): Boolean {
+    override suspend fun bowlerExists(bowlerId: Long): Boolean {
         return bowlerDao.exists(bowlerId)
     }
 
     @WorkerThread
-    override fun getBowlerCount(): Int {
+    override suspend fun getBowlerCount(): Int {
         return bowlerDao.getCount()
     }
 
     @WorkerThread
-    override fun getBowlerCount(resultId: Long): Int {
+    override suspend fun getBowlerCount(resultId: Long): Int {
         return bowlerDao.getCount(resultId)
     }
 
+    @WorkerThread
+    override suspend fun getBowlers(result: Result): List<Bowler> {
+        return bowlerDao.findByResultId(result.id).map { it.toBowler() }
+    }
+
+    @MainThread
     override fun getBowlers(bowlerIds: LongArray): LiveData<List<Bowler>> {
         val bowlers = MutableLiveData<List<Bowler>>()
         GlobalScope.launch(Dispatchers.IO) {
@@ -79,6 +85,7 @@ class BowlerRepositoryImpl(
         return bowlers
     }
 
+    @MainThread
     override fun getDefaultBowler(): LiveData<Bowler> {
         return bowlerDao.getDefault().switchMap {
             val data = MediatorLiveData<Bowler>()
@@ -88,22 +95,17 @@ class BowlerRepositoryImpl(
     }
 
     @WorkerThread
-    override fun getBowlers(result: Result): List<Bowler> {
-        return bowlerDao.findByResultId(result.id).map { it.toBowler() }
-    }
-
-    @WorkerThread
-    override fun deleteBowler(bowler: Bowler) {
+    override suspend fun deleteBowler(bowler: Bowler) {
         bowlerDao.deleteById(bowler.id)
     }
 
     @WorkerThread
-    override fun deleteAll(result: Result) {
+    override suspend fun deleteAll(result: Result) {
         bowlerDao.deleteByResultId(result.id)
     }
 
     @WorkerThread
-    override fun deleteAll() {
+    override suspend fun deleteAll() {
         bowlerDao.clear()
     }
 }

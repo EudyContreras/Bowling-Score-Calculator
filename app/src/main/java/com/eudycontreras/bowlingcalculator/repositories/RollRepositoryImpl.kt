@@ -19,32 +19,32 @@ class RollRepositoryImpl(
 ) : RollRepository {
 
     @WorkerThread
-    override fun saveRolls(rolls: List<Roll>) {
+    override suspend fun saveRolls(rolls: List<Roll>) {
         rollDao.insert(rolls.map { RollEntity.from(it) })
     }
 
     @WorkerThread
-    override fun updateRolls(rolls: List<Roll>) {
+    override suspend fun updateRolls(rolls: List<Roll>) {
         rollDao.update(rolls.map { RollEntity.from(it) })
     }
 
     @WorkerThread
-    override fun updateRolls(bowlerId: Long, rolls: List<Roll>) {
+    override suspend fun updateRolls(bowlerId: Long, rolls: List<Roll>) {
         rollDao.replaceAllFor(bowlerId, rolls.map { RollEntity.from(it) })
     }
 
     @WorkerThread
-    override fun getRolls(bowler: Bowler): List<Roll> {
+    override suspend fun getRolls(bowler: Bowler): List<Roll> {
         return rollDao.findByBowlerId(bowler.id).map { it.toRoll() }
     }
 
     @WorkerThread
-    override fun getRolls(frame: Frame): List<Roll> {
+    override suspend fun getRolls(frame: Frame): List<Roll> {
         return rollDao.findByBowlerIdAndIndex(frame.bowlerId, frame.index).map { it.toRoll() }
     }
 
     @WorkerThread
-    override fun getRolls(frames: List<Frame>): List<Roll> {
+    override suspend fun getRolls(frames: List<Frame>): List<Roll> {
         val rolls: ArrayList<Roll> = ArrayList()
 
         for (frame in frames) {
@@ -56,17 +56,17 @@ class RollRepositoryImpl(
     }
 
     @WorkerThread
-    override fun delete(bowler: Bowler) {
+    override suspend fun delete(bowler: Bowler) {
         rollDao.delete(bowler.id)
     }
 
     @WorkerThread
-    override fun delete(frame: Frame) {
-        rollDao.delete(frame.index, frame.bowlerId)
+    override suspend fun delete(frame: Frame) {
+        rollDao.delete(frame.bowlerId, frame.index)
     }
 
     @WorkerThread
-    override fun deleteAll() {
+    override suspend fun deleteAll() {
         rollDao.clear()
     }
 }

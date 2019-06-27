@@ -13,19 +13,19 @@ import com.eudycontreras.bowlingcalculator.persistance.entities.ResultEntity
 abstract class ResultsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insert(result: ResultEntity): Long
+    abstract suspend fun insert(result: ResultEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insert(result: List<ResultEntity>): List<Long>
+    abstract suspend fun insert(result: List<ResultEntity>): List<Long>
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun update(result: ResultEntity): Int
+    abstract suspend fun update(result: ResultEntity): Int
 
     @Query("SELECT count(*) FROM results")
-    abstract fun getCount(): Int
+    abstract suspend fun getCount(): Int
 
     @Query("SELECT EXISTS(SELECT 1 FROM results WHERE id = :resultId  LIMIT 1)")
-    abstract fun exists(resultId: Long): Boolean
+    abstract suspend fun exists(resultId: Long): Boolean
 
     @Query(value = "SELECT * FROM results WHERE id = :id LIMIT 1")
     abstract fun findById(id: Long): LiveData<ResultEntity>
@@ -37,9 +37,9 @@ abstract class ResultsDao {
     abstract fun findAllOrderByDate(): LiveData<List<ResultEntity>>
 
     @Query("DELETE FROM results WHERE id = :id")
-    abstract fun delete(id: Long)
+    abstract suspend fun delete(id: Long)
 
     @Query("DELETE FROM results")
-    abstract fun clear()
+    abstract suspend fun clear()
 
 }

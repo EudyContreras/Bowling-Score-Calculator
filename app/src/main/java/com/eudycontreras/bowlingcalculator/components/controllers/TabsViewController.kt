@@ -1,6 +1,5 @@
 package com.eudycontreras.bowlingcalculator.components.controllers
 
-import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
@@ -8,9 +7,7 @@ import com.eudycontreras.bowlingcalculator.components.views.SkeletonViewComponen
 import com.eudycontreras.bowlingcalculator.components.views.TabsViewComponent
 import com.eudycontreras.bowlingcalculator.fragments.FragmentCreateBowler
 import com.eudycontreras.bowlingcalculator.utilities.BowlerListener
-import com.eudycontreras.bowlingcalculator.utilities.DuplicateBowlerException
 import com.eudycontreras.bowlingcalculator.utilities.extensions.app
-import com.eudycontreras.bowlingcalculator.utilities.extensions.string
 
 /**
  * @Project BowlingCalculator
@@ -55,7 +52,6 @@ class TabsViewController(
         viewComponent.selectTab(index)
     }
 
-
     fun addTabs(bowlers: List<Bowler>, currentIndex: Int? = null, manual: Boolean) {
         if(bowlers.isNotEmpty())
             viewComponent.addTabs(bowlers, currentIndex, manual)
@@ -66,27 +62,10 @@ class TabsViewController(
     }
 
     fun createBowler(names: List<String>, manual: Boolean, listener: BowlerListener) {
-        val bowlers = names.map { Bowler(it) }
-        val activeTab = scoreController.saveActiveTab(getActive() + (names.size - 1))
-
-        context.saveCurrentState(bowlers, activeTab) {
-            bowlers.forEach { bowler ->
-                if (scoreController.bowlers.isEmpty() || !scoreController.bowlers.contains(bowler)) {
-                    scoreController.bowlers.add(bowler)
-                } else {
-                    throw DuplicateBowlerException(context.string(R.string.exception_bowler_exists))
-                }
-            }
-            if (!viewComponent.hasTabs()) {
-                scoreController.initCalculator(it, activeTab)
-            }
-
-            listener?.invoke(it)
-            viewComponent.addTabs(it, activeTab, manual)
-        }
+        scoreController.createBowler(names, manual, listener)
     }
 
-    private fun getActive(): Int {
-        return viewComponent.getCurrent()
-    }
+    fun hasTabs(): Boolean = viewComponent.hasTabs()
+
+    fun getActive(): Int = viewComponent.getCurrent()
 }

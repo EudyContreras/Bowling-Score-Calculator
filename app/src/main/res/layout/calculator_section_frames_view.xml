@@ -10,6 +10,8 @@
         android:paddingTop="@dimen/padding_medium"
         android:paddingBottom="@dimen/padding_medium"
         android:elevation="2dp"
+        android:clickable="false"
+        android:focusable="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/item_frame_view">

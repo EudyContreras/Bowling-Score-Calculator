@@ -5,16 +5,16 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:elevation="8dp"
-        android:clickable="true"
-        android:focusable="true"
+        android:elevation="2dp"
+        android:clipToPadding="false"
         android:clipChildren="false"
         tools:ignore="Overdraw">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
             android:id="@+id/emptyStateIconContainer"
+            android:background="@color/transparent"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:clipToPadding="false"
             android:clipChildren="false"
             app:layout_constraintBottom_toTopOf="@+id/midSectionSpacing"
@@ -46,7 +46,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
 
     <FrameLayout
             android:visibility="visible"

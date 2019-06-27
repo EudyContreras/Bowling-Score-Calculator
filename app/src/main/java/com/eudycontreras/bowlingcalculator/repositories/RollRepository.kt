@@ -11,21 +11,21 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.Roll
 
 interface RollRepository {
 
-    fun saveRolls(rolls: List<Roll>)
+    suspend fun saveRolls(rolls: List<Roll>)
 
-    fun updateRolls(rolls: List<Roll>)
+    suspend fun updateRolls(rolls: List<Roll>)
 
-    fun updateRolls(bowlerId: Long, rolls: List<Roll>)
+    suspend fun updateRolls(bowlerId: Long, rolls: List<Roll>)
 
-    fun getRolls(bowler: Bowler): List<Roll>
+    suspend fun getRolls(bowler: Bowler): List<Roll>
 
-    fun getRolls(frame: Frame): List<Roll>
+    suspend fun getRolls(frame: Frame): List<Roll>
 
-    fun getRolls(frames: List<Frame>): List<Roll>
+    suspend fun getRolls(frames: List<Frame>): List<Roll>
 
-    fun delete(bowler: Bowler)
+    suspend fun delete(bowler: Bowler)
 
-    fun delete(frame: Frame)
+    suspend fun delete(frame: Frame)
 
-    fun deleteAll()
+    suspend fun deleteAll()
 }

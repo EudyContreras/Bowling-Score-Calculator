@@ -112,9 +112,9 @@ data class FrameLast(override var index: Int) : Frame() {
             assignState(chances)
         }
 
-        if (!rolls.containsKey(state)) {
-            roll.parentState = state
-        } else {
+        roll.parentState = state
+
+        if (rolls.containsKey(state)) {
             handleEditedFrame(roll)
         }
 
@@ -146,14 +146,18 @@ data class FrameLast(override var index: Int) : Frame() {
                 if (roll.result != Roll.Result.STRIKE) {
                     val second = rolls.getValue(State.SECOND_CHANCE)
                     second.result = Roll.Result.from(roll, second.totalKnockdown)
-
+                    if (second.result != Roll.Result.SPARE) {
+                        rolls.remove(State.EXTRA_CHANCE)
+                    }
                     if ((second.totalKnockdown + roll.totalKnockdown) > DEFAULT_PIN_COUNT) {
                         rolls.remove(State.SECOND_CHANCE)
+                        rolls.remove(State.EXTRA_CHANCE)
                     } else {
                         rolls[State.SECOND_CHANCE] = second
                     }
                 } else {
                     rolls.remove(State.SECOND_CHANCE)
+                    rolls.remove(State.EXTRA_CHANCE)
                 }
             }
             State.SECOND_CHANCE -> {
@@ -174,7 +178,9 @@ data class FrameLast(override var index: Int) : Frame() {
                     rolls.remove(State.EXTRA_CHANCE)
                 }
             }
-            else -> { }
+            else -> {
+                var d= 0
+            }
         }
     }
 }

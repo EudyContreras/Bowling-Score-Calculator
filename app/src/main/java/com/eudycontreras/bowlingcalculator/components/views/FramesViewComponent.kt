@@ -66,6 +66,10 @@ class FramesViewComponent(
         }
     }
 
+    fun framesCreated(): Boolean {
+        return this::frameAdapter.isInitialized
+    }
+
     fun resetFrames() {
         frameAdapter.resetAllFrames()
     }

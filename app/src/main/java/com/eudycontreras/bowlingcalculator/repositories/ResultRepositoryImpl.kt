@@ -1,13 +1,14 @@
 package com.eudycontreras.bowlingcalculator.repositories
 
+import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.eudycontreras.bowlingcalculator.calculator.elements.Result
-import com.eudycontreras.bowlingcalculator.utilities.extensions.switchMap
 import com.eudycontreras.bowlingcalculator.persistance.PersistenceManager
 import com.eudycontreras.bowlingcalculator.persistance.dao.ResultsDao
 import com.eudycontreras.bowlingcalculator.persistance.entities.ResultEntity
+import com.eudycontreras.bowlingcalculator.utilities.extensions.switchMap
 
 /**
  * @Project BowlingCalculator
@@ -20,21 +21,21 @@ class ResultRepositoryImpl(
 ) : ResultRepository {
 
     @WorkerThread
-    override fun saveResult(result: Result, listener: ((id: Long, name: String) -> Unit)?) {
-        resultDao.insert(ResultEntity.from(result))
-        listener?.invoke(result.id, result.name)
+    override suspend fun saveResult(result: Result) {
+        result.id = resultDao.insert(ResultEntity.from(result))
     }
 
     @WorkerThread
-    override fun updateResult(result: Result) {
+    override suspend fun updateResult(result: Result) {
         resultDao.update(ResultEntity.from(result))
     }
 
     @WorkerThread
-    override fun saveResults(results: List<Result>) {
+    override suspend fun saveResults(results: List<Result>) {
         resultDao.insert(results.map { ResultEntity.from(it) })
     }
 
+    @MainThread
     override fun getResult(resultId: Long): LiveData<Result> {
         return resultDao.findById(resultId).switchMap {
             val data = MediatorLiveData<Result>()
@@ -43,6 +44,7 @@ class ResultRepositoryImpl(
         }
     }
 
+    @MainThread
     override fun getResults(): LiveData<List<Result>> {
         return resultDao.findAllOrderByDate().switchMap { entities ->
             val data = MediatorLiveData<List<Result>>()
@@ -52,12 +54,12 @@ class ResultRepositoryImpl(
     }
 
     @WorkerThread
-    override fun deleteResult(result: Result) {
+    override suspend fun deleteResult(result: Result) {
         resultDao.delete(result.id)
     }
 
     @WorkerThread
-    override fun deleteAll() {
+    override suspend fun deleteAll() {
         resultDao.clear()
     }
 }

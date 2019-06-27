@@ -18,22 +18,22 @@ class FrameRepositoryImpl(
 ) : FrameRepository {
 
     @WorkerThread
-    override fun saveFrames(frames: List<Frame>) {
+    override suspend fun saveFrames(frames: List<Frame>) {
         frameDao.insert(frames.map { FrameEntity.from(it) })
     }
 
     @WorkerThread
-    override fun updateFrames(bowlerId: Long, frames: List<Frame>) {
+    override suspend fun updateFrames(bowlerId: Long, frames: List<Frame>) {
         frameDao.replaceFor(bowlerId, frames.map { FrameEntity.from(it) })
     }
 
     @WorkerThread
-    override fun getFrames(bowler: Bowler): List<Frame> {
+    override suspend fun getFrames(bowler: Bowler): List<Frame> {
         val frames = frameDao.findForBowler(bowler.id).map { it.toFrame() }
         frames.forEach {
             it.bowlerId = bowler.id
             val rolls = manager.rollRepo.getRolls(it)
-            rolls.forEach { roll ->
+            rolls.sortedBy { roll -> roll.parentState.ordinal }.forEach { roll ->
                 it.rolls[roll.parentState] = roll
             }
         }
@@ -41,12 +41,12 @@ class FrameRepositoryImpl(
     }
 
     @WorkerThread
-    override fun deleteFrames(bowler: Bowler) {
+    override suspend fun deleteFrames(bowler: Bowler) {
         frameDao.delete(bowler.id)
     }
 
     @WorkerThread
-    override fun deleteAll() {
+    override suspend fun deleteAll() {
         frameDao.clear()
     }
 }

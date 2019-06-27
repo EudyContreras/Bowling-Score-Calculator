@@ -16,7 +16,6 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.getComputedScore
 import com.eudycontreras.bowlingcalculator.utilities.extensions.getPossibleScore
 import com.eudycontreras.bowlingcalculator.utilities.runAfterMain
 
-
 /**
  * @Project BowlingCalculator
  * @author Eudy Contreras.
@@ -45,7 +44,12 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
         if(bowlers.isEmpty())
             return
 
-        framesController.createFrames(bowler)
+        if (!framesController.framesCreated()) {
+            framesController.createFrames(bowler)
+        } else {
+            framesController.setSourceFrames(bowler)
+        }
+
         framesController.revealFrames(bowler)
 
         if (!bowler.hasStarted()) {
@@ -56,7 +60,6 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
             statsController.updateTotalScore(bowler.getComputedScore())
             statsController.updateMaxPossibleScore(bowler.getPossibleScore())
             statsController.setCurrentFrame(current.index + 1)
-
         }
     }
 
@@ -172,8 +175,23 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
         return canProceed
     }
 
-    fun saveActiveTab(index: Int): Int {
-        activeTab = index
-        return activity.app.persistenceManager.saveActiveTab(index)
+    private fun saveActiveTab(index: Int): Int {
+        activeTab = activity.app.persistenceManager.saveActiveTab(index)
+        return activeTab
+    }
+
+    fun createBowler(names: List<String>, manual: Boolean, listener: ((names: List<Bowler>) -> Unit)?) {
+        val newBowlers = names.map { Bowler(it) }
+        activity.saveCurrentState(newBowlers) {
+            bowlers.addAll(it)
+
+            if (!tabsController.hasTabs()) {
+                initCalculator(it, activeTab)
+            }
+
+            listener?.invoke(it)
+            val activeTab = saveActiveTab(bowlers.size - 1)
+            tabsController.addTabs(it, activeTab, manual)
+        }
     }
 }

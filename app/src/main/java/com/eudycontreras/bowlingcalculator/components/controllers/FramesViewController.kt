@@ -31,6 +31,8 @@ class FramesViewController(
         viewComponent.createFrames(frames)
     }
 
+    fun framesCreated(): Boolean = viewComponent.framesCreated()
+
     fun updateFramesState(bowler: Bowler, current: Frame) {
         viewComponent.updateFrames(bowler, current)
     }

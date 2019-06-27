@@ -14,37 +14,37 @@ import com.eudycontreras.bowlingcalculator.persistance.entities.BowlerEntity
 abstract class BowlersDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insert(bowler: BowlerEntity): Long
+    abstract suspend fun insert(bowler: BowlerEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insert(bowlers: List<BowlerEntity>): List<Long>
+    abstract suspend fun insert(bowlers: List<BowlerEntity>): List<Long>
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun update(bowler: BowlerEntity): Int
+    abstract suspend fun update(bowler: BowlerEntity): Int
 
     @Transaction
-    open fun replace(bowler: BowlerEntity) {
+    open suspend fun replace(bowler: BowlerEntity) {
         deleteById(bowler.id!!)
         insert(bowler)
     }
 
     @Query("SELECT count(*) FROM bowlers")
-    abstract fun getCount(): Int
+    abstract suspend fun getCount(): Int
 
     @Query("SELECT count(*) FROM bowlers WHERE resultId = :resultId")
-    abstract fun getCount(resultId: Long): Int
+    abstract suspend fun getCount(resultId: Long): Int
 
     @Query("SELECT EXISTS(SELECT 1 FROM bowlers WHERE id = :bowlerId LIMIT 1)")
-    abstract fun exists(bowlerId: Long): Boolean
+    abstract suspend fun exists(bowlerId: Long): Boolean
 
     @Query("SELECT * FROM bowlers WHERE id = :id LIMIT 1")
     abstract fun findById(id: Long): LiveData<BowlerEntity>
 
     @Query("SELECT * FROM bowlers WHERE id = :id LIMIT 1")
-    abstract fun getById(id: Long): BowlerEntity
+    abstract suspend fun getById(id: Long): BowlerEntity
 
     @Query("SELECT * FROM bowlers WHERE resultId = :id ORDER BY name ASC")
-    abstract fun findByResultId(id: Long): List<BowlerEntity>
+    abstract suspend fun findByResultId(id: Long): List<BowlerEntity>
 
     @Query("SELECT * FROM bowlers WHERE skill = :skill")
     abstract fun findBySkill(skill: Bowler.SkillLevel): LiveData<List<BowlerEntity>>
@@ -53,12 +53,12 @@ abstract class BowlersDao {
     abstract fun getDefault(): LiveData<BowlerEntity>
 
     @Query("DELETE FROM bowlers WHERE id = :id")
-    abstract fun deleteById(id: Long)
+    abstract suspend fun deleteById(id: Long)
 
     @Query("DELETE FROM bowlers WHERE resultId = :id")
-    abstract fun deleteByResultId(id: Long)
+    abstract suspend fun deleteByResultId(id: Long)
 
     @Query("DELETE FROM bowlers")
-    abstract fun clear()
+    abstract suspend fun clear()
 
 }
