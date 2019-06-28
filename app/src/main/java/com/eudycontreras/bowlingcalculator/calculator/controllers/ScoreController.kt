@@ -63,13 +63,6 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
         }
     }
 
-    private fun allowRedoChance(frame: Frame, chance: Frame.State) {
-        bowler.currentFrameIndex = frame.index
-        frame.state = chance
-        frame.resetChances()
-        frame.resetPins()
-    }
-
     override fun throwBall(pinKnockedCount: Int) {
         if (bowlers.isEmpty())
             return
@@ -97,7 +90,9 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
         bowler.currentFrameIndex = frameIndex
         statsController.setCurrentFrame(frameIndex + 1)
         actionController.updateActionInput(bowler.getCurrentFrame().pinUpCount(), duration = 300)
-        allowRedoChance(bowler.getCurrentFrame(), Frame.State.FIRST_CHANCE)
+        bowler.getCurrentFrame().state = Frame.State.FIRST_CHANCE
+        bowler.getCurrentFrame().resetChances()
+        bowler.getCurrentFrame().resetPins()
     }
 
     override fun onScoreUpdated(bowler: Bowler, totalScore: Int, totalPossible: Int) {

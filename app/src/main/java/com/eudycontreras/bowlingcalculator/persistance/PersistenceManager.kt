@@ -1,6 +1,7 @@
 package com.eudycontreras.bowlingcalculator.persistance
 
 import androidx.lifecycle.LiveData
+import androidx.room.withTransaction
 import com.eudycontreras.bowlingcalculator.Application
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Result
@@ -35,9 +36,11 @@ class PersistenceManager(
     val rollRepo = RollRepositoryImpl(this, appDatabase.roll)
 
     fun updateBowler(bowler: Bowler, onEnd: (() -> Unit)? = null) = ioScope.launch {
-        bowlerRepo.updateBowler(bowler)
-        frameRepo.updateFrames(bowler.id, bowler.frames)
-        rollRepo.updateRolls(bowler.id, bowler.frames.flatMap { it.rolls.values })
+        appDatabase.withTransaction {
+            bowlerRepo.updateBowler(bowler)
+            frameRepo.updateFrames(bowler.id, bowler.frames)
+            rollRepo.updateRolls(bowler.id, bowler.frames.flatMap { it.rolls.values })
+        }
 
         launch(Dispatchers.Main.immediate) {
             onEnd?.invoke()
@@ -45,20 +48,25 @@ class PersistenceManager(
     }
 
     fun updateBowlers(bowlers: List<Bowler>, onEnd: (() -> Unit)? = null) = ioScope.launch {
-        for (bowler in bowlers) {
-            bowlerRepo.updateBowler(bowler)
-            frameRepo.updateFrames(bowler.id, bowler.frames)
-            rollRepo.updateRolls(bowler.id, bowler.frames.flatMap { it.rolls.values })
+        appDatabase.withTransaction {
+            for (bowler in bowlers) {
+                bowlerRepo.updateBowler(bowler)
+                frameRepo.updateFrames(bowler.id, bowler.frames)
+                rollRepo.updateRolls(bowler.id, bowler.frames.flatMap { it.rolls.values })
+            }
         }
+
         launch(Dispatchers.Main.immediate) {
             onEnd?.invoke()
         }
     }
 
     fun resetBowler(bowler: Bowler, onEnd: ((Bowler) -> Unit)? = null) = ioScope.launch {
-        bowlerRepo.updateBowler(bowler)
-        frameRepo.updateFrames(bowler.id, bowler.frames)
-        rollRepo.delete(bowler)
+        appDatabase.withTransaction {
+            bowlerRepo.updateBowler(bowler)
+            frameRepo.updateFrames(bowler.id, bowler.frames)
+            rollRepo.delete(bowler)
+        }
 
         launch(Dispatchers.Main.immediate) {
             onEnd?.invoke(bowler)
@@ -66,12 +74,13 @@ class PersistenceManager(
     }
 
     fun saveBowlers(bowlers: List<Bowler>, listener: BowlerListener = null) = ioScope.launch {
-        bowlerRepo.saveBowlers(bowlers)
-
-        for (bowler in bowlers) {
-            frameRepo.saveFrames(bowler.frames)
-            if (bowler.hasStarted()) {
-                rollRepo.saveRolls(bowler.frames.flatMap { it.rolls.values })
+        appDatabase.withTransaction {
+            bowlerRepo.saveBowlers(bowlers)
+            for (bowler in bowlers) {
+                frameRepo.saveFrames(bowler.frames)
+                if (bowler.hasStarted()) {
+                    rollRepo.saveRolls(bowler.frames.flatMap { it.rolls.values })
+                }
             }
         }
 
@@ -83,14 +92,15 @@ class PersistenceManager(
     }
 
     fun saveResult(result: Result, listener: ((name: String) -> Unit)? = null) = ioScope.launch {
-        resultRepo.saveResult(result)
-
-        for (bowler in result.bowlers) {
-            bowler.resultId = result.id
-            bowlerRepo.saveBowler(bowler)
-            frameRepo.saveFrames(bowler.frames)
-            if (bowler.hasStarted()) {
-                rollRepo.saveRolls(bowler.frames.flatMap { it.rolls.values })
+        appDatabase.withTransaction {
+            resultRepo.saveResult(result)
+            for (bowler in result.bowlers) {
+                bowler.resultId = result.id
+                bowlerRepo.saveBowler(bowler)
+                frameRepo.saveFrames(bowler.frames)
+                if (bowler.hasStarted()) {
+                    rollRepo.saveRolls(bowler.frames.flatMap { it.rolls.values })
+                }
             }
         }
 
@@ -104,13 +114,15 @@ class PersistenceManager(
 
     fun removeBowler(bowler: Bowler, function: ((Bowler) -> Unit)?) = ioScope.launch {
 
-        val filtered = storage.currentBowlerIds.dropWhile { it == bowler.id }
+        val filtered = storage.currentBowlerIds.filter { id -> id != bowler.id }
 
-        rollRepo.delete(bowler)
-        frameRepo.deleteFrames(bowler)
-        bowlerRepo.deleteBowler(bowler)
+        appDatabase.withTransaction {
+            rollRepo.delete(bowler)
+            frameRepo.deleteFrames(bowler)
+            bowlerRepo.deleteBowler(bowler)
+        }
 
-        suspend { saveActiveBowlersIds(filtered.toLongArray()) }
+        saveActiveBowlersIds(filtered.toLongArray())
 
         launch(Dispatchers.Main.immediate) {
             function?.invoke(bowler)

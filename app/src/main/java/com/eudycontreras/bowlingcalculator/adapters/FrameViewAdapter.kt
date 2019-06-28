@@ -14,6 +14,13 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.eudycontreras.bowlingcalculator.R
+import com.eudycontreras.bowlingcalculator.adapters.FrameViewAdapter.Values.Companion.concealSpeed
+import com.eudycontreras.bowlingcalculator.adapters.FrameViewAdapter.Values.Companion.markDefaultScale
+import com.eudycontreras.bowlingcalculator.adapters.FrameViewAdapter.Values.Companion.resetFlipSpeed
+import com.eudycontreras.bowlingcalculator.adapters.FrameViewAdapter.Values.Companion.revealSpeed
+import com.eudycontreras.bowlingcalculator.adapters.FrameViewAdapter.Values.Companion.sequenceStagger
+import com.eudycontreras.bowlingcalculator.adapters.FrameViewAdapter.Values.Companion.toBackDuration
+import com.eudycontreras.bowlingcalculator.adapters.FrameViewAdapter.Values.Companion.toFrontDuration
 import com.eudycontreras.bowlingcalculator.calculator.elements.*
 import com.eudycontreras.bowlingcalculator.components.views.FramesViewComponent
 import com.eudycontreras.bowlingcalculator.listeners.AnimationListener
@@ -44,22 +51,27 @@ class FrameViewAdapter(
     internal val white: ColorStateList = ColorStateList.valueOf(context.color(R.color.white))
     internal val semiWhite: ColorStateList = ColorStateList.valueOf(context.color(R.color.background))
 
+    internal var revealingBowlerId: Long = -1
     internal var currentIndex: Int = DEFAULT_START_INDEX
     internal var lastSelected: Int? = null
-
-    private var revealingBowlerId: Long = -1
-    private var sequenceStagger: Long = 50
-    private var resetFlipSpeed: Long = 800
-    private var revealSpeed: Long = 300
-    private var concealSpeed: Long = 300
-
-    private val markDefaultScale: Float = 0.9f
 
     private var revealed: HashMap<Int, Boolean> = HashMap(DEFAULT_FRAME_COUNT)
 
     private val viewHolders: Array<FrameViewHolder?> = arrayOfNulls(DEFAULT_FRAME_COUNT)
 
     private var lastReference: FrameViewHolder? = null
+
+    internal sealed class Values {
+        companion object {
+            const val toFrontDuration = 250L
+            const val toBackDuration = 250L
+            const val sequenceStagger: Long = 50
+            const val resetFlipSpeed: Long = 800
+            const val revealSpeed: Long = 300
+            const val concealSpeed: Long = 300
+            const val markDefaultScale: Float = 0.9f
+        }
+    }
 
     init {
         (0..DEFAULT_FRAME_COUNT).forEach { revealed[it] = false }
@@ -151,6 +163,8 @@ class FrameViewAdapter(
 
         private var frame: Frame? = null
 
+        private var selected: Boolean = false
+
         init {
             view.setOnClickListener(this)
         }
@@ -162,14 +176,12 @@ class FrameViewAdapter(
             doWith(frame, adapter){ frame, adapter->
                 if (adapter.currentIndex != frame.index) {
                     adapter.currentIndex = frame.index
-                    adapter.lastSelected?.let { last ->
-                        if (adapter.viewComponent.controller.checkCanSelectFrame(frame.index, last)) {
-                            adapter.viewComponent.controller.selectFrame(frame.index)
-                            adapter.lastReference?.let { reference ->
-                                sendLastToBack(reference, adapter)
-                            }
-                            bringCurrentToFront(frame, adapter)
+                    if (adapter.viewComponent.controller.checkCanSelectFrame(frame.index, adapter.lastSelected)) {
+                        adapter.viewComponent.controller.selectFrame(frame.index)
+                        adapter.lastReference?.let { reference ->
+                            sendLastToBack(reference, adapter)
                         }
+                        bringCurrentToFront(frame, adapter)
                     }
                     return
                 }
@@ -188,14 +200,14 @@ class FrameViewAdapter(
             view.translationY = 0f
             view.alpha = 1f
 
-            roundOneMark.scaleX = adapter.markDefaultScale
-            roundOneMark.scaleY = adapter.markDefaultScale
+            roundOneMark.scaleX = markDefaultScale
+            roundOneMark.scaleY = markDefaultScale
 
-            roundTwoMark.scaleX = adapter.markDefaultScale
-            roundTwoMark.scaleY = adapter.markDefaultScale
+            roundTwoMark.scaleX = markDefaultScale
+            roundTwoMark.scaleY = markDefaultScale
 
-            roundExtraMark.scaleX = adapter.markDefaultScale
-            roundExtraMark.scaleY = adapter.markDefaultScale
+            roundExtraMark.scaleX = markDefaultScale
+            roundExtraMark.scaleY = markDefaultScale
 
             roundOneMark.backgroundTintList = adapter.markerNormal
             roundTwoMark.backgroundTintList = adapter.markerNormal
@@ -275,7 +287,29 @@ class FrameViewAdapter(
             determineValues(adapter, frame, frame.getRollBy(Frame.State.EXTRA_CHANCE), roundExtraMarkIcon, roundExtraMarkText)
         }
 
-        private fun processMarkerSelection(frame: Frame, adapter: FrameViewAdapter) {
+        private fun setMarkerSelection(frame: Frame, adapter: FrameViewAdapter) {
+            when (frame.state) {
+                Frame.State.FIRST_CHANCE -> {
+                    setMarkSelected(roundOneMark, adapter)
+                }
+                Frame.State.SECOND_CHANCE -> {
+                    setMarkUnselected(roundOneMark, adapter)
+                    setMarkSelected(roundTwoMark, adapter)
+                }
+                Frame.State.EXTRA_CHANCE -> {
+                    setMarkUnselected(roundOneMark, adapter)
+                    setMarkUnselected(roundTwoMark, adapter)
+                    setMarkSelected(roundExtraMark, adapter)
+                }
+                else -> {
+                    setMarkUnselected(roundOneMark, adapter)
+                    setMarkUnselected(roundTwoMark, adapter)
+                    setMarkUnselected(roundExtraMark, adapter)
+                }
+            }
+        }
+
+        private fun animateMarkerSelection(frame: Frame, adapter: FrameViewAdapter) {
             when (frame.state) {
                 Frame.State.FIRST_CHANCE -> {
                     animateMarkSelected(roundOneMark, adapter)
@@ -361,18 +395,22 @@ class FrameViewAdapter(
                 view.translationZ = 4.dp
                 view.translationY = (-1).dp
                 view.backgroundTintList = adapter.white
+
+                adapter.lastReference = this
                 adapter.lastSelected = frame.index
-                processMarkerSelection(frame, adapter)
+                setMarkerSelection(frame, adapter)
             } else {
                 adapter.lastReference = this
                 adapter.lastSelected = frame.index
-                processMarkerSelection(frame, adapter )
+                animateMarkerSelection(frame, adapter )
                 bringCurrentToFront(view, adapter)
             }
+
+            selected = true
         }
 
         private fun bringCurrentToFront(view: View, adapter: FrameViewAdapter, onEnd: (() -> Unit)? = null) {
-            val duration: Long = 300
+            val duration: Long = toFrontDuration
 
             view.animateColor(adapter.semiWhite, adapter.white, duration)
 
@@ -394,12 +432,11 @@ class FrameViewAdapter(
 
         private fun sendLastToBack(viewHolder: FrameViewHolder?, adapter: FrameViewAdapter) {
             viewHolder?.let {
-                val duration: Long = 300
-                val view: View = it.itemView
+                if (!it.selected)
+                    return@let
 
-                view.translationY = (-1).dp
-                view.translationZ = 4.dp
-                view.backgroundTintList = adapter.white
+                val duration: Long = toBackDuration
+                val view: View = it.itemView
 
                 view.animateColor(adapter.white, adapter.semiWhite, duration)
 
@@ -411,6 +448,8 @@ class FrameViewAdapter(
                     .start()
 
                 disableMarkSelection(viewHolder, adapter)
+
+                selected = false
             }
         }
 
@@ -508,6 +547,12 @@ class FrameViewAdapter(
             animator.start()
         }
 
+        private fun setMarkSelected(mark: View, adapter: FrameViewAdapter) {
+            mark.backgroundTintList = adapter.markerSelected
+            mark.scaleX = 1f
+            mark.scaleY = 1f
+        }
+
         private fun animateMarkSelected(mark: View, adapter: FrameViewAdapter) {
             val duration: Long = 200
 
@@ -519,6 +564,12 @@ class FrameViewAdapter(
                 .scaleY(1f)
                 .setDuration(duration)
                 .start()
+        }
+
+        private fun setMarkUnselected(mark: View, adapter: FrameViewAdapter) {
+            mark.backgroundTintList = adapter.markerNormal
+            mark.scaleX = 0.9f
+            mark.scaleY = 0.9f
         }
 
         private fun animateMarkUnselected(mark: View, adapter: FrameViewAdapter) {

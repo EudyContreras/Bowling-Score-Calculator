@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(com.eudycontreras.bowlingcalculator.R.layout.activity_main)
+        setContentView(R.layout.activity_main)
 
         setSupportActionBar(toolbar as Toolbar)
 
@@ -145,7 +145,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         val bowlers = scoreController.bowlers
-        suspend { app.persistenceManager.updateBowlers(bowlers) }
+        app.persistenceManager.updateBowlers(bowlers)
         super.onDestroy()
     }
 

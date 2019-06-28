@@ -5,6 +5,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:background="@drawable/shape_dialog"
         android:backgroundTint="@color/colorPrimary"
+        android:animateLayoutChanges="true"
         android:elevation="2dp"
         android:translationZ="18dp"
         android:clipChildren="false"
