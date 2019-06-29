@@ -29,8 +29,6 @@ data class Bowler(
 
     var resultId: Long = NO_ID
 
-    @Transient var activeBowler: Boolean = false
-
     var frames: List<Frame> = List(DEFAULT_FRAME_COUNT) { i ->
         if (i < DEFAULT_FRAME_COUNT - 1) {
             FrameNormal(i)
@@ -58,6 +56,8 @@ data class Bowler(
         return currentFrameIndex > 0 || getCurrentFrame().hasStarted()
     }
 
+    fun getNextFrame() = frames[currentFrameIndex + 1]
+
     fun getCurrentFrame() = frames[currentFrameIndex]
 
     override fun init() {
@@ -73,7 +73,6 @@ data class Bowler(
             it.rolls.clear()
         }
     }
-
 
     fun performRoll(pinCount: Int, listener: ScoreStateListener? = null) {
         performRoll(pinCount, listener, false)
@@ -97,16 +96,24 @@ data class Bowler(
         currentFrame.updateState(roll)
 
         if (!currentFrame.hasChances()) {
+            val lastFrame = getCurrentFrame()
+
             moveToNextFrame()
-            currentFrame = getCurrentFrame()
-            if (currentFrame is FrameLast) {
-                if (!currentFrame.isCompleted) {
-                    currentFrame.reset()
+            if (!fromSimulation) {
+                currentFrame = getCurrentFrame()
+                if (currentFrame is FrameLast) {
+                    if (!currentFrame.isCompleted) {
+                        currentFrame.reset()
+                    } else {
+                        if (lastFrame !is FrameLast) {
+                            currentFrame.state = Frame.State.FIRST_CHANCE
+                            currentFrame.resetChances()
+                            currentFrame.resetPins()
+                        }
+                    }
                 } else {
-                    currentFrame.isEditing = false
+                    currentFrame.reset()
                 }
-            } else {
-                currentFrame.reset()
             }
         }
 
@@ -158,5 +165,9 @@ data class Bowler(
 
     override fun hashCode(): Int {
         return id.hashCode()
+    }
+
+    override fun toString(): String {
+        return "Bowler(name='$name', id=$id)"
     }
 }

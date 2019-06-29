@@ -12,6 +12,7 @@ import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.adapters.FrameViewAdapter.Values.Companion.concealSpeed
@@ -37,6 +38,7 @@ import kotlinx.android.synthetic.main.item_frame_view_mark.view.*
 
 class FrameViewAdapter(
     private val context: Activity,
+    private val layoutManager: LinearLayoutManager,
     private val viewComponent: FramesViewComponent,
     private val items: ArrayList<Frame>
 ) : RecyclerView.Adapter<FrameViewAdapter.FrameViewHolder>() {
@@ -96,6 +98,13 @@ class FrameViewAdapter(
     }
 
     internal fun adjustViewPort(index: Int) {
+        val firstVisible = layoutManager.findFirstCompletelyVisibleItemPosition()
+        val lastVisible = layoutManager.findLastCompletelyVisibleItemPosition()
+
+        if (index in firstVisible..lastVisible) {
+            return
+        }
+
         if (index != currentIndex) {
             return
         }
@@ -186,7 +195,6 @@ class FrameViewAdapter(
                     return
                 }
                 if(frame is FrameLast && frame.isCompleted) {
-                    frame.isEditing = true
                     adapter.viewComponent.controller.selectFrame(frame.index)
                     bringCurrentToFront(frame, adapter)
                 }

@@ -89,7 +89,9 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
     override fun onFrameSelected(frameIndex: Int) {
         bowler.currentFrameIndex = frameIndex
         statsController.setCurrentFrame(frameIndex + 1)
+        statsController.updateMaxPossibleScore(bowler.getPossibleScore())
         actionController.updateActionInput(bowler.getCurrentFrame().pinUpCount(), duration = 300)
+
         bowler.getCurrentFrame().state = Frame.State.FIRST_CHANCE
         bowler.getCurrentFrame().resetChances()
         bowler.getCurrentFrame().resetPins()
@@ -105,7 +107,7 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
         actionController.updateActionInput(current.pinUpCount())
 
         if (current is FrameLast) {
-            if (current.isCompleted && !current.isEditing) {
+            if (current.isCompleted) {
                 actionController.deactivateAllInput()
             }
         }

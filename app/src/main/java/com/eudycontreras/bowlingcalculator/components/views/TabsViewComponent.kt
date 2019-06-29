@@ -28,7 +28,7 @@ class TabsViewComponent(
 
     private var smoothScroller: LinearSmoothScroller = object : LinearSmoothScroller(context) {
         override fun getVerticalSnapPreference(): Int {
-            return LinearSmoothScroller.SNAP_TO_START
+            return SNAP_TO_START
         }
     }
 

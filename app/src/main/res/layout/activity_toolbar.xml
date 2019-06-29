@@ -49,7 +49,7 @@
             <FrameLayout
                     android:id="@+id/toolbarMenu"
                     android:layout_gravity="center"
-                    android:layout_margin="@dimen/margin_small"
+                    android:layout_margin="4dp"
                     android:backgroundTint="@color/colorAccent"
                     android:background="@drawable/shape_circle"
                     android:layout_width="32dp"

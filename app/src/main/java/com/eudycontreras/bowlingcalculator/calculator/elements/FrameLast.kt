@@ -15,8 +15,6 @@ data class FrameLast(override var index: Int) : Frame() {
         const val FRAME_LAST: String = "FrameLast"
     }
 
-    @Transient var isEditing: Boolean = false
-
     override var bowlerId: Long = NO_ID
 
     override val type: String = FRAME_LAST
@@ -33,16 +31,7 @@ data class FrameLast(override var index: Int) : Frame() {
 
     override var pointsFromPrevious: Int = 0
 
-    override val inProgress: Boolean
-        get() = if (rolls.isNotEmpty()) {
-            state != State.CLEARED
-        } else false
-
-    override val isCompleted: Boolean
-        get() = !hasChances()
-
     override fun reset() {
-        isEditing = false
         pointsFromPrevious = 0
         bonusPoints = 0
         state = State.FIRST_CHANCE
@@ -97,7 +86,6 @@ data class FrameLast(override var index: Int) : Frame() {
 
     override fun updateState(roll: Roll) {
         if (chances <= 0 || state == State.CLEARED) {
-            resetPins()
             return
         }
 
@@ -178,9 +166,7 @@ data class FrameLast(override var index: Int) : Frame() {
                     rolls.remove(State.EXTRA_CHANCE)
                 }
             }
-            else -> {
-                var d= 0
-            }
+            else -> { }
         }
     }
 }

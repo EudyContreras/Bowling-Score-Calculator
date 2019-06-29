@@ -13,7 +13,11 @@ abstract class Frame : Element {
         FIRST_CHANCE,
         SECOND_CHANCE,
         EXTRA_CHANCE,
-        CLEARED
+        CLEARED;
+
+        override fun toString(): String{
+            return name
+        }
     }
 
     companion object {
@@ -26,7 +30,7 @@ abstract class Frame : Element {
 
     abstract val type: String
 
-    abstract val rolls: LinkedHashMap<Frame.State, Roll>
+    abstract val rolls: LinkedHashMap<State, Roll>
 
     abstract var chances: Int
 
@@ -38,15 +42,19 @@ abstract class Frame : Element {
 
     abstract var pointsFromPrevious: Int
 
-    abstract val inProgress: Boolean
+    val inProgress: Boolean
+        get() = if (rolls.isNotEmpty()) {
+            state != State.CLEARED
+        } else false
 
-    abstract val isCompleted: Boolean
+    val isCompleted: Boolean
+        get() = !hasChances()
 
     fun hasChances(): Boolean = chances > 0
 
     fun hasStarted(): Boolean = rolls.size > 0
 
-    fun getRollBy(chance: Frame.State): Roll? = rolls[chance]
+    fun getRollBy(chance: State): Roll? = rolls[chance]
 
     fun areAllPinsDown(): Boolean = pins.all { it.state == Pin.State.DOWN }
 
@@ -88,4 +96,8 @@ abstract class Frame : Element {
     abstract fun missingRounds(): Boolean
 
     abstract fun handleEditedFrame(roll: Roll)
+
+    override fun toString(): String {
+        return "Frame(index=$index, type='$type', chances=$chances, state=$state)"
+    }
 }

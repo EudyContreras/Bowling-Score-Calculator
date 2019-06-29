@@ -29,7 +29,7 @@ class FramesViewComponent(
 
     private var smoothScroller: LinearSmoothScroller = object : LinearSmoothScroller(context) {
         override fun getVerticalSnapPreference(): Int {
-            return LinearSmoothScroller.SNAP_TO_START
+            return  SNAP_TO_START
         }
         override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
             return SCROLLER_MILLI_PER_INCH / displayMetrics.densityDpi
@@ -52,8 +52,9 @@ class FramesViewComponent(
 
     fun createFrames(frames: List<Frame>) {
         frameRecycler?.let {
-            frameAdapter = FrameViewAdapter(context, this, frames as ArrayList<Frame>)
-            it.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+            val layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+            frameAdapter = FrameViewAdapter(context, layoutManager, this, frames as ArrayList<Frame>)
+            it.layoutManager = layoutManager
             it.recycledViewPool.setMaxRecycledViews(0, 0)
             it.setItemViewCacheSize(10)
             it.adapter = frameAdapter

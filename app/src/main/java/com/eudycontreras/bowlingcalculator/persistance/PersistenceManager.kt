@@ -114,15 +114,13 @@ class PersistenceManager(
 
     fun removeBowler(bowler: Bowler, function: ((Bowler) -> Unit)?) = ioScope.launch {
 
-        val filtered = storage.currentBowlerIds.filter { id -> id != bowler.id }
-
         appDatabase.withTransaction {
             rollRepo.delete(bowler)
             frameRepo.deleteFrames(bowler)
             bowlerRepo.deleteBowler(bowler)
         }
 
-        saveActiveBowlersIds(filtered.toLongArray())
+        removeBowlerId(bowler.id)
 
         launch(Dispatchers.Main.immediate) {
             function?.invoke(bowler)
@@ -147,6 +145,12 @@ class PersistenceManager(
         val storedIds = storage.currentBowlerIds.toMutableList().plus(bowlerIds.toList()).distinct().toLongArray()
         storage.currentBowlerIds = storedIds
         return storedIds
+    }
+
+    @Synchronized fun removeBowlerId(bowlerId: Long): LongArray {
+        val filtered = storage.currentBowlerIds.filter { id -> id != bowlerId }.toLongArray()
+        storage.currentBowlerIds = filtered
+        return filtered
     }
 
     fun hasBowlers(): Boolean {

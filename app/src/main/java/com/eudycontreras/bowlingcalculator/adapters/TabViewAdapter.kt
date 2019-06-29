@@ -54,7 +54,7 @@ class TabViewAdapter(
     fun addItem(item: TabViewModel, selectedIndex: Int? = null, manual: Boolean = false) {
         lastTab?.let { reference ->
             if (!reference.isEnqueued) {
-                (reference.get() as TabViewAdapter.TabViewHolderNormal?)?.deactivateTab()
+                (reference.get() as TabViewHolderNormal?)?.deactivateTab()
             }
         }
 
@@ -75,7 +75,7 @@ class TabViewAdapter(
 
         lastTab?.let { reference ->
             if (!reference.isEnqueued) {
-                (reference.get() as TabViewAdapter.TabViewHolderNormal?)?.deactivateTab()
+                (reference.get() as TabViewHolderNormal?)?.deactivateTab()
             }
         }
 
