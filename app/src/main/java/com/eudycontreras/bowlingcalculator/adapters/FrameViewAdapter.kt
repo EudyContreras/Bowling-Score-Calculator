@@ -280,7 +280,6 @@ class FrameViewAdapter(
                     if (frame.getRollBy(Frame.State.EXTRA_CHANCE) == null){
                         roundExtraMark.hide()
                     }
-                    sendLastToBack(this, adapter)
                 }
             } else {
                 roundExtraMark.hide()
@@ -440,8 +439,9 @@ class FrameViewAdapter(
 
         private fun sendLastToBack(viewHolder: FrameViewHolder?, adapter: FrameViewAdapter) {
             viewHolder?.let {
-                if (!it.selected)
-                    return@let
+                view.translationY = (-1).dp
+                view.translationZ = 4.dp
+                view.backgroundTintList = adapter.white
 
                 val duration: Long = toBackDuration
                 val view: View = it.itemView
