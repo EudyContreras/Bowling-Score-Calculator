@@ -10,6 +10,7 @@ import com.eudycontreras.bowlingcalculator.adapters.FrameViewAdapter
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
 import com.eudycontreras.bowlingcalculator.components.controllers.FramesViewController
+import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_FRAME_COUNT
 import com.eudycontreras.bowlingcalculator.utilities.SCROLLER_MILLI_PER_INCH
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -56,7 +57,7 @@ class FramesViewComponent(
             frameAdapter = FrameViewAdapter(context, layoutManager, this, frames as ArrayList<Frame>)
             it.layoutManager = layoutManager
             it.recycledViewPool.setMaxRecycledViews(0, 0)
-            it.setItemViewCacheSize(10)
+            it.setItemViewCacheSize(DEFAULT_FRAME_COUNT)
             it.adapter = frameAdapter
         }
     }

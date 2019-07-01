@@ -11,6 +11,9 @@ import android.content.res.Resources
 val Int.dp: Float
     get() = this * Resources.getSystem().displayMetrics.density
 
+val Float.dp: Float
+    get() = this * Resources.getSystem().displayMetrics.density
+
 fun Int.next(shift: Int = 1 ): Int {
     return this + shift
 }
