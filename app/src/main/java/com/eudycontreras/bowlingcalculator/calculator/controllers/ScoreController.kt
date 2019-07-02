@@ -24,6 +24,7 @@ import com.eudycontreras.bowlingcalculator.utilities.runAfterMain
 class ScoreController(private val activity: MainActivity) : ScoreStateListener, BowlerActionListener{
 
     lateinit var loaderController: LoaderViewController
+    lateinit var inputNameController: InputViewController
     lateinit var skeletonController: SkeletonViewController
     lateinit var actionController: ActionViewController
     lateinit var framesController: FramesViewController
@@ -190,5 +191,9 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
             val activeTab = saveActiveTab(bowlers.size - 1)
             tabsController.addTabs(it, activeTab, manual)
         }
+    }
+
+    fun requestRename(bowlerId: Long, bowlerName: String) {
+        inputNameController.requestRename(bowlerId, bowlerName)
     }
 }

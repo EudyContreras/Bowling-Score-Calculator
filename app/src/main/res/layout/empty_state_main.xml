@@ -74,11 +74,11 @@
             android:id="@+id/midSectionSpacing"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="@dimen/spacing_extra_extra_large"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintVertical_bias="0.65"/>
 
     <LinearLayout
             android:id="@+id/emptyStateTextContainer"

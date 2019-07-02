@@ -19,8 +19,6 @@ abstract class Shape {
     var showStroke: Boolean = false
         get() = field && strokeWidth > 0
 
-    var shadowPosition: LightSource.Position = LightSource.Position.BOTTOM_LEFT
-
     var touchProcessor: ((Shape, MotionEvent, Float, Float) -> Unit)? = null
 
     var color: MutableColor = MutableColor()
@@ -66,25 +64,11 @@ abstract class Shape {
     var elevation: Float = 0f
         set(value) {
             field = value
-            drawShadow = value > 0f
-        }
-
-    var drawShadow: Boolean = false
-        get() = field && elevation > 0
-        set(value) {
-            field = value
-            if (shadow == null) {
-                if (value) {
-                    shadow = Shadow()
-                }
-            }
         }
 
     var strokeWidth: Float = 0f
 
     var strokeColor: MutableColor? = null
-
-    var shadow: Shadow? = null
 
     var shader: Shader? = null
 
@@ -101,13 +85,10 @@ abstract class Shape {
         corners.reset()
 
         showStroke = false
-        drawShadow = false
-        shadowPosition = LightSource.Position.BOTTOM_LEFT
 
         strokeWidth = 0f
         strokeColor = null
 
-        shadow = null
         shader = null
         render = true
 

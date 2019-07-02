@@ -2,32 +2,29 @@
 <FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:elevation="1dp"
-        android:translationZ="8dp"
-        android:backgroundTint="@color/colorPrimaryLight"
-        android:background="@drawable/shape_rename_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/padding_large"
-        app:rcl_corner_radius="24dp"
+        android:elevation="1dp"
+        android:translationZ="8dp"
         android:layout_marginBottom="@dimen/margin_medium">
    <LinearLayout
-           android:id="@+id/inputRenameContainer"
            android:background="@drawable/shape_button"
+           android:elevation="1dp"
+           android:layout_gravity="center"
+           android:translationZ="8dp"
            android:backgroundTint="@color/white"
-           android:paddingStart="@dimen/padding_extra_large"
+           android:paddingStart="@dimen/padding"
            android:paddingEnd="@dimen/padding_small"
            android:layout_width="match_parent"
            android:layout_height="35dp"
+           android:layout_marginEnd="@dimen/margin_small"
            android:orientation="horizontal">
        <EditText
                android:layout_weight="1"
-               android:id="@+id/inputRename"
+               android:id="@+id/createDialogInput"
                android:focusable="true"
                android:singleLine="true"
                android:inputType="textPersonName"
-               android:layout_marginStart="@dimen/margin"
-               android:layout_marginEnd="@dimen/margin"
                android:background="@null"
                android:layout_width="0dp"
                android:layout_height="match_parent"/>
@@ -42,7 +39,6 @@
                android:elevation="1dp"
                android:translationZ="6dp">
            <View
-                   android:id="@+id/saveRenameIcon"
                    android:layout_gravity="center"
                    android:background="@drawable/ic_save_score"
                    android:backgroundTint="@color/white"

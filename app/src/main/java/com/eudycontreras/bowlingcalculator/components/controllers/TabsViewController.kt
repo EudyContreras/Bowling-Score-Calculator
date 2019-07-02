@@ -1,6 +1,7 @@
 package com.eudycontreras.bowlingcalculator.components.controllers
 
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
+import com.eudycontreras.bowlingcalculator.adapters.TabViewAdapter
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.components.views.SkeletonViewComponent
@@ -63,6 +64,12 @@ class TabsViewController(
 
     fun createBowler(names: List<String>, manual: Boolean, listener: BowlerListener) {
         scoreController.createBowler(names, manual, listener)
+    }
+
+    fun requestRename(model: TabViewAdapter.TabViewModel?) {
+        model?.let {
+            scoreController.requestRename(model.bowlerId, model.bowlerName)
+        }
     }
 
     fun hasTabs(): Boolean = viewComponent.hasTabs()

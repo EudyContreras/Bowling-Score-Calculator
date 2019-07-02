@@ -129,6 +129,9 @@ class FrameViewAdapter(
     }
 
     internal fun revealAllFrames(bowler: Bowler) {
+        lastSelected = null
+        currentIndex = DEFAULT_START_INDEX
+        lastSelected = DEFAULT_START_INDEX
         revealingBowlerId = bowler.id
         adjustViewPort(0)
         runSequential(sequenceStagger, items.size) {

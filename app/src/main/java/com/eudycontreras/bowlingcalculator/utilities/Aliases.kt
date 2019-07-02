@@ -16,3 +16,5 @@ typealias BowlerListener = ((names: List<Bowler>) -> Unit)?
 typealias Bowlers = List<Bowler>
 
 typealias Frames = List<Frame>
+
+typealias Action = (()-> Unit)?
