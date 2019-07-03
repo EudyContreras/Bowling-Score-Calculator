@@ -1,5 +1,6 @@
 package com.eudycontreras.bowlingcalculator.utilities
 
+import androidx.core.math.MathUtils.clamp
 import com.eudycontreras.bowlingcalculator.adapters.FrameTypeAdapter
 import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
 import com.google.gson.Gson
@@ -20,6 +21,18 @@ val gson: Gson by lazy {
 
 fun <T> toString(element: T): String {
     return element.toString()
+}
+
+fun mapRange(value: Float, fromMin: Float, fromMax: Float, toMin: Float, toMax: Float): Float {
+    return (value - fromMin) * (toMax - toMin) / (fromMax - fromMin) + toMin
+}
+
+fun mapRange(value: Float, fromMin: Float, fromMax: Float, toMin: Float, toMax: Float, clampMin: Float, clampMax: Float): Float {
+    return clamp(((value - fromMin) * (toMax - toMin) / (fromMax - fromMin) + toMin), clampMin, clampMax)
+}
+
+fun clamp(value: Float, minValue: Float, maxValue: Float): Float {
+    return if (value < minValue) minValue else if (value > maxValue) maxValue else value
 }
 
 inline fun <reified X,reified Y> doWith(first: X?, second: Y?, capsule: (X,Y) -> Unit) {

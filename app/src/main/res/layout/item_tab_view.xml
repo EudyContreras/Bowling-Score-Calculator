@@ -10,6 +10,7 @@
         android:layout_height="wrap_content">
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/tabItem"
+            android:longClickable="true"
             android:animateLayoutChanges="true"
             android:orientation="vertical"
             android:background="@drawable/shape_tab"

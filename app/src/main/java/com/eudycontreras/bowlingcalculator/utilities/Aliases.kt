@@ -1,5 +1,6 @@
 package com.eudycontreras.bowlingcalculator.utilities
 
+import android.graphics.Color
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
 
@@ -8,8 +9,12 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
  * @author Eudy Contreras.
  */
 
+typealias AndroidColor = Color
+
 typealias BowlerListener = ((names: List<Bowler>) -> Unit)?
 
 typealias Bowlers = List<Bowler>
 
 typealias Frames = List<Frame>
+
+typealias Action = (()-> Unit)?

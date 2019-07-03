@@ -23,4 +23,5 @@
         results here.
     </string>
     <string name="exception_bowler_exists">The bowler created already exists</string>
+    <string name="action_rename">Rename</string>
 </resources>

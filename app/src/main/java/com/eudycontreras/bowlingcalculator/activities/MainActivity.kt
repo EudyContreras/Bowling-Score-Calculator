@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.components.controllers.*
+import com.eudycontreras.bowlingcalculator.listeners.BackPressedListener
 import com.eudycontreras.bowlingcalculator.utilities.BowlerListener
 import com.eudycontreras.bowlingcalculator.utilities.Bowlers
 import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_GRACE_PERIOD
@@ -33,9 +34,11 @@ import kotlinx.android.synthetic.main.activity_toolbar.view.*
 
 class MainActivity : AppCompatActivity() {
 
+    private val backNavigationListeners = ArrayList<BackPressedListener>()
     private lateinit var scoreController: ScoreController
 
     private lateinit var skeletonController: SkeletonViewController
+    private lateinit var inputNameController: InputViewController
     private lateinit var loaderController: LoaderViewController
     private lateinit var framesController: FramesViewController
     private lateinit var actionController: ActionViewController
@@ -61,6 +64,7 @@ class MainActivity : AppCompatActivity() {
         scoreController = ScoreController(this)
 
         skeletonController = SkeletonViewController(this, scoreController)
+        inputNameController = InputViewController(this, scoreController)
         loaderController = LoaderViewController(this, scoreController)
         framesController = FramesViewController(this, scoreController)
         actionController = ActionViewController(this, scoreController)
@@ -97,13 +101,24 @@ class MainActivity : AppCompatActivity() {
     private fun registerListeners() {
         toolbar.toolbarMenu.addTouchAnimation(
             clickTarget = null,
-            scale = 0.95f,
+            scale = 0.90f,
+            depth = 0f,
             interpolatorPress = DecelerateInterpolator(),
             interpolatorRelease = OvershootInterpolator()
         )
 
         toolbar.toolbarMenu.setOnClickListener {
 
+        }
+    }
+
+    override fun onBackPressed() {
+        backNavigationListeners.forEach {
+            it.onBackPressed()
+        }
+
+        if (!backNavigationListeners.any { it.disallowExit() }) {
+            super.onBackPressed()
         }
     }
 
@@ -121,6 +136,14 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    fun addBackPressListeners(listener: BackPressedListener) {
+        backNavigationListeners.add(listener)
+    }
+
+    fun removeBackPressListeners(listener: BackPressedListener) {
+        backNavigationListeners.remove(listener)
     }
 
     private fun onStorageEmpty() {

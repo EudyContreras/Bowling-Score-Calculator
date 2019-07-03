@@ -85,7 +85,7 @@ class FragmentCreateBowler: DialogFragment() {
         }
 
         createDialog.dialogCreateSubmit.setOnClickListener {
-            val names = adapter!!.getItems().asReversed()
+            val names = adapter!!.getItems().asReversed().map { it.trim() }
 
             if(names.isNotEmpty()) {
                 controller?.createBowler(names, manualRequest) {

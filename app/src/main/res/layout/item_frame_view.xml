@@ -7,6 +7,7 @@
         android:backgroundTint="@color/background"
         android:elevation="1dp"
         android:translationZ="0dp"
+        android:focusable="false"
         android:layout_marginTop="@dimen/margin"
         android:layout_marginEnd="@dimen/margin"
         android:layout_marginStart="@dimen/margin"

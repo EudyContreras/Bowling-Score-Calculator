@@ -1,16 +1,14 @@
 package com.eudycontreras.bowlingcalculator.adapters
 
 import android.app.Activity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
-import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.components.views.TabsViewComponent
 import com.eudycontreras.bowlingcalculator.listeners.AnimationListener
@@ -21,6 +19,8 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.detach
 import com.eudycontreras.bowlingcalculator.utilities.extensions.dp
 import kotlinx.android.synthetic.main.item_tab_view.view.*
 import java.lang.ref.WeakReference
+
+
 
 
 /**
@@ -49,6 +49,12 @@ class TabViewAdapter(
             val translateY = 4.dp
             val translateZ = (-10).dp
         }
+    }
+
+    fun updateItem(id: Long, name: String) {
+        val index = this.items.indexOfFirst { it.bowlerId == id }
+        items[index].bowlerName = name
+        notifyDataSetChanged()
     }
 
     fun addItem(item: TabViewModel, selectedIndex: Int? = null, manual: Boolean = false) {
@@ -111,10 +117,10 @@ class TabViewAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TabViewHolder {
         return when(viewType) {
             ViewType.ADD_TAB.value -> {
-                TabViewHolderAdd(LayoutInflater.from(context).inflate(R.layout.item_tab_view_add, parent, false))
+                TabViewHolderAdd(LayoutInflater.from(context).inflate(com.eudycontreras.bowlingcalculator.R.layout.item_tab_view_add, parent, false))
             }
             else -> {
-                TabViewHolderNormal(LayoutInflater.from(context).inflate(R.layout.item_tab_view, parent, false))
+                TabViewHolderNormal(LayoutInflater.from(context).inflate(com.eudycontreras.bowlingcalculator.R.layout.item_tab_view, parent, false))
             }
         }
     }
@@ -187,6 +193,14 @@ class TabViewAdapter(
 
         private var removed = false
 
+        private val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
+            override fun onLongPress(e: MotionEvent) {
+                Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
+                viewComponent.controller.requestRename(model)
+            }
+        })
+
+
         init {
             resetValues()
             registerListeners()
@@ -195,11 +209,13 @@ class TabViewAdapter(
                 clickTarget = null,
                 depth = (-8).dp,
                 interpolatorPress = DecelerateInterpolator(),
-                interpolatorRelease = OvershootInterpolator()
+                interpolatorRelease = OvershootInterpolator(),
+                gestureDetector = gestureDetector
             )
         }
 
         override fun registerListeners(){
+            tabItem.isLongClickable = true
             tabItem.setOnClickListener(this)
 
             tabAction.setOnClickListener {
@@ -299,7 +315,7 @@ class TabViewAdapter(
 
     data class TabViewModel(
         val bowlerId: Long = 0,
-        val bowlerName: String = ""
+        var bowlerName: String = ""
     ) {
         var type: ViewType = ViewType.NORMAL_TAB
 

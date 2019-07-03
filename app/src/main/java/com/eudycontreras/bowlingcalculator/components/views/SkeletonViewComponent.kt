@@ -128,7 +128,7 @@ class SkeletonViewComponent(
             .scaleX(1f)
             .setListener(AnimationListener(onEnd = {
                 if (!context.indicator.isAnimationRunning) {
-                    context.indicator.setTarget(action, 2.4f, 0.5f)
+                    context.indicator.setTarget(action, 2.1f, 0.5f)
                     context.indicator.startIndicatorAnimation(0)
                 }
             }))

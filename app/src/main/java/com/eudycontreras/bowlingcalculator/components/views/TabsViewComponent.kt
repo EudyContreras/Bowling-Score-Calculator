@@ -82,6 +82,11 @@ class TabsViewComponent(
         scrollToIndex(index)
     }
 
+
+    fun updateTabName(bowlerId: Long, newName: String) {
+        tabAdapter.updateItem(bowlerId, newName)
+    }
+
     fun setCurrent(index: Int) {
         tabAdapter.currentIndex = index
     }

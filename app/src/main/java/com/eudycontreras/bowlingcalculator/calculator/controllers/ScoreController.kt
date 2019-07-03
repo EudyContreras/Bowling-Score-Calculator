@@ -24,6 +24,7 @@ import com.eudycontreras.bowlingcalculator.utilities.runAfterMain
 class ScoreController(private val activity: MainActivity) : ScoreStateListener, BowlerActionListener{
 
     lateinit var loaderController: LoaderViewController
+    lateinit var inputNameController: InputViewController
     lateinit var skeletonController: SkeletonViewController
     lateinit var actionController: ActionViewController
     lateinit var framesController: FramesViewController
@@ -189,6 +190,22 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
             listener?.invoke(it)
             val activeTab = saveActiveTab(bowlers.size - 1)
             tabsController.addTabs(it, activeTab, manual)
+        }
+    }
+
+    fun requestRename(bowlerId: Long, bowlerName: String) {
+        inputNameController.requestRename(bowlerId, bowlerName)
+    }
+
+    fun saveBowlerName(bowlerId: Long, newName: String, onSaved: (name: String) -> Unit) {
+        val bowler = bowlers.firstOrNull { it.id == bowlerId }
+
+        bowler?.let {
+            it.name = newName.trim()
+            activity.app.persistenceManager.updateBowler(it) {
+                onSaved(newName)
+                tabsController.updateTabName(it.id, newName)
+            }
         }
     }
 }

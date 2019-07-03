@@ -2,10 +2,16 @@ package com.eudycontreras.bowlingcalculator.utilities.extensions
 
 import android.animation.ValueAnimator
 import android.content.res.ColorStateList
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.Interpolator
+import android.widget.EditText
 import com.eudycontreras.bowlingcalculator.listeners.AnimationListener
+
+
 
 /**
  * @Project BowlingCalculator
@@ -55,6 +61,20 @@ fun View.show(duration: Long = 0L) {
         .start()
 }
 
+fun EditText.AddChangeListener(
+    onAfterChange: ((String) -> Unit)? = null,
+    onBeforeChange: ((String) -> Unit)? = null,
+    onChange: ((String) -> Unit)? = null
+) {
+    this.addTextChangedListener(object : TextWatcher {
+        override fun afterTextChanged(sequence: Editable) { onAfterChange?.invoke(sequence.toString()) }
+
+        override fun beforeTextChanged(sequence: CharSequence, start: Int, count: Int, after: Int) { onBeforeChange?.invoke(sequence.toString()) }
+
+        override fun onTextChanged(sequence: CharSequence, start: Int, before: Int, count: Int) { onChange?.invoke(sequence.toString()) }
+    })
+}
+
 fun View.addTouchAnimation(
     clickTarget: View? = null,
     durationPress: Long = 150,
@@ -64,7 +84,8 @@ fun View.addTouchAnimation(
     originalDepth: Float = -1F,
     interpolatorPress: Interpolator? = null,
     interpolatorRelease: Interpolator? = null,
-    directFeedback: Boolean = true
+    directFeedback: Boolean = true,
+    gestureDetector: GestureDetector? = null
 ) {
 
     val releaseListener = AnimationListener(
@@ -133,7 +154,7 @@ fun View.addTouchAnimation(
             }
             else -> {}
         }
-        true
+        gestureDetector?.onTouchEvent(motionEvent) ?: true
     }
 }
 
