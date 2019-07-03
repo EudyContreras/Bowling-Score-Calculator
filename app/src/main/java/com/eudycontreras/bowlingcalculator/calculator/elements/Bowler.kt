@@ -14,8 +14,8 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.doWhen
  */
 
 data class Bowler(
-    val name: String = "",
-    val skill: SkillLevel = SkillLevel.AMATEUR
+    var name: String = "",
+    var skill: SkillLevel = SkillLevel.AMATEUR
 ) : Element {
 
     enum class SkillLevel{

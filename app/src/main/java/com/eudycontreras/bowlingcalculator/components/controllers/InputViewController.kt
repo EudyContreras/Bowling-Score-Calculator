@@ -10,18 +10,17 @@ class InputViewController(
 ) {
     private var viewComponent: InputViewComponent = InputViewComponent(context, this)
 
+    internal var concealDelayMini: Long = 500
     internal var concealDelay: Long = 4000
+
+    @Volatile internal var revealed: Boolean = false
 
     init {
         scoreController.inputNameController = this
     }
 
-    fun updateNameChange(newName: String, oldName: String) {
-
-    }
-
-    fun saveNewName(newName: String, oldName: String, onSaved: (name: String)-> Unit) {
-
+    fun saveNewName(nameInfo: InputViewComponent.RenameInfo, onSaved: (name: String)-> Unit) {
+        scoreController.saveBowlerName(nameInfo.bowlerId, nameInfo.newName, onSaved)
     }
 
     fun requestRename(bowlerId: Long, bowlerName: String) {

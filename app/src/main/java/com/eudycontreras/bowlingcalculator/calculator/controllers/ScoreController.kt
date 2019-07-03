@@ -196,4 +196,16 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
     fun requestRename(bowlerId: Long, bowlerName: String) {
         inputNameController.requestRename(bowlerId, bowlerName)
     }
+
+    fun saveBowlerName(bowlerId: Long, newName: String, onSaved: (name: String) -> Unit) {
+        val bowler = bowlers.firstOrNull { it.id == bowlerId }
+
+        bowler?.let {
+            it.name = newName.trim()
+            activity.app.persistenceManager.updateBowler(it) {
+                onSaved(newName)
+                tabsController.updateTabName(it.id, newName)
+            }
+        }
+    }
 }

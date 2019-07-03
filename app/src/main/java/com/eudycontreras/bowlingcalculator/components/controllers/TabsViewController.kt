@@ -72,6 +72,10 @@ class TabsViewController(
         }
     }
 
+    fun updateTabName(bowlerId: Long, newName: String) {
+        viewComponent.updateTabName(bowlerId, newName)
+    }
+
     fun hasTabs(): Boolean = viewComponent.hasTabs()
 
     fun getActive(): Int = viewComponent.getCurrent()

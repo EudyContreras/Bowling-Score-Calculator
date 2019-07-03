@@ -1,52 +1,61 @@
 package com.eudycontreras.bowlingcalculator.components.views
 
+import android.graphics.drawable.Drawable
 import android.os.Handler
+import android.view.KeyEvent
 import android.view.View
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
+import android.view.animation.OvershootInterpolator
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.FrameLayout
-import android.widget.LinearLayout
 import androidx.core.view.doOnLayout
-import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.components.controllers.InputViewController
 import com.eudycontreras.bowlingcalculator.listeners.AnimationListener
 import com.eudycontreras.bowlingcalculator.listeners.BackPressedListener
 import com.eudycontreras.bowlingcalculator.utilities.Action
-import com.eudycontreras.bowlingcalculator.utilities.extensions.AddChangeListener
-import com.eudycontreras.bowlingcalculator.utilities.extensions.dp
-import com.eudycontreras.bowlingcalculator.utilities.extensions.hideInput
-import com.eudycontreras.bowlingcalculator.utilities.extensions.showInput
+import com.eudycontreras.bowlingcalculator.utilities.extensions.*
 import kotlinx.android.synthetic.main.activity_main.*
+
+
+
 
 class InputViewComponent(
     private val context: MainActivity,
     val controller: InputViewController
 ): ViewComponent, BackPressedListener {
 
+    private val doneIcon: Drawable = context.drawable(com.eudycontreras.bowlingcalculator.R.drawable.ic_done)
+    private val saveIcon: Drawable = context.drawable(com.eudycontreras.bowlingcalculator.R.drawable.ic_save_score)
+
     private val parentView: View? = context.inputNameArea
 
-    private val nameInputContainer: LinearLayout? = parentView?.findViewById(R.id.inputRenameContainer)
 
-    private val nameInput: EditText? = parentView?.findViewById(R.id.inputRename)
-
-    private val saveName: FrameLayout? = parentView?.findViewById(R.id.saveRename)
-
-    private val saveNameIcon: View? = parentView?.findViewById(R.id.saveRenameIcon)
+    private val nameInput: EditText? = parentView?.findViewById(com.eudycontreras.bowlingcalculator.R.id.inputRename)
+    private val saveNameAction: FrameLayout? = parentView?.findViewById(com.eudycontreras.bowlingcalculator.R.id.saveRename)
+    private val saveNameIcon: View? = parentView?.findViewById(com.eudycontreras.bowlingcalculator.R.id.saveRenameIcon)
 
     private val handler: Handler = Handler()
 
-    @Volatile private var revealed: Boolean = false
+    private val renameInfo: RenameInfo = RenameInfo()
 
     private val animDuration: Long = 250
 
     private var height: Float = 0f
     private var depth: Float = 0f
 
+    data class RenameInfo(
+        var bowlerId: Long = 0L,
+        var oldName: String = "",
+        var newName: String = ""
+    )
+
     init {
         setDefaultValues()
         registerListeners()
+        assignInteraction(null)
     }
 
     override fun setDefaultValues() {
@@ -62,53 +71,115 @@ class InputViewComponent(
     }
 
     override fun registerListeners() {
-        saveName?.setOnClickListener {
+        nameInput?.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                saveNewName(nameInput.text.toString())
+                return@setOnEditorActionListener true
+            }
+            false
+        }
 
+        nameInput?.setOnKeyListener { _, keyCode, keyEvent ->
+            if ((keyEvent.action == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                saveNewName(nameInput.text.toString())
+                return@setOnKeyListener  true
+            }
+            return@setOnKeyListener  false
+        }
+
+        saveNameAction?.setOnClickListener {
+            saveNewName(nameInput?.text.toString())
         }
 
         nameInput?.AddChangeListener(
             onChange = {
-                if (revealed) {
+                if (controller.revealed) {
                     handler.removeCallbacksAndMessages(null)
                 }
-            },
-            onAfterChange = {
-
             }
         )
     }
 
     override fun assignInteraction(view: View?) {
-        parentView?.let {
-
-        }
+        saveNameAction?.addTouchAnimation(
+            clickTarget = null,
+            scale = 0.90f,
+            depth = 0f,
+            interpolatorPress = DecelerateInterpolator(),
+            interpolatorRelease = OvershootInterpolator()
+        )
     }
 
     override fun onBackPressed() {
-        if (revealed) {
+        if (controller.revealed) {
             concealInputContainer(animDuration) {
-                revealed = false
+                controller.revealed = false
             }
         }
     }
 
     override fun disallowExit(): Boolean {
-       return revealed
+       return controller.revealed
     }
 
     private val runnable = {
-        if (revealed) {
+        if (controller.revealed) {
             concealInputContainer(animDuration) {
-                revealed = false
+                controller.revealed = false
             }
         }
     }
 
+    fun animateSave(duration: Long) {
+
+    }
+
+    private fun saveNewName(newName: String) {
+        if (newName.contentEquals(renameInfo.oldName)) {
+            return
+        }
+
+        renameInfo.newName = newName
+
+        saveNameIcon?.let { view ->
+            val switchIcon: Action = {
+                controller.saveNewName(renameInfo) {
+                    onNameSaved(view, renameInfo)
+                }
+            }
+
+            view.animate()
+                .setListener(AnimationListener(onEnd = switchIcon))
+                .scaleX(0f)
+                .scaleY(0f)
+                .setDuration(150)
+                .start()
+        }
+    }
+
+    private fun onNameSaved(view: View, info: RenameInfo) {
+        handler.postDelayed(runnable, controller.concealDelayMini)
+
+        view.background = doneIcon
+        view.animate()
+            .setListener(null)
+            .scaleX(1f)
+            .scaleY(1f)
+            .setDuration(200)
+            .setInterpolator(OvershootInterpolator())
+            .start()
+    }
+
     fun requestRename(bowlerId: Long, bowlerName: String) {
+        renameInfo.bowlerId = bowlerId
+        renameInfo.oldName = bowlerName
+
         nameInput?.setText(bowlerName)
         nameInput?.setSelection(bowlerName.length)
+        saveNameIcon?.background = saveIcon
+
         revealInputContainer(animDuration){
-            revealed = true
+            controller.revealed = true
             handler.postDelayed(runnable, controller.concealDelay)
         }
     }
@@ -138,6 +209,7 @@ class InputViewComponent(
         parentView?.let {
             nameInput?.clearFocus()
             context.hideInput()
+
             var listener: AnimationListener? = null
 
             if (endAction != null) {

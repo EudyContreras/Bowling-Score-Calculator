@@ -51,6 +51,12 @@ class TabViewAdapter(
         }
     }
 
+    fun updateItem(id: Long, name: String) {
+        val index = this.items.indexOfFirst { it.bowlerId == id }
+        items[index].bowlerName = name
+        notifyDataSetChanged()
+    }
+
     fun addItem(item: TabViewModel, selectedIndex: Int? = null, manual: Boolean = false) {
         lastTab?.let { reference ->
             if (!reference.isEnqueued) {
@@ -309,7 +315,7 @@ class TabViewAdapter(
 
     data class TabViewModel(
         val bowlerId: Long = 0,
-        val bowlerName: String = ""
+        var bowlerName: String = ""
     ) {
         var type: ViewType = ViewType.NORMAL_TAB
 
