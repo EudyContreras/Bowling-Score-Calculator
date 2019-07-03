@@ -1,6 +1,7 @@
 package com.eudycontreras.bowlingcalculator.persistance
 
 import androidx.lifecycle.LiveData
+import androidx.room.withTransaction
 import com.eudycontreras.bowlingcalculator.Application
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Result
@@ -11,9 +12,9 @@ import com.eudycontreras.bowlingcalculator.repositories.FrameRepositoryImpl
 import com.eudycontreras.bowlingcalculator.repositories.ResultRepositoryImpl
 import com.eudycontreras.bowlingcalculator.repositories.RollRepositoryImpl
 import com.eudycontreras.bowlingcalculator.utilities.BowlerListener
-import com.eudycontreras.bowlingcalculator.utilities.fromIO
-import com.eudycontreras.bowlingcalculator.utilities.fromMain
-import com.eudycontreras.bowlingcalculator.utilities.fromScopeIO
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * @Project BowlingCalculator
@@ -27,88 +28,134 @@ class PersistenceManager(
 
     private val storage: PrimitiveStorage = PrimitiveStorageImpl(application)
 
+    private val ioScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+
     val bowlerRepo = BowlerRepositoryImpl(this, appDatabase.bowler)
     val frameRepo = FrameRepositoryImpl(this, appDatabase.frame)
     val resultRepo = ResultRepositoryImpl(this, appDatabase.result)
     val rollRepo = RollRepositoryImpl(this, appDatabase.roll)
 
-    val activeTab: Int
-        get() = storage.activeTab
-
-    fun updateBowler(bowler: Bowler, onEnd: (() -> Unit)? = null) {
-        fromIO {
+    fun updateBowler(bowler: Bowler, onEnd: (() -> Unit)? = null) = ioScope.launch {
+        appDatabase.withTransaction {
             bowlerRepo.updateBowler(bowler)
             frameRepo.updateFrames(bowler.id, bowler.frames)
             rollRepo.updateRolls(bowler.id, bowler.frames.flatMap { it.rolls.values })
-            fromMain(onEnd)
+        }
+
+        launch(Dispatchers.Main.immediate) {
+            onEnd?.invoke()
         }
     }
 
-    fun resetBowler(bowler: Bowler, onEnd: (() -> Unit)? = null) {
-        fromIO {
+    fun updateBowlers(bowlers: List<Bowler>, onEnd: (() -> Unit)? = null) = ioScope.launch {
+        appDatabase.withTransaction {
+            for (bowler in bowlers) {
+                bowlerRepo.updateBowler(bowler)
+                frameRepo.updateFrames(bowler.id, bowler.frames)
+                rollRepo.updateRolls(bowler.id, bowler.frames.flatMap { it.rolls.values })
+            }
+        }
+
+        launch(Dispatchers.Main.immediate) {
+            onEnd?.invoke()
+        }
+    }
+
+    fun resetBowler(bowler: Bowler, onEnd: ((Bowler) -> Unit)? = null) = ioScope.launch {
+        appDatabase.withTransaction {
             bowlerRepo.updateBowler(bowler)
             frameRepo.updateFrames(bowler.id, bowler.frames)
             rollRepo.delete(bowler)
-            fromMain(onEnd)
+        }
+
+        launch(Dispatchers.Main.immediate) {
+            onEnd?.invoke(bowler)
         }
     }
 
-    fun saveBowlers(bowlers: List<Bowler>, listener: BowlerListener = null) {
-        fromIO {
+    fun saveBowlers(bowlers: List<Bowler>, listener: BowlerListener = null) = ioScope.launch {
+        appDatabase.withTransaction {
             bowlerRepo.saveBowlers(bowlers)
-            storage.currentBowlerIds = bowlers.map { it.id }.toLongArray()
             for (bowler in bowlers) {
                 frameRepo.saveFrames(bowler.frames)
-                rollRepo.saveRolls(bowler.frames.flatMap { it.rolls.values })
-            }
-            fromMain(bowlers, listener)
-        }
-    }
-
-    fun saveResult(result: Result, listener: ((name: String) -> Unit)? = null) {
-        fromScopeIO {
-            resultRepo.saveResult(result) { id, name ->
-                for (bowler in result.bowlers) {
-                    bowler.resultId = id
-                    bowlerRepo.saveBowler(bowler)
-                    frameRepo.saveFrames(bowler.frames)
+                if (bowler.hasStarted()) {
                     rollRepo.saveRolls(bowler.frames.flatMap { it.rolls.values })
                 }
-                fromMain {
-                    listener?.invoke(name)
-                    resultRepo.getResults().observeForever {
-                        var results = it
-                    }
+            }
+        }
+
+        saveActiveBowlersIds(bowlers.map { it.id }.toLongArray())
+
+        launch(Dispatchers.Main) {
+            listener?.invoke(bowlers)
+        }
+    }
+
+    fun saveResult(result: Result, listener: ((name: String) -> Unit)? = null) = ioScope.launch {
+        appDatabase.withTransaction {
+            resultRepo.saveResult(result)
+            for (bowler in result.bowlers) {
+                bowler.resultId = result.id
+                bowlerRepo.saveBowler(bowler)
+                frameRepo.saveFrames(bowler.frames)
+                if (bowler.hasStarted()) {
+                    rollRepo.saveRolls(bowler.frames.flatMap { it.rolls.values })
                 }
+            }
+        }
+
+        launch(Dispatchers.Main.immediate) {
+            listener?.invoke(result.name)
+            resultRepo.getResults().observeForever {
+
             }
         }
     }
 
-    fun removeBowler(bowler: Bowler, function: (() -> Unit)?) {
-        fromIO {
-            val filtered = storage.currentBowlerIds.filter { it != bowler.id }
-            storage.currentBowlerIds = filtered.toLongArray()
+    fun removeBowler(bowler: Bowler, function: ((Bowler) -> Unit)?) = ioScope.launch {
+
+        appDatabase.withTransaction {
             rollRepo.delete(bowler)
             frameRepo.deleteFrames(bowler)
             bowlerRepo.deleteBowler(bowler)
-            fromMain(function)
         }
-    }
 
-    fun saveActiveTab(activeTab: Int) {
-        storage.activeTab = activeTab
+        removeBowlerId(bowler.id)
+
+        launch(Dispatchers.Main.immediate) {
+            function?.invoke(bowler)
+        }
     }
 
     fun getBowlers(): LiveData<List<Bowler>> {
         val bowlerIds = storage.currentBowlerIds
-        return bowlerRepo.getBowlers(bowlerIds)
+        return  bowlerRepo.getBowlers(bowlerIds)
     }
 
     fun getResult(resultId: Long): LiveData<Result> {
         return resultRepo.getResult(resultId)
     }
 
+    @Synchronized fun saveActiveTab(activeTab: Int): Int {
+        storage.activeTab = activeTab
+        return activeTab
+    }
+
+    @Synchronized fun saveActiveBowlersIds(bowlerIds: LongArray): LongArray {
+        val storedIds = storage.currentBowlerIds.toMutableList().plus(bowlerIds.toList()).distinct().toLongArray()
+        storage.currentBowlerIds = storedIds
+        return storedIds
+    }
+
+    @Synchronized fun removeBowlerId(bowlerId: Long): LongArray {
+        val filtered = storage.currentBowlerIds.filter { id -> id != bowlerId }.toLongArray()
+        storage.currentBowlerIds = filtered
+        return filtered
+    }
+
     fun hasBowlers(): Boolean {
         return storage.currentBowlerIds.isNotEmpty()
     }
+
+    fun getActiveTab(): Int = storage.activeTab
 }

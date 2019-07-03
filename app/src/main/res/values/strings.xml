@@ -22,4 +22,6 @@
     <string name="empty_state_add_bowler_body">There seem to be no result to show! Create a bowler in order to see their
         results here.
     </string>
+    <string name="exception_bowler_exists">The bowler created already exists</string>
+    <string name="action_rename">Rename</string>
 </resources>

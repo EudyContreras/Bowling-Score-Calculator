@@ -1,5 +1,6 @@
 package com.eudycontreras.bowlingcalculator.components.views
 
+import android.util.DisplayMetrics
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
@@ -9,6 +10,8 @@ import com.eudycontreras.bowlingcalculator.adapters.FrameViewAdapter
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
 import com.eudycontreras.bowlingcalculator.components.controllers.FramesViewController
+import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_FRAME_COUNT
+import com.eudycontreras.bowlingcalculator.utilities.SCROLLER_MILLI_PER_INCH
 import kotlinx.android.synthetic.main.activity_main.*
 
 /**
@@ -27,7 +30,10 @@ class FramesViewComponent(
 
     private var smoothScroller: LinearSmoothScroller = object : LinearSmoothScroller(context) {
         override fun getVerticalSnapPreference(): Int {
-            return LinearSmoothScroller.SNAP_TO_START
+            return  SNAP_TO_START
+        }
+        override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
+            return SCROLLER_MILLI_PER_INCH / displayMetrics.densityDpi
         }
     }
 
@@ -47,10 +53,11 @@ class FramesViewComponent(
 
     fun createFrames(frames: List<Frame>) {
         frameRecycler?.let {
-            frameAdapter = FrameViewAdapter(context, this, frames as ArrayList<Frame>)
-            it.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+            val layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+            frameAdapter = FrameViewAdapter(context, layoutManager, this, frames as ArrayList<Frame>)
+            it.layoutManager = layoutManager
             it.recycledViewPool.setMaxRecycledViews(0, 0)
-            it.setItemViewCacheSize(10)
+            it.setItemViewCacheSize(DEFAULT_FRAME_COUNT)
             it.adapter = frameAdapter
         }
     }
@@ -61,12 +68,20 @@ class FramesViewComponent(
         }
     }
 
+    fun framesCreated(): Boolean {
+        return this::frameAdapter.isInitialized
+    }
+
     fun resetFrames() {
         frameAdapter.resetAllFrames()
     }
 
-    fun revealFrames() {
-        frameAdapter.revealAllFrames()
+    fun revealFrames(bowler: Bowler) {
+        frameAdapter.revealAllFrames(bowler)
+    }
+
+    fun concealFrames(onEnd: () -> Unit) {
+        frameAdapter.concealFrames(onEnd)
     }
 
     fun updateFrames(bowler: Bowler, current: Frame) {

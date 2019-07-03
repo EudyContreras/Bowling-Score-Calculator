@@ -9,26 +9,26 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
+import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import android.widget.TextView
-import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.eudycontreras.bowlingcalculator.R
-import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
-import com.eudycontreras.bowlingcalculator.calculator.elements.FrameLast
-import com.eudycontreras.bowlingcalculator.calculator.elements.FrameNormal
-import com.eudycontreras.bowlingcalculator.calculator.elements.Roll
+import com.eudycontreras.bowlingcalculator.adapters.FrameViewAdapter.Values.Companion.concealSpeed
+import com.eudycontreras.bowlingcalculator.adapters.FrameViewAdapter.Values.Companion.markDefaultScale
+import com.eudycontreras.bowlingcalculator.adapters.FrameViewAdapter.Values.Companion.resetFlipSpeed
+import com.eudycontreras.bowlingcalculator.adapters.FrameViewAdapter.Values.Companion.revealSpeed
+import com.eudycontreras.bowlingcalculator.adapters.FrameViewAdapter.Values.Companion.sequenceStagger
+import com.eudycontreras.bowlingcalculator.adapters.FrameViewAdapter.Values.Companion.toBackDuration
+import com.eudycontreras.bowlingcalculator.adapters.FrameViewAdapter.Values.Companion.toFrontDuration
+import com.eudycontreras.bowlingcalculator.calculator.elements.*
 import com.eudycontreras.bowlingcalculator.components.views.FramesViewComponent
-import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_FRAME_COUNT
-import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_START_INDEX
-import com.eudycontreras.bowlingcalculator.utilities.extensions.animateColor
-import com.eudycontreras.bowlingcalculator.utilities.extensions.dp
-import com.eudycontreras.bowlingcalculator.utilities.extensions.hide
-import com.eudycontreras.bowlingcalculator.utilities.extensions.show
-import com.eudycontreras.bowlingcalculator.utilities.runSequential
+import com.eudycontreras.bowlingcalculator.listeners.AnimationListener
+import com.eudycontreras.bowlingcalculator.utilities.*
+import com.eudycontreras.bowlingcalculator.utilities.extensions.*
 import kotlinx.android.synthetic.main.item_frame_view.view.*
 import kotlinx.android.synthetic.main.item_frame_view_mark.view.*
-import java.lang.ref.WeakReference
 
 
 /**
@@ -38,29 +38,46 @@ import java.lang.ref.WeakReference
 
 class FrameViewAdapter(
     private val context: Activity,
+    private val layoutManager: LinearLayoutManager,
     private val viewComponent: FramesViewComponent,
     private val items: ArrayList<Frame>
 ) : RecyclerView.Adapter<FrameViewAdapter.FrameViewHolder>() {
 
-    internal val viewHolders: Array<FrameViewHolder?> = arrayOfNulls(DEFAULT_FRAME_COUNT)
+    internal val missIcon: Drawable = context.drawable(R.drawable.ic_result_miss)
+    internal val spareIcon: Drawable = context.drawable(R.drawable.ic_result_spare)
+    internal val strikeIcon: Drawable = context.drawable(R.drawable.ic_result_strike)
 
-    internal val missIcon: Drawable? = ContextCompat.getDrawable(context, R.drawable.ic_result_miss)
-    internal val spareIcon: Drawable? = ContextCompat.getDrawable(context, R.drawable.ic_result_spare)
-    internal val strikeIcon: Drawable? = ContextCompat.getDrawable(context, R.drawable.ic_result_strike)
+    internal val markerNormal: ColorStateList = ColorStateList.valueOf(context.color(R.color.frameMark))
+    internal val markerSelected: ColorStateList = ColorStateList.valueOf(context.color(R.color.frameMarkSelected))
 
-    internal val markerNormal: Int = ContextCompat.getColor(context, R.color.frameMark)
-    internal val markerSelected: Int = ContextCompat.getColor(context, R.color.frameMarkSelected)
+    internal val white: ColorStateList = ColorStateList.valueOf(context.color(R.color.white))
+    internal val semiWhite: ColorStateList = ColorStateList.valueOf(context.color(R.color.background))
 
-    internal val white: Int = ContextCompat.getColor(context, R.color.white)
-    internal val semiWhite: Int = ContextCompat.getColor(context, R.color.background)
-
-    internal var lastReference: WeakReference<FrameViewHolder>? = null
-
+    internal var revealingBowlerId: Long = -1
     internal var currentIndex: Int = DEFAULT_START_INDEX
     internal var lastSelected: Int? = null
 
-    private var resetFlipSpeed: Long = 500
-    private var revealSpeed: Long = 200
+    private var revealed: HashMap<Int, Boolean> = HashMap(DEFAULT_FRAME_COUNT)
+
+    private val viewHolders: Array<FrameViewHolder?> = arrayOfNulls(DEFAULT_FRAME_COUNT)
+
+    private var lastReference: FrameViewHolder? = null
+
+    internal sealed class Values {
+        companion object {
+            const val toFrontDuration = 250L
+            const val toBackDuration = 250L
+            const val sequenceStagger: Long = 50
+            const val resetFlipSpeed: Long = 800
+            const val revealSpeed: Long = 300
+            const val concealSpeed: Long = 300
+            const val markDefaultScale: Float = 0.9f
+        }
+    }
+
+    init {
+        (0..DEFAULT_FRAME_COUNT).forEach { revealed[it] = false }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FrameViewHolder {
         return FrameViewHolder(LayoutInflater.from(context).inflate(R.layout.item_frame_view, parent, false))
@@ -68,11 +85,11 @@ class FrameViewAdapter(
 
     override fun onViewRecycled(holder: FrameViewHolder) {
         super.onViewRecycled(holder)
-        holder.resetValues()
+        holder.resetValues(this)
     }
 
     override fun onBindViewHolder(holder: FrameViewHolder, position: Int) {
-        holder.resetValues()
+        holder.resetValues(this)
         holder.performBinding(this, items[position])
     }
 
@@ -81,34 +98,57 @@ class FrameViewAdapter(
     }
 
     internal fun adjustViewPort(index: Int) {
+        val firstVisible = layoutManager.findFirstCompletelyVisibleItemPosition()
+        val lastVisible = layoutManager.findLastCompletelyVisibleItemPosition()
+
+        if (index in firstVisible..lastVisible) {
+            return
+        }
+
         if (index != currentIndex) {
             return
         }
 
-        if ((index > (itemCount / 2)) || index == DEFAULT_START_INDEX) {
-            this.viewComponent.scrollToIndex(index)
+        if (index > (itemCount / 2)) {
+            this.viewComponent.scrollToIndex(itemCount - 1)
+            return
+        }
+
+        if (index < (itemCount / 2)) {
+            this.viewComponent.scrollToIndex(DEFAULT_START_INDEX)
         }
     }
 
     internal fun resetAllFrames() {
         lastSelected = null
-        lastReference = null
         currentIndex = DEFAULT_START_INDEX
         adjustViewPort(0)
-        runSequential(80, viewHolders.size) {
-            context.runOnUiThread { viewHolders[it]?.resetCell(resetFlipSpeed) }
+        runSequential(sequenceStagger, items.size) {
+            viewHolders[it]?.resetCell(this, resetFlipSpeed, items[it])
         }
     }
 
-    internal fun revealAllFrames() {
+    internal fun revealAllFrames(bowler: Bowler) {
+        lastSelected = null
+        currentIndex = DEFAULT_START_INDEX
+        lastSelected = DEFAULT_START_INDEX
+        revealingBowlerId = bowler.id
         adjustViewPort(0)
-        runSequential(120, viewHolders.size) {
-            context.runOnUiThread { viewHolders[it]?.revealCell(revealSpeed, this) }
+        runSequential(sequenceStagger, items.size) {
+            revealed[it] = true
+            viewHolders[it]?.revealCell(this, revealSpeed, items[it])
         }
+    }
+
+    fun concealFrames(onEnd: () -> Unit) {
+        for (it in 0 until items.size) {
+            revealed[it] = false
+            viewHolders[it]?.concealCell(revealSpeed)
+        }
+        runAfterMain(concealSpeed, onEnd)
     }
 
     fun changeSource(items: List<Frame>) {
-        this.lastReference = null
         this.items.clear()
         this.items.addAll(items)
         this.notifyDataSetChanged()
@@ -135,82 +175,41 @@ class FrameViewAdapter(
 
         private var frame: Frame? = null
 
-        private val markDefaultScale: Float = 0.9f
+        private var selected: Boolean = false
 
         init {
             view.setOnClickListener(this)
-
-            roundOneMark.isClickable = false
-            roundTwoMark.isClickable = false
-            roundExtraMark.isClickable = false
         }
 
         override fun onClick(view: View?) {
-            frame?.let {frame ->
-                adapter?.let {
-                    if (it.currentIndex != frame.index) {
-                        it.currentIndex = frame.index
-                        it.lastSelected?.let { last ->
-                            if (it.viewComponent.controller.canSelect(frame.index, last)) {
-                                it.viewComponent.controller.performFrameSelection(frame.index)
-                                it.lastReference?.let { reference ->
-                                    if (!reference.isEnqueued) {
-                                        sendLastToBack(reference.get(), it)
-                                    }
-                                }
-                                it.lastReference = WeakReference(this)
-                                bringCurrentToFront(frame, it)
-                            }
+            if (frame == null || adapter == null)
+                return
+
+            doWith(frame, adapter){ frame, adapter->
+                if (adapter.currentIndex != frame.index) {
+                    adapter.currentIndex = frame.index
+                    if (adapter.viewComponent.controller.checkCanSelectFrame(frame.index, adapter.lastSelected)) {
+                        adapter.viewComponent.controller.selectFrame(frame.index)
+                        adapter.lastReference?.let { reference ->
+                            sendLastToBack(reference, adapter)
                         }
-                        return
+                        bringCurrentToFront(frame, adapter)
                     }
-                    if(frame is FrameLast && frame.isCompleted) {
-                        it.viewComponent.controller.performFrameSelection(frame.index)
-                        bringCurrentToFront(frame, it)
-                    }
+                    return
+                }
+                if(frame is FrameLast && frame.isCompleted) {
+                    adapter.viewComponent.controller.selectFrame(frame.index)
+                    bringCurrentToFront(frame, adapter)
                 }
             }
         }
 
-        fun resetCell(flipSpeed: Long, onEnd: (() -> Unit)? = null) {
-            frame?.let {
-                animateResetFrameCell(flipSpeed) {
-                    onEnd?.invoke()
-                    resetValues()
-                }
-            }
-        }
-
-        fun revealCell(
-            flipSpeed: Long,
-            adapter: FrameViewAdapter
-        ) {
-            frame?.let {
-                animateFrameReveal(flipSpeed, adapter)
-            }
-        }
-
-        internal fun resetValues() {
-
-            adapter?.let {
-                if (it.items.isEmpty()){
-                    frame = null
-                }
-                view.animateColor(it.white, it.semiWhite, 0L)
-                disableMarkSelection(this, it)
-                frame?.let {frame ->
-                    performBinding(it, frame)
-                }
-            }
-
-            frame?.let {
-                if (it is FrameNormal) {
-                    roundExtraMark.hide()
-                }
-            }
-
+        internal fun resetValues(adapter: FrameViewAdapter) {
+            view.scaleX = 1f
+            view.scaleY = 1f
             view.translationZ = 0f
             view.translationY = 0f
+            view.alpha = 1f
 
             roundOneMark.scaleX = markDefaultScale
             roundOneMark.scaleY = markDefaultScale
@@ -221,6 +220,12 @@ class FrameViewAdapter(
             roundExtraMark.scaleX = markDefaultScale
             roundExtraMark.scaleY = markDefaultScale
 
+            roundOneMark.backgroundTintList = adapter.markerNormal
+            roundTwoMark.backgroundTintList = adapter.markerNormal
+            roundExtraMark.backgroundTintList = adapter.markerNormal
+
+            view.backgroundTintList = adapter.semiWhite
+
             roundOneMarkIcon.background = null
             roundTwoMarkIcon.background = null
             roundExtraMarkIcon.background = null
@@ -230,29 +235,40 @@ class FrameViewAdapter(
             roundExtraMarkText.text = ""
 
             frameScore.text = "0"
+
+            frame?.let {
+                if (it is FrameNormal) {
+                    roundExtraMark.hide()
+                }
+            }
         }
 
         internal fun performBinding(adapter: FrameViewAdapter, frame: Frame) {
             this.frame = frame
             this.adapter = adapter
 
-            if (!adapter.viewHolders.any { holder -> holder?.layoutPosition == frame.index }) {
-                view.translationZ = 30.dp
-                view.translationY = (-20).dp
-                view.scaleX = 1.3f
-                view.scaleY = 1.3f
-                view.alpha = 0f
-            }
-
             adapter.viewHolders[frame.index] = this
 
-            frameIndex.text = (frame.index + 1).toString()
-            frameScore.text = frame.getTotal(true).toString()
+            frameIndex.text = toString(frame.index + 1)
+            frameScore.text = toString(frame.getTotal(true))
+
+            if (!adapter.revealed.getValue(frame.index)) {
+                itemView.translationZ = 30.dp
+                itemView.translationY = (-60).dp
+                itemView.scaleX = 1.2f
+                itemView.scaleY = 1.2f
+                itemView.alpha = 0f
+            }
 
             if (frame.index == adapter.currentIndex) {
-                adapter.lastReference = WeakReference(this)
-                bringCurrentToFront(frame, adapter)
-            } else if (frame.index == adapter.currentIndex - 1) {
+                if (adapter.revealingBowlerId != frame.bowlerId) {
+                    bringCurrentToFront(frame, adapter)
+                } else {
+                    if (adapter.revealed.getValue(frame.index)) {
+                        bringCurrentToFront(frame, adapter)
+                    }
+                }
+            } else {
                 adapter.lastSelected?.let {
                     if (frame.index == it) {
                         sendLastToBack(this, adapter)
@@ -267,7 +283,6 @@ class FrameViewAdapter(
                     if (frame.getRollBy(Frame.State.EXTRA_CHANCE) == null){
                         roundExtraMark.hide()
                     }
-                    sendLastToBack(this, adapter)
                 }
             } else {
                 roundExtraMark.hide()
@@ -282,7 +297,29 @@ class FrameViewAdapter(
             determineValues(adapter, frame, frame.getRollBy(Frame.State.EXTRA_CHANCE), roundExtraMarkIcon, roundExtraMarkText)
         }
 
-        private fun processMarkerSelection(frame: Frame, adapter: FrameViewAdapter) {
+        private fun setMarkerSelection(frame: Frame, adapter: FrameViewAdapter) {
+            when (frame.state) {
+                Frame.State.FIRST_CHANCE -> {
+                    setMarkSelected(roundOneMark, adapter)
+                }
+                Frame.State.SECOND_CHANCE -> {
+                    setMarkUnselected(roundOneMark, adapter)
+                    setMarkSelected(roundTwoMark, adapter)
+                }
+                Frame.State.EXTRA_CHANCE -> {
+                    setMarkUnselected(roundOneMark, adapter)
+                    setMarkUnselected(roundTwoMark, adapter)
+                    setMarkSelected(roundExtraMark, adapter)
+                }
+                else -> {
+                    setMarkUnselected(roundOneMark, adapter)
+                    setMarkUnselected(roundTwoMark, adapter)
+                    setMarkUnselected(roundExtraMark, adapter)
+                }
+            }
+        }
+
+        private fun animateMarkerSelection(frame: Frame, adapter: FrameViewAdapter) {
             when (frame.state) {
                 Frame.State.FIRST_CHANCE -> {
                     animateMarkSelected(roundOneMark, adapter)
@@ -310,22 +347,22 @@ class FrameViewAdapter(
 
             when (roll.result) {
                 Roll.Result.STRIKE -> {
+                    text.hide()
                     icon.show()
                     icon.background = adapter.strikeIcon
-                    text.hide()
                     if (frame is FrameNormal) {
                         roundTwoMark.hide()
                     }
                 }
                 Roll.Result.SPARE -> {
+                    text.hide()
                     icon.show()
                     icon.background = adapter.spareIcon
-                    text.hide()
                 }
                 Roll.Result.MISS -> {
+                    text.hide()
                     icon.show()
                     icon.background = adapter.missIcon
-                    text.hide()
                 }
                 Roll.Result.NORMAL -> {
                     icon.hide()
@@ -336,77 +373,98 @@ class FrameViewAdapter(
             }
         }
 
-        private fun bringCurrentToFront(frame: Frame, adapter: FrameViewAdapter) {
-            if (adapter.viewComponent.controller.canSelect(frame.index)) {
-                if (adapter.currentIndex == frame.index) {
-                    if (adapter.lastSelected == null) {
-                        bringCurrentToFront(view) { processMarkerSelection(frame, adapter ) }
-                    } else {
-                        adapter.lastSelected?.let {
-                            if (it == frame.index) {
-                                view.translationZ = 4.dp
-                                view.translationY = (-1).dp
-                                view.backgroundTintList = ColorStateList.valueOf(adapter.white)
-                                adapter.lastSelected = frame.index
-                                processMarkerSelection(frame, adapter )
-                            } else {
-                                bringCurrentToFront(view) { processMarkerSelection(frame, adapter ) }
-                            }
-                        }
-                    }
-                }
+        internal fun resetCell(adapter:FrameViewAdapter, flipSpeed: Long, frame: Frame, onEnd: (() -> Unit)? = null) {
+            animateResetFrameCell(flipSpeed) {
+                onEnd?.invoke()
+                resetValues(adapter)
+                performBinding(adapter, frame)
             }
         }
 
-        private fun bringCurrentToFront(view: View?, onEnd: (() -> Unit)?) {
-            adapter?.let {
-                frame?.let { frame ->
-                    it.lastSelected = frame.index
-                }
+        internal fun revealCell(
+            adapter: FrameViewAdapter,
+            flipSpeed: Long,
+            frame: Frame
+        ) {
+            animateFrameReveal(frame, flipSpeed, adapter)
+        }
 
-                val duration: Long = 200
-                view?.run {
-                    animateColor(it.semiWhite, it.white, duration)
-                    animate()
-                        .setListener(null)
-                        .translationZ(4.dp)
-                        .translationY((-1).dp)
-                        .setDuration(duration)
-                        .start()
-                }
+        internal fun concealCell(concealSpeed: Long) {
+            animateFrameConceal(concealSpeed)
+        }
 
-                onEnd?.invoke()
+        private fun bringCurrentToFront(frame: Frame, adapter: FrameViewAdapter) {
+
+            if (!adapter.viewComponent.controller.checkCanSelectFrame(frame.index))
+                return
+
+            if (frame.isCompleted)
+                return
+
+            if (adapter.lastSelected == frame.index) {
+                view.translationZ = 4.dp
+                view.translationY = (-1).dp
+                view.backgroundTintList = adapter.white
+
+                adapter.lastReference = this
+                adapter.lastSelected = frame.index
+                setMarkerSelection(frame, adapter)
+            } else {
+                adapter.lastReference = this
+                adapter.lastSelected = frame.index
+                animateMarkerSelection(frame, adapter )
+                bringCurrentToFront(view, adapter)
             }
 
-            roundOneMark.isClickable = true
-            roundTwoMark.isClickable = true
-            roundExtraMark.isClickable = true
+            selected = true
+        }
+
+        private fun bringCurrentToFront(view: View, adapter: FrameViewAdapter, onEnd: (() -> Unit)? = null) {
+            val duration: Long = toFrontDuration
+
+            view.animateColor(adapter.semiWhite, adapter.white, duration)
+
+            val listener: AnimationListener? = if (onEnd != null) {
+                AnimationListener(onEnd = onEnd)
+            } else
+                null
+
+            view.animate()
+                .setListener(listener)
+                .scaleX(1f)
+                .scaleY(1f)
+                .translationZ(4.dp)
+                .translationY((-1).dp)
+                .alpha(1f)
+                .setDuration(duration)
+                .start()
         }
 
         private fun sendLastToBack(viewHolder: FrameViewHolder?, adapter: FrameViewAdapter) {
             viewHolder?.let {
-                val view: View = it.itemView
                 view.translationY = (-1).dp
                 view.translationZ = 4.dp
-                view.backgroundTintList = ColorStateList.valueOf(adapter.white)
+                view.backgroundTintList = adapter.white
 
-                val duration: Long = 200
+                val duration: Long = toBackDuration
+                val view: View = it.itemView
+
                 view.animateColor(adapter.white, adapter.semiWhite, duration)
-                disableMarkSelection(viewHolder, adapter)
+
                 view.animate()
                     .setListener(null)
                     .translationZ(0.dp)
                     .translationY(0f)
                     .setDuration(duration)
                     .start()
+
+                disableMarkSelection(viewHolder, adapter)
+
+                selected = false
             }
         }
 
         private fun disableMarkSelection(viewHolder: FrameViewHolder, adapter: FrameViewAdapter) {
-            viewHolder.roundOneMark.isClickable = false
-            viewHolder.roundTwoMark.isClickable = false
-            viewHolder.roundExtraMark.isClickable = false
-
             animateMarkUnselected(viewHolder.roundOneMark, adapter)
             viewHolder.frame?.let {
                 if (!it.rolls.values.any { roll -> roll.result == Roll.Result.STRIKE }) {
@@ -420,21 +478,36 @@ class FrameViewAdapter(
             animateMarkUnselected(viewHolder.roundExtraMark, adapter)
         }
 
+        private fun animateFrameConceal(duration: Long) {
+            view.animate()
+                .setListener(null)
+                .setInterpolator(LinearInterpolator())
+                .setDuration(duration)
+                .alpha(0f)
+                .start()
+        }
+
         private fun animateFrameReveal(
+            frame: Frame,
             duration: Long,
             adapter: FrameViewAdapter
         ) {
             var translateY = 0f
             var translateZ = 0f
 
-            frame?.let {
-                if (adapter.currentIndex == it.index) {
-                    translateY = (-1).dp
-                    translateZ = 4.dp
+            if (adapter.currentIndex == frame.index) {
+                translateY = (-1).dp
+                translateZ = 4.dp
+            }
+
+            val onEnd: (() -> Unit)? = {
+                if (frame.index == adapter.currentIndex && !frame.isCompleted) {
+                    bringCurrentToFront(frame, adapter)
                 }
             }
 
-            view.animate()
+            itemView.animate()
+                .setListener(AnimationListener(onEnd = onEnd))
                 .setInterpolator(DecelerateInterpolator())
                 .setDuration(duration)
                 .translationZ(translateZ)
@@ -485,9 +558,17 @@ class FrameViewAdapter(
             animator.start()
         }
 
+        private fun setMarkSelected(mark: View, adapter: FrameViewAdapter) {
+            mark.backgroundTintList = adapter.markerSelected
+            mark.scaleX = 1f
+            mark.scaleY = 1f
+        }
+
         private fun animateMarkSelected(mark: View, adapter: FrameViewAdapter) {
             val duration: Long = 200
+
             mark.animateColor(adapter.markerNormal, adapter.markerSelected, duration)
+
             mark.animate()
                 .setListener(null)
                 .scaleX(1f)
@@ -496,9 +577,17 @@ class FrameViewAdapter(
                 .start()
         }
 
+        private fun setMarkUnselected(mark: View, adapter: FrameViewAdapter) {
+            mark.backgroundTintList = adapter.markerNormal
+            mark.scaleX = 0.9f
+            mark.scaleY = 0.9f
+        }
+
         private fun animateMarkUnselected(mark: View, adapter: FrameViewAdapter) {
-            val duration: Long = 100
+            val duration: Long = 150
+
             mark.animateColor(adapter.markerSelected, adapter.markerNormal, 0)
+
             mark.animate()
                 .setListener(null)
                 .scaleX(0.9f)

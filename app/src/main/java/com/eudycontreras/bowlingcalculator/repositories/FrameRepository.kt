@@ -10,13 +10,13 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
 
 interface FrameRepository {
 
-    fun saveFrames(frames: List<Frame>)
+    suspend fun saveFrames(frames: List<Frame>)
 
-    fun updateFrames(bowlerId: Long, frames: List<Frame>)
+    suspend fun updateFrames(bowlerId: Long, frames: List<Frame>)
 
-    fun getFrames(bowler: Bowler): List<Frame>
+    suspend fun getFrames(bowler: Bowler): List<Frame>
 
-    fun deleteFrames(bowler: Bowler)
+    suspend fun deleteFrames(bowler: Bowler)
 
-    fun deleteAll()
+    suspend fun deleteAll()
 }

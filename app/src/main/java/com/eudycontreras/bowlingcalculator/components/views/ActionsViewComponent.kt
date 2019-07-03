@@ -9,6 +9,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.children
+import androidx.lifecycle.ViewModel
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.components.controllers.ActionViewController
@@ -27,7 +28,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 class ActionsViewComponent(
     private val context: MainActivity,
     private val controller: ActionViewController
-) : ViewComponent {
+) : ViewComponent, ViewModel() {
 
     private var remainingPins: Int = DEFAULT_PIN_COUNT
 
@@ -61,8 +62,9 @@ class ActionsViewComponent(
                 val input: FrameLayout = view.findViewById(R.id.throwInput) as FrameLayout
                 val text: TextView = input.findViewById(R.id.throwInputText)
 
-                view.scaleY = 0f
-                view.scaleX = 0f
+                input.scaleY = 0f
+                input.scaleX = 0f
+                input.alpha = 0f
                 text.text = toString(index)
 
                 input.addTouchAnimation(
@@ -79,25 +81,25 @@ class ActionsViewComponent(
         throwAction?.let { parent ->
             parent.children.forEachIndexed { index, view ->
                 view.findViewById<FrameLayout>(R.id.throwInput).setOnClickListener {
-                    controller.handleThrowActions(index)
+                    controller.performThrow(index)
                 }
             }
         }
 
         strikeAction?.setOnClickListener {
-            controller.handleThrowActions(DEFAULT_PIN_COUNT)
+            controller.performThrow(DEFAULT_PIN_COUNT)
         }
 
         resetAction?.setOnClickListener {
-            controller.handleResetAction()
+            controller.performReset()
         }
 
         loadAction?.setOnClickListener {
-            controller.handleLoadAction()
+            controller.loadResult()
         }
 
         saveAction?.setOnClickListener {
-            controller.handleSaveAction()
+            controller.saveResult()
         }
     }
 
@@ -111,42 +113,41 @@ class ActionsViewComponent(
     }
 
     fun revealAvailablePins() {
-        val delay: Long =  150
-        val duration: Long = 250
+        val duration: Long = 350
+        val delay: Long = 60
 
         throwAction?.let { parent ->
             var leftIndex = (parent.childCount / 2) - 1
             var rightIndex = parent.childCount / 2
-            runSequential(delay, parent.childCount - 1) {
-                context.runOnUiThread {
-                    val view = parent.getChildAt(leftIndex)
-                    view.isEnabled = true
-                    view.animate()
-                        .alpha(1f)
-                        .scaleX(1f)
-                        .scaleY(1f)
-                        .setInterpolator(OvershootInterpolator())
-                        .setDuration(duration)
-                        .start()
-                    leftIndex = (leftIndex - 1).clamp(0, 4)
-                }
-                context.runOnUiThread {
-                    val view = parent.getChildAt(rightIndex)
-                    view.isEnabled = true
-                    view.animate()
-                        .alpha(1f)
-                        .scaleX(1f)
-                        .scaleY(1f)
-                        .setInterpolator(OvershootInterpolator())
-                        .setDuration(duration)
-                        .start()
-                    rightIndex = (rightIndex + 1).clamp(5, 9)
-                }
+            val onEnd = {
+                activateStrike(strikeAction)
+            }
+            runSequential(delay, parent.childCount - 1, onEnd) {
+                val viewLeft = parent.getChildAt(leftIndex).findViewById<FrameLayout>(R.id.throwInput)
+                viewLeft.isEnabled = true
+                viewLeft.animate()
+                    .alpha(1f)
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setInterpolator(OvershootInterpolator())
+                    .setDuration(duration)
+                    .start()
+                leftIndex = (leftIndex - 1).clamp(0, 4)
+                val viewRight = parent.getChildAt(rightIndex).findViewById<FrameLayout>(R.id.throwInput)
+                viewRight.isEnabled = true
+                viewRight.animate()
+                    .alpha(1f)
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setInterpolator(OvershootInterpolator())
+                    .setDuration(duration)
+                    .start()
+                rightIndex = (rightIndex + 1).clamp(5, 9)
             }
         }
     }
 
-    fun setAvailablePins(remainingPins: Int) {
+    fun setAvailablePins(remainingPins: Int, duration: Long) {
         this.remainingPins = remainingPins
         if (remainingPins < DEFAULT_PIN_COUNT) {
             deactivateStrike(strikeAction)
@@ -157,20 +158,12 @@ class ActionsViewComponent(
             parent.children.forEachIndexed { index, view ->
                 val input: FrameLayout = view.findViewById(R.id.throwInput)
                 if ((index) > remainingPins) {
-                    hidePinInput(input)
+                    hidePinInput(input, duration)
                 } else {
-                    showPinsInput(input)
+                    showPinsInput(input, duration)
                 }
             }
         }
-    }
-
-    fun revealArea() {
-
-    }
-
-    fun concealArea() {
-
     }
 
     private fun activateStrike(view: View?) {
@@ -180,7 +173,7 @@ class ActionsViewComponent(
                 .alpha(1f)
                 .scaleX(1f)
                 .scaleY(1f)
-                .setDuration(250)
+                .setDuration(300)
                 .setInterpolator(OvershootInterpolator())
                 .start()
         }
@@ -193,26 +186,30 @@ class ActionsViewComponent(
                 .alpha(0.0f)
                 .scaleX(0.4f)
                 .scaleY(0.4f)
-                .setDuration(250)
+                .setDuration(200)
                 .setInterpolator(AccelerateInterpolator())
                 .start()
 
         }
     }
 
-    private fun hidePinInput(view: View) {
+    private fun hidePinInput(view: View, duration: Long = 300) {
         view.isEnabled = false
         view.animate()
             .alpha(0f)
-            .setDuration(250)
+            .scaleX(0f)
+            .scaleY(0f)
+            .setDuration(duration)
             .start()
     }
 
-    private fun showPinsInput(view: View) {
+    private fun showPinsInput(view: View, duration: Long = 300) {
         view.isEnabled = true
         view.animate()
             .alpha(1f)
-            .setDuration(250)
+            .scaleX(1f)
+            .scaleY(1f)
+            .setDuration(duration)
             .start()
     }
 }

@@ -1,16 +1,14 @@
 package com.eudycontreras.bowlingcalculator.adapters
 
 import android.app.Activity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
-import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.components.views.TabsViewComponent
 import com.eudycontreras.bowlingcalculator.listeners.AnimationListener
@@ -21,6 +19,8 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.detach
 import com.eudycontreras.bowlingcalculator.utilities.extensions.dp
 import kotlinx.android.synthetic.main.item_tab_view.view.*
 import java.lang.ref.WeakReference
+
+
 
 
 /**
@@ -43,49 +43,63 @@ class TabViewAdapter(
 
     sealed class Values {
         companion object {
-            const val alpha = 0.4f
-            const val duration = 150L
+            const val alpha = 0.6f
+            const val changeDuration = 400L
+            const val removeDuration = 200L
             val translateY = 4.dp
             val translateZ = (-10).dp
         }
     }
 
-    fun addItem(item: TabViewModel, selectedIndex: Int? = null) {
+    fun updateItem(id: Long, name: String) {
+        val index = this.items.indexOfFirst { it.bowlerId == id }
+        items[index].bowlerName = name
+        notifyDataSetChanged()
+    }
+
+    fun addItem(item: TabViewModel, selectedIndex: Int? = null, manual: Boolean = false) {
         lastTab?.let { reference ->
             if (!reference.isEnqueued) {
-                (reference.get() as TabViewAdapter.TabViewHolderNormal?)?.deactivateTab()
+                (reference.get() as TabViewHolderNormal?)?.deactivateTab()
             }
         }
+
+        val isManual = manual && items.size > 1
+
         this.items.add(currentIndex, item)
 
         currentIndex = selectedIndex?:this.items.size - 2
         lastTab = null
 
         notifyItemInserted(currentIndex)
-        viewComponent.controller.onTabSelection(currentIndex)
+        viewComponent.controller.onTabSelection(currentIndex, isManual)
     }
 
-    fun addItems(items: List<TabViewModel>, selectedIndex: Int? = null) {
+    fun addItems(items: List<TabViewModel>, selectedIndex: Int? = null, manual: Boolean = false) {
         if (items.isEmpty())
             return
 
         lastTab?.let { reference ->
             if (!reference.isEnqueued) {
-                (reference.get() as TabViewAdapter.TabViewHolderNormal?)?.deactivateTab()
+                (reference.get() as TabViewHolderNormal?)?.deactivateTab()
             }
         }
 
+        val isManual = manual && this.items.size > 1
+
         items.asReversed().forEach {
             this.items.add(currentIndex, it)
+            notifyItemInserted(currentIndex)
+            if (currentIndex > 0) {
+                notifyItemChanged(currentIndex - 1)
+            }
         }
 
         currentIndex = selectedIndex?:this.items.size - 2
         lastTab = null
 
-        notifyDataSetChanged()
-
-        viewComponent.scrollToIndex(this.items.size - 1)
-        viewComponent.controller.onTabSelection(currentIndex)
+        viewComponent.scrollToIndex(currentIndex)
+        viewComponent.controller.onTabSelection(currentIndex, isManual)
     }
 
     fun removeItem(index: Int) {
@@ -103,10 +117,10 @@ class TabViewAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TabViewHolder {
         return when(viewType) {
             ViewType.ADD_TAB.value -> {
-                TabViewHolderAdd(LayoutInflater.from(context).inflate(R.layout.item_tab_view_add, parent, false))
+                TabViewHolderAdd(LayoutInflater.from(context).inflate(com.eudycontreras.bowlingcalculator.R.layout.item_tab_view_add, parent, false))
             }
             else -> {
-                TabViewHolderNormal(LayoutInflater.from(context).inflate(R.layout.item_tab_view, parent, false))
+                TabViewHolderNormal(LayoutInflater.from(context).inflate(com.eudycontreras.bowlingcalculator.R.layout.item_tab_view, parent, false))
             }
         }
     }
@@ -163,7 +177,7 @@ class TabViewAdapter(
         override fun onClick(view: View?) {
             model?.let {
                 currentIndex = layoutPosition
-                viewComponent.controller.requestTab()
+                viewComponent.controller.onTabRequested(true)
             }
         }
     }
@@ -179,6 +193,14 @@ class TabViewAdapter(
 
         private var removed = false
 
+        private val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
+            override fun onLongPress(e: MotionEvent) {
+                Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
+                viewComponent.controller.requestRename(model)
+            }
+        })
+
+
         init {
             resetValues()
             registerListeners()
@@ -187,11 +209,13 @@ class TabViewAdapter(
                 clickTarget = null,
                 depth = (-8).dp,
                 interpolatorPress = DecelerateInterpolator(),
-                interpolatorRelease = OvershootInterpolator()
+                interpolatorRelease = OvershootInterpolator(),
+                gestureDetector = gestureDetector
             )
         }
 
         override fun registerListeners(){
+            tabItem.isLongClickable = true
             tabItem.setOnClickListener(this)
 
             tabAction.setOnClickListener {
@@ -206,7 +230,7 @@ class TabViewAdapter(
                 return
             }
             currentIndex = layoutPosition
-            viewComponent.controller.onTabSelection(layoutPosition)
+            viewComponent.controller.onTabSelection(layoutPosition, true)
             lastTab?.let { reference ->
                 if (!reference.isEnqueued) {
                     (reference.get() as TabViewHolderNormal?)?.deactivateTab()
@@ -237,22 +261,22 @@ class TabViewAdapter(
             lastTab = WeakReference(this)
             this.tabAction.attach()
             this.tabItem.animate()
-                .alpha(1f)
                 .setListener(null)
+                .alpha(1f)
                 .translationY(0f)
-                .translationZ(0.dp)
-                .setDuration(Values.duration)
+                .translationZ(0f)
+                .setDuration(Values.changeDuration)
                 .start()
         }
 
         fun deactivateTab() {
             this.tabAction.detach()
             this.tabItem.animate()
-                .alpha(Values.alpha)
                 .setListener(null)
+                .alpha(Values.alpha)
                 .translationY(Values.translateY)
                 .translationZ(Values.translateZ)
-                .setDuration(Values.duration)
+                .setDuration(Values.changeDuration)
                 .start()
         }
 
@@ -260,7 +284,7 @@ class TabViewAdapter(
             this.tabItem.animate()
                 .alpha(0f)
                 .translationZ(Values.translateZ)
-                .setDuration(Values.duration)
+                .setDuration(Values.removeDuration)
                 .setListener(AnimationListener(onEnd = onEnd))
                 .start()
         }
@@ -273,13 +297,14 @@ class TabViewAdapter(
             } else {
                 layoutPosition
             }
-            viewComponent.controller.removeTab(lastTabIndex, currentIndex) {
+            val onRemoved = {
                 animateRemoval {
                     removeItem(layoutPosition)
                     notifyItemRemoved(layoutPosition)
                     notifyItemChanged(currentIndex)
                 }
             }
+            viewComponent.controller.requestTabRemoval(lastTabIndex, currentIndex, onRemoved)
         }
     }
 
@@ -290,7 +315,7 @@ class TabViewAdapter(
 
     data class TabViewModel(
         val bowlerId: Long = 0,
-        val bowlerName: String = ""
+        var bowlerName: String = ""
     ) {
         var type: ViewType = ViewType.NORMAL_TAB
 

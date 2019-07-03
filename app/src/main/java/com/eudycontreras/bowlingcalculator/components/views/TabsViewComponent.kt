@@ -1,6 +1,7 @@
 package com.eudycontreras.bowlingcalculator.components.views
 
 import android.view.View
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
@@ -9,6 +10,7 @@ import com.eudycontreras.bowlingcalculator.adapters.TabViewAdapter
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.components.controllers.TabsViewController
 import kotlinx.android.synthetic.main.activity_main.*
+
 
 /**
  * @Project BowlingCalculator
@@ -26,7 +28,7 @@ class TabsViewComponent(
 
     private var smoothScroller: LinearSmoothScroller = object : LinearSmoothScroller(context) {
         override fun getVerticalSnapPreference(): Int {
-            return LinearSmoothScroller.SNAP_TO_START
+            return SNAP_TO_START
         }
     }
 
@@ -58,17 +60,20 @@ class TabsViewComponent(
         tabAdapter = TabViewAdapter(context, this, list)
 
         tabRecycler?.let {
+            val itemAnimator = DefaultItemAnimator()
+            itemAnimator.removeDuration = 40
+            it.itemAnimator = itemAnimator
             it.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
             it.adapter = tabAdapter
         }
     }
 
-    fun addTabs(bowlers: List<Bowler>, currentIndex: Int? = null) {
+    fun addTabs(bowlers: List<Bowler>, currentIndex: Int? = null, manual: Boolean = false) {
         if (bowlers.size == 1) {
-            tabAdapter.addItem(bowlers.first().run { TabViewAdapter.TabViewModel(id, name) }, currentIndex)
+            tabAdapter.addItem(bowlers.first().run { TabViewAdapter.TabViewModel(id, name) }, currentIndex, manual)
             return
         }
-        tabAdapter.addItems(bowlers.map { TabViewAdapter.TabViewModel(it.id, it.name) }, currentIndex)
+        tabAdapter.addItems(bowlers.map { TabViewAdapter.TabViewModel(it.id, it.name) }, currentIndex, manual)
     }
 
     fun selectTab(index: Int) {
@@ -77,7 +82,17 @@ class TabsViewComponent(
         scrollToIndex(index)
     }
 
-    fun hasTabs() = tabAdapter.normalTabs.isNotEmpty()
+
+    fun updateTabName(bowlerId: Long, newName: String) {
+        tabAdapter.updateItem(bowlerId, newName)
+    }
+
+    fun setCurrent(index: Int) {
+        tabAdapter.currentIndex = index
+    }
 
     fun getCurrent() = tabAdapter.currentIndex
+
+    fun hasTabs() = tabAdapter.normalTabs.isNotEmpty()
+
 }

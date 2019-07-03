@@ -111,18 +111,27 @@ class SkeletonViewComponent(
             onEnd?.invoke()
             showing = true
         }
+
         iconContainer.animate()
+            .alpha(1f)
             .scaleY(1f)
             .scaleX(1f)
             .translationZ(4.dp)
             .setDuration(duration)
             .setInterpolator(OvershootInterpolator())
-            .setListener(AnimationListener(endAction))
+            .setListener(AnimationListener(onEnd = endAction))
             .start()
 
         action.animate()
+            .alpha(1f)
             .scaleY(1f)
             .scaleX(1f)
+            .setListener(AnimationListener(onEnd = {
+                if (!context.indicator.isAnimationRunning) {
+                    context.indicator.setTarget(action, 2.1f, 0.5f)
+                    context.indicator.startIndicatorAnimation(0)
+                }
+            }))
             .translationZ(12.dp)
             .setStartDelay(duration - 50)
             .setDuration(duration)
@@ -148,23 +157,28 @@ class SkeletonViewComponent(
         val duration = 400L
 
         val endAction = {
-            parent.visibility = View.INVISIBLE
             onEnd?.invoke()
             showing = false
+            parent.visibility = View.INVISIBLE
+        }
+
+        if (context.indicator.isAnimationRunning) {
+            context.indicator.stopIndicatorAnimation(200)
         }
 
         iconContainer.animate()
-            .scaleY(0f)
-            .scaleX(0f)
+            .scaleY(0.6f)
+            .scaleX(0.6f)
+            .alpha(0f)
             .translationZ(0f)
             .setDuration(duration)
             .setInterpolator(DecelerateInterpolator())
-            .setListener(AnimationListener(endAction))
+            .setListener(AnimationListener(onEnd = endAction))
             .start()
 
         action.animate()
-            .scaleY(0f)
-            .scaleX(0f)
+            .setListener(null)
+            .alpha(0f)
             .translationZ(4.dp)
             .setStartDelay(0)
             .setDuration(duration)
@@ -194,7 +208,7 @@ class SkeletonViewComponent(
         abstract val showActionButton: Boolean
 
         class Default(context: Activity, override val action: (() -> Unit)? = null) : EmptyState() {
-            override val icon: Drawable = context.drawable(R.drawable.img_logo)
+            override val icon: Drawable = context.drawable(R.drawable.img_bowling_logo_alt)
             override val actionColor: Int = context.color(R.color.colorAccentLight)
             override val shapeColor: Int = context.color(R.color.colorPrimary)
             override val titleIcon: Drawable = context.drawable(R.drawable.ic_add_bowler)

@@ -24,3 +24,5 @@ const val DEFAULT_FRAME_COUNT = 10
 const val DEFAULT_FRAME_CHANCES = 2
 
 const val DEFAULT_PIN_COUNT = 10
+
+const val SCROLLER_MILLI_PER_INCH = 150f

@@ -13,6 +13,8 @@ import com.eudycontreras.bowlingcalculator.utilities.gson
  * @author Eudy Contreras.
  */
 
+data class Ternary<T>(val target: T, val result: Boolean)
+
 fun List<Roll>.sum() = map { it.totalKnockdown }.sum()
 
 fun Bowler.getComputedScore(): Int {
@@ -33,6 +35,34 @@ fun <T> List<T>.asLiveData(): MediatorLiveData<List<T>> {
     return livaData
 }
 
+fun Any?.isNotNull(): Boolean {
+    return this != null
+}
+
+infix fun <T> Collection<T>.and(other: Collection<T>): Collection<T> {
+    return this.plus(other)
+}
+
+infix fun <T> Collection<T>.without(other: Collection<T>): Collection<T> {
+    return this.minus(other)
+}
+
+infix fun <T> Boolean.then(target: T): Ternary<T> {
+    return Ternary(target, this)
+}
+
+infix fun <T> Ternary<T>.or(target: T): T {
+    return if (this.result) this.target else target
+}
+
 inline fun <reified T> T.clone(): T {
     return gson.fromJson(gson.toJson(this, T::class.java), T::class.java)
+}
+
+inline fun <T> T.doWhen(block: T.() -> Boolean, action: (T)-> Unit ): Ternary<T> {
+    if (block.invoke(this)) {
+        action.invoke(this)
+        return Ternary(this, true)
+    }
+    return Ternary(this, false)
 }

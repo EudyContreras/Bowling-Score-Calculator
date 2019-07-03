@@ -1,6 +1,7 @@
 package com.eudycontreras.bowlingcalculator.components.controllers
 
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
+import com.eudycontreras.bowlingcalculator.adapters.TabViewAdapter
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.components.views.SkeletonViewComponent
@@ -25,59 +26,57 @@ class TabsViewController(
         scoreController.tabsController = this
     }
 
-    fun createTabs(bowler: List<Bowler>) {
-        viewComponent.crateTabs(bowler)
-    }
 
-    fun requestTab(listener: BowlerListener = null) {
+    fun onTabRequested(manual: Boolean, listener: BowlerListener = null) {
         val onDismiss = {
             if (!context.app.persistenceManager.hasBowlers()) {
-                scoreController.skeletonController.setState(SkeletonViewComponent.EmptyState.Default(context) { requestTab() })
+                scoreController.skeletonController.setState(SkeletonViewComponent.EmptyState.Default(context) {
+                    onTabRequested(true)
+                })
                 scoreController.skeletonController.revealState()
             } else {
                 scoreController.skeletonController.concealState()
             }
         }
-        context.openDialog(FragmentCreateBowler.instance(this, listener, onDismiss))
+        context.openDialog(FragmentCreateBowler.instance(this, manual, listener, onDismiss))
     }
 
-    fun addTabs(bowlers: List<Bowler>, currentIndex: Int? = null) {
-        if(bowlers.isNotEmpty())
-        viewComponent.addTabs(bowlers, currentIndex)
-    }
-
-    fun removeTab(lastIndex: Int, index: Int, onEnd: (()-> Unit)? = null) {
+    fun requestTabRemoval(lastIndex: Int, index: Int, onEnd: (()-> Unit)? = null) {
         scoreController.removeBowler(lastIndex, index, onEnd)
+    }
+
+    fun onTabSelection(current: Int, manual: Boolean = false) {
+        scoreController.selectBowler(current, manual)
     }
 
     fun selectTab(index: Int) {
         viewComponent.selectTab(index)
     }
 
-    fun onTabSelection(current: Int) {
-        scoreController.selectBowler(current)
+    fun addTabs(bowlers: List<Bowler>, currentIndex: Int? = null, manual: Boolean) {
+        if(bowlers.isNotEmpty())
+            viewComponent.addTabs(bowlers, currentIndex, manual)
     }
 
-    fun createBowler(names: List<String>, listener: BowlerListener) {
-        val bowlers = names.map { Bowler(it) }
+    fun createTabs(bowler: List<Bowler>) {
+        viewComponent.crateTabs(bowler)
+    }
 
-        context.saveCurrentState(bowlers) {
-            listener?.invoke(it)
-            bowlers.forEach { bowler ->
-                if (!scoreController.bowlers.contains(bowler)) {
-                    scoreController.bowlers.add(bowler)
-                }
-            }
-            if (!viewComponent.hasTabs()) {
-                val activeTab = getActive()
-                context.app.persistenceManager.saveActiveTab(activeTab)
-                scoreController.initCalculator(it, activeTab)
-            }
-            viewComponent.addTabs(it)
+    fun createBowler(names: List<String>, manual: Boolean, listener: BowlerListener) {
+        scoreController.createBowler(names, manual, listener)
+    }
+
+    fun requestRename(model: TabViewAdapter.TabViewModel?) {
+        model?.let {
+            scoreController.requestRename(model.bowlerId, model.bowlerName)
         }
     }
 
-    fun getActive(): Int {
-        return viewComponent.getCurrent()
+    fun updateTabName(bowlerId: Long, newName: String) {
+        viewComponent.updateTabName(bowlerId, newName)
     }
+
+    fun hasTabs(): Boolean = viewComponent.hasTabs()
+
+    fun getActive(): Int = viewComponent.getCurrent()
 }

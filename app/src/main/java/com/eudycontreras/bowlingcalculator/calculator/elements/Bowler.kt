@@ -6,6 +6,7 @@ import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_FRAME_COUNT
 import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_START_INDEX
 import com.eudycontreras.bowlingcalculator.utilities.NO_ID
 import com.eudycontreras.bowlingcalculator.utilities.extensions.clamp
+import com.eudycontreras.bowlingcalculator.utilities.extensions.doWhen
 
 /**
  * @Project BowlingCalculator
@@ -13,8 +14,8 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.clamp
  */
 
 data class Bowler(
-    val name: String = "",
-    val skill: SkillLevel = SkillLevel.AMATEUR
+    var name: String = "",
+    var skill: SkillLevel = SkillLevel.AMATEUR
 ) : Element {
 
     enum class SkillLevel{
@@ -51,6 +52,12 @@ data class Bowler(
             .clamp(DEFAULT_START_INDEX, DEFAULT_FRAME_COUNT - 1)
     }
 
+    fun hasStarted(): Boolean {
+        return currentFrameIndex > 0 || getCurrentFrame().hasStarted()
+    }
+
+    fun getNextFrame() = frames[currentFrameIndex + 1]
+
     fun getCurrentFrame() = frames[currentFrameIndex]
 
     override fun init() {
@@ -77,31 +84,36 @@ data class Bowler(
 
         var currentFrame = getCurrentFrame()
 
-        if (!currentFrame.hasChances()) {
-            if (currentFrame is FrameLast) {
-                if (!currentFrame.isCompleted) {
-                    currentFrame.reset()
-                }
-            }
+        currentFrame.doWhen( { !hasChances() and (this is FrameLast) and !isCompleted } ) {
+            it.reset()
         }
 
-        if (currentFrame is FrameNormal) {
-            handleNormalFrameThrow(pinCount, roll, currentFrame)
-        } else {
-            handleLastFrameThrow(pinCount, roll, currentFrame)
+        when (currentFrame) {
+            is FrameNormal -> handleNormalFrameThrow(pinCount, roll, currentFrame)
+            else -> handleLastFrameThrow(pinCount, roll, currentFrame)
         }
 
         currentFrame.updateState(roll)
 
         if (!currentFrame.hasChances()) {
+            val lastFrame = getCurrentFrame()
+
             moveToNextFrame()
-            currentFrame = getCurrentFrame()
-            if (currentFrame is FrameLast) {
-                if (!currentFrame.isCompleted) {
+            if (!fromSimulation) {
+                currentFrame = getCurrentFrame()
+                if (currentFrame is FrameLast) {
+                    if (!currentFrame.isCompleted) {
+                        currentFrame.reset()
+                    } else {
+                        if (lastFrame !is FrameLast) {
+                            currentFrame.state = Frame.State.FIRST_CHANCE
+                            currentFrame.resetChances()
+                            currentFrame.resetPins()
+                        }
+                    }
+                } else {
                     currentFrame.reset()
                 }
-            } else {
-                currentFrame.reset()
             }
         }
 
@@ -128,14 +140,22 @@ data class Bowler(
             }
             Frame.State.EXTRA_CHANCE -> {
                 val lastRoll = frame.getRollBy(Frame.State.SECOND_CHANCE)
-                Roll.Result.from(lastRoll, pinCount)
+
+                if (lastRoll != null) {
+                    if (lastRoll.result == Roll.Result.SPARE || lastRoll.result == Roll.Result.STRIKE) {
+                        Roll.Result.from(null, pinCount)
+                    } else {
+                        Roll.Result.from(lastRoll, pinCount)
+                    }
+                } else {
+                    Roll.Result.from(lastRoll, pinCount)
+                }
             }
             else -> Roll.Result.UNKNOWN
         }
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
         if (other !is Bowler) return false
 
         if (id != other.id) return false
@@ -145,5 +165,9 @@ data class Bowler(
 
     override fun hashCode(): Int {
         return id.hashCode()
+    }
+
+    override fun toString(): String {
+        return "Bowler(name='$name', id=$id)"
     }
 }

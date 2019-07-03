@@ -10,18 +10,16 @@ import kotlinx.coroutines.withContext
  * @author Eudy Contreras.
  */
 
-suspend fun CoroutineScope.fromMain(action: (()-> Unit)?) {
-    action?.let { task ->
-        withContext(Dispatchers.Main) {
-            task.invoke()
-        }
+fun CoroutineScope.fromMain(action: (()-> Unit)?) {
+    suspend {
+
     }
 }
 
-suspend fun CoroutineScope.fromIO(action: (()-> Unit)?) {
-    action?.let { task ->
+fun CoroutineScope.fromIO(action: (()-> Unit)?) {
+    suspend {
         withContext(Dispatchers.IO) {
-            task.invoke()
+            action?.invoke()
         }
     }
 }

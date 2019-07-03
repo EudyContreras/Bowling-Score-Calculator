@@ -31,12 +31,20 @@ data class Roll(
         parentState = Frame.State.FIRST_CHANCE
     }
 
+    override fun toString(): String {
+        return "Roll(totalKnockdown=$totalKnockdown, result=$result, parentState=$parentState)"
+    }
+
     enum class Result {
         STRIKE,
         SPARE,
         MISS,
         NORMAL,
         UNKNOWN;
+
+        override fun toString(): String{
+            return name
+        }
 
         companion object {
             fun from(lastRoll: Roll?, pinKnockedCount: Int): Result {

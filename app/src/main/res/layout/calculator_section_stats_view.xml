@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:elevation="1dp"
@@ -9,13 +9,7 @@
         android:orientation="horizontal"
         android:background="@color/colorPrimaryLight"
         android:layout_width="match_parent"
-        android:layout_height="40dp">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/statsFrame"
-            android:layout_weight="0.7"
-            android:layout_width="0dp"
-            android:layout_height="match_parent">
+        android:layout_height="45dp">
 
         <TextView
                 android:id="@+id/currentFrameLabel"
@@ -33,32 +27,24 @@
 
         <TextView
                 android:id="@+id/currentFrameValue"
-                android:layout_width="0dp"
-                android:layout_height="25dp"
-                android:text="0"
-                android:textSize="16sp"
+                android:layout_width="50dp"
+                android:layout_height="24dp"
+                android:textColor="@color/white"
+                android:textSize="14sp"
                 android:fontFamily="sans-serif-black"
                 android:textStyle="bold"
                 android:gravity="center"
+                android:textAlignment="gravity"
                 android:background="@drawable/shape_button"
+                android:backgroundTint="@color/colorPrimaryVeryLight"
                 android:layout_marginStart="@dimen/margin_medium"
                 android:layout_marginEnd="@dimen/margin_medium"
                 app:layout_constraintStart_toEndOf="@id/currentFrameLabel"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/currentFrameLabel"
                 app:layout_constraintBottom_toBottomOf="@id/currentFrameLabel"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/statsBoardOne"
-            android:layout_weight="0.93"
-            android:layout_width="0dp"
-            android:layout_height="match_parent">
-
         <TextView
                 android:id="@+id/totalScoreLabel"
-                android:layout_marginStart="@dimen/margin_medium"
                 android:fontFamily="sans-serif-black"
                 android:textColor="@color/white"
                 android:textStyle="bold"
@@ -66,38 +52,32 @@
                 android:text="@string/total_score"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_medium"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"/>
+                app:layout_constraintEnd_toStartOf="@id/totalScoreValue"/>
 
         <TextView
                 android:id="@+id/totalScoreValue"
-                android:layout_width="0dp"
-                android:layout_height="25dp"
-                android:text="0"
-                android:textSize="16sp"
+                android:layout_width="50dp"
+                android:layout_height="24dp"
+                android:textColor="@color/white"
+                android:textSize="14sp"
                 android:fontFamily="sans-serif-black"
                 android:textStyle="bold"
                 android:gravity="center"
+                android:text="300"
+                android:textAlignment="gravity"
                 android:background="@drawable/shape_button"
-                android:layout_marginStart="@dimen/margin_medium"
-                android:layout_marginEnd="@dimen/margin_medium"
-                app:layout_constraintStart_toEndOf="@id/totalScoreLabel"
+                android:backgroundTint="@color/colorPrimaryVeryLight"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/totalScoreLabel"
-                app:layout_constraintBottom_toBottomOf="@id/totalScoreLabel"/>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/statsBoardTwo"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="0.545"/>
 
         <TextView
                 android:id="@+id/maxPossibleLabel"
-                android:layout_marginStart="@dimen/margin_medium"
                 android:fontFamily="sans-serif-black"
                 android:textColor="@color/white"
                 android:textStyle="bold"
@@ -105,26 +85,27 @@
                 android:text="@string/max_possible"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_medium"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"/>
+                app:layout_constraintEnd_toStartOf="@id/maxPossibleValue"/>
 
         <TextView
                 android:id="@+id/maxPossibleValue"
-                android:layout_width="0dp"
-                android:layout_height="25dp"
-                android:text="0"
-                android:textSize="16sp"
+                android:layout_width="50dp"
+                android:layout_height="24dp"
+                android:textColor="@color/white"
+                android:textSize="14sp"
                 android:fontFamily="sans-serif-black"
                 android:textStyle="bold"
                 android:gravity="center"
+                android:textAlignment="gravity"
                 android:background="@drawable/shape_button"
+                android:backgroundTint="@color/colorPrimaryVeryLight"
                 android:layout_marginStart="@dimen/margin_medium"
                 android:layout_marginEnd="@dimen/margin_medium"
-                app:layout_constraintStart_toEndOf="@id/maxPossibleLabel"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/maxPossibleLabel"
-                app:layout_constraintBottom_toBottomOf="@id/maxPossibleLabel"/>
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

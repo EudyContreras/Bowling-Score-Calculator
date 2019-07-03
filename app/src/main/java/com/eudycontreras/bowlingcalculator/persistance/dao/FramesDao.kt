@@ -12,42 +12,42 @@ import com.eudycontreras.bowlingcalculator.persistance.entities.FrameEntity
 abstract class FramesDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insert(frame: FrameEntity): Long
+    abstract suspend fun insert(frame: FrameEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insert(frame: List<FrameEntity>): List<Long>
+    abstract suspend fun insert(frame: List<FrameEntity>): List<Long>
 
     @Transaction
-    open fun replaceAll(frames: List<FrameEntity>) {
+    open suspend fun  replaceAll(frames: List<FrameEntity>) {
         clear()
         insert(frames)
     }
 
     @Transaction
-    open fun replaceFor(bowlerId: Long, frames: List<FrameEntity>) {
+    open suspend fun replaceFor(bowlerId: Long, frames: List<FrameEntity>) {
         delete(bowlerId)
         insert(frames)
     }
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun update(frame: FrameEntity): Int
+    abstract suspend fun update(frame: FrameEntity): Int
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun update(frames: List<FrameEntity>): Int
+    abstract suspend fun update(frames: List<FrameEntity>): Int
 
     @Query("SELECT * FROM frames WHERE `index` = :index AND bowlerId = :bowlerId LIMIT 1")
-    abstract fun find(bowlerId: Long, index: Int): FrameEntity
+    abstract suspend fun find(bowlerId: Long, index: Int): FrameEntity
 
     @Query("SELECT * FROM frames WHERE bowlerId = :bowlerId ORDER BY `index` ASC")
-    abstract fun findForBowler(bowlerId: Long): List<FrameEntity>
+    abstract suspend fun findForBowler(bowlerId: Long): List<FrameEntity>
 
     @Query("SELECT * FROM frames WHERE bowlerId = -1")
-    abstract fun getDefault(): List<FrameEntity>
+    abstract suspend fun getDefault(): List<FrameEntity>
 
     @Query("DELETE FROM frames WHERE bowlerId = :bowlerId")
-    abstract fun delete(bowlerId: Long)
+    abstract suspend fun delete(bowlerId: Long)
 
     @Query("DELETE FROM frames")
-    abstract fun clear()
+    abstract suspend fun clear()
 
 }

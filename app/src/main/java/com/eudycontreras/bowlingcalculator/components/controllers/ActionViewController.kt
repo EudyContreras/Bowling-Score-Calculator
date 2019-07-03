@@ -26,28 +26,28 @@ class ActionViewController(
          scoreController.actionController = this
     }
 
-    fun handleResetAction() {
+    fun performReset() {
         scoreController.clearScore()
     }
 
-    fun handleThrowActions(pinCount: Int) {
+    fun performThrow(pinCount: Int) {
         scoreController.throwBall(pinCount)
     }
 
-    fun handleSaveAction() {
+    fun saveResult() {
         context.openDialog(FragmentSaveResult.instance(this))
     }
 
-    fun handleLoadAction() {
+    fun loadResult() {
         context.openDialog(FragmentLoadResult.instance(this))
     }
 
-    fun updateActionInput(remainingPins: Int) {
-        viewComponent.setAvailablePins(remainingPins)
+    fun updateActionInput(remainingPins: Int, duration: Long = 400) {
+        viewComponent.setAvailablePins(remainingPins, duration)
     }
 
     fun deactivateAllInput() {
-        viewComponent.setAvailablePins(-1)
+        viewComponent.setAvailablePins(-1, 450)
     }
 
     fun revealPins() {

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "4f899357dadd01033871df0dca0ca0e5",
+    "identityHash": "6bd0f2d1b0ab0be9af9a453879f32ca8",
     "entities": [
       {
         "tableName": "Bowlers",
@@ -215,12 +215,39 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "Mappings",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`resultId` INTEGER NOT NULL, `bowlerId` INTEGER NOT NULL, PRIMARY KEY(`resultId`, `bowlerId`))",
+        "fields": [
+          {
+            "fieldPath": "resultId",
+            "columnName": "resultId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bowlerId",
+            "columnName": "bowlerId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "resultId",
+            "bowlerId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4f899357dadd01033871df0dca0ca0e5')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6bd0f2d1b0ab0be9af9a453879f32ca8')"
     ]
   }
 }

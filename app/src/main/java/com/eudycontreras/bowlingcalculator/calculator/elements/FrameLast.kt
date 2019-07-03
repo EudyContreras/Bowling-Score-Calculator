@@ -31,14 +31,6 @@ data class FrameLast(override var index: Int) : Frame() {
 
     override var pointsFromPrevious: Int = 0
 
-    override val inProgress: Boolean
-        get() = if (rolls.isNotEmpty()) {
-            state != State.CLEARED
-        } else false
-
-    override val isCompleted: Boolean
-        get() = !hasChances()
-
     override fun reset() {
         pointsFromPrevious = 0
         bonusPoints = 0
@@ -94,7 +86,6 @@ data class FrameLast(override var index: Int) : Frame() {
 
     override fun updateState(roll: Roll) {
         if (chances <= 0 || state == State.CLEARED) {
-            resetPins()
             return
         }
 
@@ -109,9 +100,9 @@ data class FrameLast(override var index: Int) : Frame() {
             assignState(chances)
         }
 
-        if (!rolls.containsKey(state)) {
-            roll.parentState = state
-        } else {
+        roll.parentState = state
+
+        if (rolls.containsKey(state)) {
             handleEditedFrame(roll)
         }
 
@@ -143,14 +134,18 @@ data class FrameLast(override var index: Int) : Frame() {
                 if (roll.result != Roll.Result.STRIKE) {
                     val second = rolls.getValue(State.SECOND_CHANCE)
                     second.result = Roll.Result.from(roll, second.totalKnockdown)
-
+                    if (second.result != Roll.Result.SPARE) {
+                        rolls.remove(State.EXTRA_CHANCE)
+                    }
                     if ((second.totalKnockdown + roll.totalKnockdown) > DEFAULT_PIN_COUNT) {
                         rolls.remove(State.SECOND_CHANCE)
+                        rolls.remove(State.EXTRA_CHANCE)
                     } else {
                         rolls[State.SECOND_CHANCE] = second
                     }
                 } else {
                     rolls.remove(State.SECOND_CHANCE)
+                    rolls.remove(State.EXTRA_CHANCE)
                 }
             }
             State.SECOND_CHANCE -> {

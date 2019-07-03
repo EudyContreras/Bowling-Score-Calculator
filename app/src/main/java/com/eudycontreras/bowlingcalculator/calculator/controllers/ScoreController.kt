@@ -14,7 +14,7 @@ import com.eudycontreras.bowlingcalculator.utilities.MAX_POSSIBLE_SCORE_GAME
 import com.eudycontreras.bowlingcalculator.utilities.extensions.app
 import com.eudycontreras.bowlingcalculator.utilities.extensions.getComputedScore
 import com.eudycontreras.bowlingcalculator.utilities.extensions.getPossibleScore
-
+import com.eudycontreras.bowlingcalculator.utilities.runAfterMain
 
 /**
  * @Project BowlingCalculator
@@ -24,6 +24,7 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.getPossibleScore
 class ScoreController(private val activity: MainActivity) : ScoreStateListener, BowlerActionListener{
 
     lateinit var loaderController: LoaderViewController
+    lateinit var inputNameController: InputViewController
     lateinit var skeletonController: SkeletonViewController
     lateinit var actionController: ActionViewController
     lateinit var framesController: FramesViewController
@@ -44,30 +45,30 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
         if(bowlers.isEmpty())
             return
 
-        framesController.createFrames(bowler)
-        framesController.setSourceFrames(bowler)
-        actionController.revealPins()
-        framesController.revealFrames()
+        if (!framesController.framesCreated()) {
+            framesController.createFrames(bowler)
+        } else {
+            framesController.setSourceFrames(bowler)
+        }
 
-        onScoreUpdated(
-            bowler,
-            bowler.getComputedScore(),
-            bowler.getPossibleScore()
-        )
-    }
+        framesController.revealFrames(bowler)
 
-    private fun allowRedoChance(frame: Frame, chance: Frame.State) {
-        bowler.currentFrameIndex = frame.index
-        frame.state = chance
-        frame.resetChances()
-        frame.resetPins()
+        if (!bowler.hasStarted()) {
+            actionController.revealPins()
+        } else {
+            val current: Frame = bowler.getCurrentFrame()
+            framesController.updateFramesState(bowler, current)
+            statsController.updateTotalScore(bowler.getComputedScore())
+            statsController.updateMaxPossibleScore(bowler.getPossibleScore())
+            statsController.setCurrentFrame(current.index + 1)
+        }
     }
 
     override fun throwBall(pinKnockedCount: Int) {
         if (bowlers.isEmpty())
             return
 
-        bowler.performRoll(pinKnockedCount, this)
+        bowler.performRoll(pinKnockedCount, listener = this)
         activity.app.persistenceManager.updateBowler(bowler)
     }
 
@@ -76,20 +77,25 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
             return
 
         bowler.reset()
-        statsController.updateTotalScore(0)
-        statsController.updateMaxPossibleScore(MAX_POSSIBLE_SCORE_GAME)
-        statsController.setCurrentFrame(bowler.currentFrameIndex + 1)
-        actionController.updateActionInput(DEFAULT_PIN_COUNT)
-        framesController.resetFrames()
 
-        activity.app.persistenceManager.resetBowler(bowler)
+        activity.app.persistenceManager.resetBowler(bowler) {
+            statsController.updateTotalScore(it.getComputedScore())
+            statsController.updateMaxPossibleScore(it.getPossibleScore())
+            statsController.setCurrentFrame(it.currentFrameIndex + 1)
+            actionController.updateActionInput(DEFAULT_PIN_COUNT, duration = 300)
+            framesController.resetFrames()
+        }
     }
 
     override fun onFrameSelected(frameIndex: Int) {
         bowler.currentFrameIndex = frameIndex
         statsController.setCurrentFrame(frameIndex + 1)
-        actionController.updateActionInput(bowler.getCurrentFrame().pinUpCount())
-        allowRedoChance(bowler.getCurrentFrame(), Frame.State.FIRST_CHANCE)
+        statsController.updateMaxPossibleScore(bowler.getPossibleScore())
+        actionController.updateActionInput(bowler.getCurrentFrame().pinUpCount(), duration = 300)
+
+        bowler.getCurrentFrame().state = Frame.State.FIRST_CHANCE
+        bowler.getCurrentFrame().resetChances()
+        bowler.getCurrentFrame().resetPins()
     }
 
     override fun onScoreUpdated(bowler: Bowler, totalScore: Int, totalPossible: Int) {
@@ -100,49 +106,106 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
         statsController.updateMaxPossibleScore(totalPossible)
         statsController.setCurrentFrame(current.index + 1)
         actionController.updateActionInput(current.pinUpCount())
+
         if (current is FrameLast) {
             if (current.isCompleted) {
                 actionController.deactivateAllInput()
-                return
             }
         }
     }
 
-    fun selectBowler(tabIndex: Int) {
-        activeTab = tabIndex
-        activity.app.persistenceManager.saveActiveTab(activeTab)
+    fun selectBowler(tabIndex: Int, manual: Boolean) {
+        saveActiveTab(tabIndex)
 
         val bowler: Bowler? = if (bowlers.isEmpty()) null else bowler
 
-        framesController.setSourceFrames(bowler)
-
         if (bowler != null) {
-            onScoreUpdated(
-                bowler,
-                bowler.getComputedScore(),
-                bowler.getPossibleScore()
-            )
+            framesController.setSourceFrames(bowler)
+            if (bowler.hasStarted() || manual) {
+                onScoreUpdated(
+                    bowler,
+                    bowler.getComputedScore(),
+                    bowler.getPossibleScore()
+                )
+            }
         } else {
-            skeletonController.setState(SkeletonViewComponent.EmptyState.Default(activity) {
-                tabsController.requestTab()
-            })
-            skeletonController.revealState()
-            statsController.updateTotalScore(0)
-            statsController.updateMaxPossibleScore(MAX_POSSIBLE_SCORE_GAME)
-            statsController.setCurrentFrame(DEFAULT_START_INDEX + 1)
-            actionController.deactivateAllInput()
+            framesController.setSourceFrames(bowler = null) {
+                runAfterMain(delay = 250) {
+                    skeletonController.setState(SkeletonViewComponent.EmptyState.Default(activity) {
+                        tabsController.onTabRequested(true)
+                    })
+                    skeletonController.revealState()
+                }
+
+                statsController.updateTotalScore(score = 0)
+                statsController.updateMaxPossibleScore(MAX_POSSIBLE_SCORE_GAME)
+                statsController.setCurrentFrame(DEFAULT_START_INDEX + 1)
+                actionController.deactivateAllInput()
+            }
         }
     }
 
-    fun removeBowler(lastIndex: Int, index: Int, onEnd: (() -> Unit)?) {
-        activity.app.persistenceManager.saveActiveTab(index)
-        activeTab = index
+    fun removeBowler(lastIndex: Int, current: Int, onEnd: (() -> Unit)?) {
 
-        val bowler = bowlers.removeAt(lastIndex)
+        val onBowlerRemoved: ((Bowler) -> Unit)? = {
+            saveActiveTab(current)
 
-        activity.app.persistenceManager.removeBowler(bowler) {
+            bowlers.remove(it)
+            selectBowler(current, true)
             onEnd?.invoke()
-            selectBowler(index)
+        }
+
+        activity.app.persistenceManager.removeBowler(bowlers[lastIndex], onBowlerRemoved)
+    }
+
+    fun canSelectFrame(wantedIndex: Int, lastIndex: Int? = null): Boolean {
+        val canProceed = bowler.lastPlayedFrameIndex >= wantedIndex
+
+        if (lastIndex != null) {
+            val frame: Frame = bowler.frames[lastIndex]
+
+            val inProgress = frame.inProgress
+
+            if (inProgress && frame.missingRounds()) {
+                return false
+            }
+        }
+        return canProceed
+    }
+
+    private fun saveActiveTab(index: Int): Int {
+        activeTab = activity.app.persistenceManager.saveActiveTab(index)
+        return activeTab
+    }
+
+    fun createBowler(names: List<String>, manual: Boolean, listener: ((names: List<Bowler>) -> Unit)?) {
+        val newBowlers = names.map { Bowler(it) }
+        activity.saveCurrentState(newBowlers) {
+            bowlers.addAll(it)
+
+            if (!tabsController.hasTabs()) {
+                initCalculator(it, activeTab)
+            }
+
+            listener?.invoke(it)
+            val activeTab = saveActiveTab(bowlers.size - 1)
+            tabsController.addTabs(it, activeTab, manual)
+        }
+    }
+
+    fun requestRename(bowlerId: Long, bowlerName: String) {
+        inputNameController.requestRename(bowlerId, bowlerName)
+    }
+
+    fun saveBowlerName(bowlerId: Long, newName: String, onSaved: (name: String) -> Unit) {
+        val bowler = bowlers.firstOrNull { it.id == bowlerId }
+
+        bowler?.let {
+            it.name = newName.trim()
+            activity.app.persistenceManager.updateBowler(it) {
+                onSaved(newName)
+                tabsController.updateTabName(it.id, newName)
+            }
         }
     }
 }

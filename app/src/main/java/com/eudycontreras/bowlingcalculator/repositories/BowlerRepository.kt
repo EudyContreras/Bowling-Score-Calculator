@@ -11,28 +11,28 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.Result
 
 interface BowlerRepository {
 
-    fun saveBowler(bowler: Bowler)
+    suspend fun saveBowler(bowler: Bowler)
 
-    fun saveBowlers(bowlers: List<Bowler>)
+    suspend fun saveBowlers(bowlers: List<Bowler>)
 
-    fun updateBowler(bowler: Bowler)
+    suspend fun updateBowler(bowler: Bowler)
 
-    fun bowlerExists(bowlerId: Long): Boolean
+    suspend fun bowlerExists(bowlerId: Long): Boolean
 
-    fun getBowlerCount(): Int
+    suspend fun getBowlerCount(): Int
 
-    fun getBowlerCount(resultId: Long): Int
+    suspend fun getBowlerCount(resultId: Long): Int
+
+    suspend fun getBowlers(result: Result): List<Bowler>
 
     fun getBowlers(bowlerIds: LongArray): LiveData<List<Bowler>>
 
-    fun getBowlers(result: Result): List<Bowler>
-
     fun getDefaultBowler(): LiveData<Bowler>
 
-    fun deleteBowler(bowler: Bowler)
+    suspend fun deleteBowler(bowler: Bowler)
 
-    fun deleteAll(result: Result)
+    suspend fun deleteAll(result: Result)
 
-    fun deleteAll()
+    suspend fun deleteAll()
 
 }

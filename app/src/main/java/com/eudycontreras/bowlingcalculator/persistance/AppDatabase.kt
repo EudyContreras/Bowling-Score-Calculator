@@ -6,14 +6,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.eudycontreras.bowlingcalculator.persistance.dao.BowlersDao
-import com.eudycontreras.bowlingcalculator.persistance.dao.FramesDao
-import com.eudycontreras.bowlingcalculator.persistance.dao.ResultsDao
-import com.eudycontreras.bowlingcalculator.persistance.dao.RollsDao
-import com.eudycontreras.bowlingcalculator.persistance.entities.BowlerEntity
-import com.eudycontreras.bowlingcalculator.persistance.entities.FrameEntity
-import com.eudycontreras.bowlingcalculator.persistance.entities.ResultEntity
-import com.eudycontreras.bowlingcalculator.persistance.entities.RollEntity
+import com.eudycontreras.bowlingcalculator.persistance.dao.*
+import com.eudycontreras.bowlingcalculator.persistance.entities.*
 import com.eudycontreras.bowlingcalculator.utilities.DB_VERSION
 
 /**
@@ -32,7 +26,8 @@ private const val DATABASE_NAME = "bowling_calculator.db"
         BowlerEntity::class,
         FrameEntity::class,
         RollEntity::class,
-        ResultEntity::class
+        ResultEntity::class,
+        MappingEntity::class
     ],
     version = DB_VERSION,
     exportSchema = true
@@ -57,6 +52,10 @@ abstract class AppDatabase : RoomDatabase() {
     val result
         get() = getResults()
 
+    abstract fun getMappings(): MappingsDao
+    val mapping
+        get() = getMappings()
+
     companion object {
         private var instance: AppDatabase? = null
 
@@ -65,6 +64,7 @@ abstract class AppDatabase : RoomDatabase() {
                 synchronized(AppDatabase::class) {
                     instance = Room.databaseBuilder(context, AppDatabase::class.java, DATABASE_NAME)
                         .fallbackToDestructiveMigration()
+                        .allowMainThreadQueries()
                         .build()
                 }
             }

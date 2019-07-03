@@ -2,29 +2,36 @@
 <androidx.appcompat.widget.Toolbar
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/toolbar"
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/colorAccent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="6dp"
+        android:elevation="2dp"
+        android:translationZ="12dp"
+        android:layout_marginStart="0dp"
+        app:titleMarginStart="0dp"
         app:title="@string/app_name"
         app:layout_constraintTop_toTopOf="parent">
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
         <LinearLayout
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|start"
                 android:orientation="horizontal">
 
-            <View android:layout_width="30dp"
-                  android:layout_height="30dp"
-                  android:layout_gravity="start"
-                  android:layout_marginEnd="@dimen/margin_medium"
-                  android:background="@drawable/img_logo"/>
+            <View
+                    android:visibility="visible"
+                    android:layout_marginEnd="@dimen/margin_large"
+                    android:layout_gravity="end|center"
+                    android:background="@drawable/img_bowling_logo_alt"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"/>
             <TextView
-                    android:visibility="invisible"
+                    android:visibility="visible"
                     android:id="@+id/toolbarTitle"
                     android:text="@string/app_name"
                     android:textAppearance="@style/Base.TextAppearance.Widget.AppCompat.Toolbar.Title"
@@ -32,20 +39,66 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|start"
                     android:textColor="@android:color/white"
-                    android:textSize="18sp"/>
+                    android:textSize="16sp"/>
         </LinearLayout>
 
         <FrameLayout
-                android:id="@+id/toolbarMenu"
-                android:layout_marginEnd="@dimen/margin"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@+id/toolbarMenuBorder"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@drawable/shape_circle"
+                android:backgroundTint="@color/colorAccentDark"
+                android:layout_marginEnd="@dimen/margin_large"
                 android:layout_gravity="end|center"
-                android:layout_width="40dp"
-                android:layout_height="40dp">
-            <View
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            <FrameLayout
+                    android:id="@+id/resultInfo"
                     android:layout_gravity="center"
-                    android:background="@drawable/ic_menu"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"/>
+                    android:layout_margin="4dp"
+                    android:backgroundTint="@color/colorAccent"
+                    android:background="@drawable/shape_circle"
+                    android:elevation="1dp"
+                    android:translationZ="6dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp">
+                <View
+                        android:layout_gravity="center"
+                        android:background="@drawable/ic_info"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"/>
+            </FrameLayout>
         </FrameLayout>
-    </FrameLayout>
+
+        <FrameLayout
+                android:id="@+id/toolbarMenuBorder"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@drawable/shape_circle"
+                android:backgroundTint="@color/colorAccentDark"
+                android:layout_marginEnd="@dimen/margin_large"
+                android:layout_gravity="end|center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            <FrameLayout
+                    android:id="@+id/toolbarMenu"
+                    android:layout_gravity="center"
+                    android:layout_margin="4dp"
+                    android:backgroundTint="@color/colorAccent"
+                    android:background="@drawable/shape_circle"
+                    android:elevation="1dp"
+                    android:translationZ="6dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp">
+                <View
+                        android:layout_gravity="center"
+                        android:background="@drawable/ic_menu"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"/>
+            </FrameLayout>
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.appcompat.widget.Toolbar>

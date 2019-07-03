@@ -18,39 +18,39 @@ abstract class RollsDao {
     abstract fun insert(roll: List<RollEntity>): List<Long>
 
     @Transaction
-    open fun replaceAll(rolls: List<RollEntity>) {
+    open suspend fun replaceAll(rolls: List<RollEntity>) {
         clear()
         insert(rolls)
     }
 
     @Transaction
-    open fun replaceAllFor(bowlerId: Long, rolls: List<RollEntity>) {
+    open suspend fun replaceAllFor(bowlerId: Long, rolls: List<RollEntity>) {
         delete(bowlerId)
         insert(rolls)
     }
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun update(roll: RollEntity): Int
+    abstract suspend fun update(roll: RollEntity): Int
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun update(roll: List<RollEntity>): Int
+    abstract suspend fun update(roll: List<RollEntity>): Int
 
     @Query(value = "SELECT * FROM rolls WHERE bowlerId = :id")
-    abstract fun findByBowlerId(id: Long): List<RollEntity>
+    abstract suspend fun findByBowlerId(id: Long): List<RollEntity>
 
     @Query(value = "SELECT * FROM rolls WHERE bowlerId = :bowlerId AND frameIndex = :frameIndex")
-    abstract fun findByBowlerIdAndIndex(bowlerId: Long, frameIndex: Int): List<RollEntity>
+    abstract suspend fun findByBowlerIdAndIndex(bowlerId: Long, frameIndex: Int): List<RollEntity>
 
     @Query(value = "SELECT * FROM rolls WHERE bowlerId = :bowlerId AND frameIndex = :frameIndex")
-    abstract fun getByBowlerIdAndIndex(bowlerId: Long, frameIndex: Int): List<RollEntity>
+    abstract suspend fun getByBowlerIdAndIndex(bowlerId: Long, frameIndex: Int): List<RollEntity>
 
-    @Query("DELETE FROM rolls WHERE frameIndex = :frameIndex AND bowlerId = :bowlerId")
-    abstract fun delete(frameIndex: Int, bowlerId: Long)
+    @Query("DELETE FROM rolls WHERE bowlerId = :bowlerId AND frameIndex = :frameIndex")
+    abstract suspend fun delete(bowlerId: Long, frameIndex: Int)
 
     @Query("DELETE FROM rolls WHERE bowlerId = :bowlerId")
-    abstract fun delete(bowlerId: Long)
+    abstract suspend fun delete(bowlerId: Long)
 
     @Query("DELETE FROM rolls")
-    abstract fun clear()
+    abstract suspend fun clear()
 
 }

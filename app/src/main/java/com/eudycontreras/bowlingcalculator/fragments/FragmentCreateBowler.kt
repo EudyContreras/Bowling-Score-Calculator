@@ -30,14 +30,17 @@ class FragmentCreateBowler: DialogFragment() {
     private var bowlerListener: BowlerListener = null
     private var dismissListener: (() -> Unit)? = null
 
+    private var manualRequest: Boolean = false
+
     private lateinit var createDialog: ConstraintLayout
 
     companion object {
-        fun instance(controller: TabsViewController, listener: BowlerListener = null, onDismiss: (() -> Unit)? = null): FragmentCreateBowler {
+        fun instance(controller: TabsViewController, manual: Boolean, listener: BowlerListener = null, onDismiss: (() -> Unit)? = null): FragmentCreateBowler {
             val fragment = FragmentCreateBowler()
             fragment.bowlerListener = listener
             fragment.dismissListener = onDismiss
             fragment.controller = controller
+            fragment.manualRequest = manual
             return fragment
         }
     }
@@ -82,10 +85,10 @@ class FragmentCreateBowler: DialogFragment() {
         }
 
         createDialog.dialogCreateSubmit.setOnClickListener {
-            val names = adapter!!.getItems().asReversed()
+            val names = adapter!!.getItems().asReversed().map { it.trim() }
 
-            if(!names.isEmpty()) {
-                controller?.createBowler(names) {
+            if(names.isNotEmpty()) {
+                controller?.createBowler(names, manualRequest) {
                     bowlerListener?.invoke(it)
                     dismiss()
                 }

@@ -2,48 +2,60 @@ package com.eudycontreras.bowlingcalculator.activities
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.ViewGroup
+import android.view.animation.DecelerateInterpolator
+import android.view.animation.OvershootInterpolator
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.components.controllers.*
+import com.eudycontreras.bowlingcalculator.listeners.BackPressedListener
 import com.eudycontreras.bowlingcalculator.utilities.BowlerListener
 import com.eudycontreras.bowlingcalculator.utilities.Bowlers
 import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_GRACE_PERIOD
+import com.eudycontreras.bowlingcalculator.utilities.extensions.addTouchAnimation
 import com.eudycontreras.bowlingcalculator.utilities.extensions.app
-import com.eudycontreras.bowlingcalculator.utilities.extensions.show
 import com.eudycontreras.bowlingcalculator.utilities.runAfterMain
+import com.eudycontreras.indicatoreffectlib.views.IndicatorView
 import kotlinx.android.synthetic.main.activity_main.*
-
-
+import kotlinx.android.synthetic.main.activity_toolbar.view.*
 
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
  */
 
 class MainActivity : AppCompatActivity() {
 
+    private val backNavigationListeners = ArrayList<BackPressedListener>()
     private lateinit var scoreController: ScoreController
 
     private lateinit var skeletonController: SkeletonViewController
+    private lateinit var inputNameController: InputViewController
     private lateinit var loaderController: LoaderViewController
     private lateinit var framesController: FramesViewController
     private lateinit var actionController: ActionViewController
     private lateinit var statsController: StatsViewController
     private lateinit var tabsController: TabsViewController
 
+    lateinit var indicator: IndicatorView
     private var created = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(com.eudycontreras.bowlingcalculator.R.layout.activity_main)
+        setContentView(R.layout.activity_main)
 
         setSupportActionBar(toolbar as Toolbar)
 
+        initIndicator()
+        registerListeners()
         initControllers()
     }
 
@@ -52,6 +64,7 @@ class MainActivity : AppCompatActivity() {
         scoreController = ScoreController(this)
 
         skeletonController = SkeletonViewController(this, scoreController)
+        inputNameController = InputViewController(this, scoreController)
         loaderController = LoaderViewController(this, scoreController)
         framesController = FramesViewController(this, scoreController)
         actionController = ActionViewController(this, scoreController)
@@ -62,6 +75,50 @@ class MainActivity : AppCompatActivity() {
 
         if (app.persistenceManager.hasBowlers()) {
             loaderController.showLoader()
+        }
+    }
+
+    private fun initIndicator() {
+        indicator = IndicatorView(this, findViewById<ViewGroup>(R.id.root))
+        indicator.indicatorType = IndicatorView.INDICATOR_TYPE_AROUND
+        indicator.indicatorColor = ContextCompat.getColor(this, R.color.colorAccentLight)
+        indicator.indicatorStrokeColor = ContextCompat.getColor(this, R.color.colorAccentLight)
+        indicator.indicatorColorStart = ContextCompat.getColor(this, R.color.white)
+        indicator.indicatorColorEnd = ContextCompat.getColor(this, R.color.colorAccentLight)
+        indicator.indicatorCount = 3
+        indicator.indicatorMinOpacity = 0f
+        indicator.indicatorMaxOpacity = 1f
+        indicator.indicatorRepeatMode = IndicatorView.REPEAT_MODE_RESTART
+        indicator.indicatorRepeats = IndicatorView.INFINITE_REPEATS
+        indicator.indicatorDuration = 4000
+        indicator.indicatorStrokeWidth = 0f
+        indicator.isShowBorderStroke = false
+        indicator.revealDuration = 500
+        indicator.revealDuration = 0
+        indicator.isUseColorInterpolation = false
+    }
+
+    private fun registerListeners() {
+        toolbar.toolbarMenu.addTouchAnimation(
+            clickTarget = null,
+            scale = 0.90f,
+            depth = 0f,
+            interpolatorPress = DecelerateInterpolator(),
+            interpolatorRelease = OvershootInterpolator()
+        )
+
+        toolbar.toolbarMenu.setOnClickListener {
+
+        }
+    }
+
+    override fun onBackPressed() {
+        backNavigationListeners.forEach {
+            it.onBackPressed()
+        }
+
+        if (!backNavigationListeners.any { it.disallowExit() }) {
+            super.onBackPressed()
         }
     }
 
@@ -81,20 +138,23 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun addBackPressListeners(listener: BackPressedListener) {
+        backNavigationListeners.add(listener)
+    }
+
+    fun removeBackPressListeners(listener: BackPressedListener) {
+        backNavigationListeners.remove(listener)
+    }
+
     private fun onStorageEmpty() {
-        tabsController.requestTab{
-            val activeTab = tabsController.getActive()
-            app.persistenceManager.saveActiveTab(activeTab)
-            scoreController.initCalculator(it, activeTab)
-        }
+        tabsController.onTabRequested(false)
     }
 
     private fun onStorageFull() {
         val bowlers = app.persistenceManager.getBowlers()
-        val activeTab = app.persistenceManager.activeTab
+        val activeTab = app.persistenceManager.getActiveTab()
 
         bowlers.observe(this, Observer {
-
             if (it.isEmpty()) {
                 onStorageEmpty()
                 return@Observer
@@ -102,47 +162,27 @@ class MainActivity : AppCompatActivity() {
 
             loaderController.hideLoader()
             scoreController.initCalculator(it, activeTab)
-            tabsController.addTabs(it, activeTab)
+            tabsController.addTabs(it, activeTab, false)
         })
     }
 
     override fun onDestroy() {
+        val bowlers = scoreController.bowlers
+        app.persistenceManager.updateBowlers(bowlers)
         super.onDestroy()
-        saveCurrentState(scoreController.bowlers)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        saveCurrentState(scoreController.bowlers)
     }
 
     fun saveCurrentState(bowlers: Bowlers, listener: BowlerListener = null) {
-        app.persistenceManager.saveActiveTab(scoreController.activeTab)
         app.persistenceManager.saveBowlers(bowlers, listener)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
 
-        if (id == com.eudycontreras.bowlingcalculator.R.id.action_settings) {
+        if (id == R.id.action_settings) {
             return true
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    fun addFragment(fragment: Fragment, containerId: Int) {
-        if (supportFragmentManager.fragments.contains(fragment)) {
-            return
-        }
-
-        fragmentContainer.show()
-
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-
-        fragmentTransaction.setCustomAnimations(0, 0, 0, 0)
-        fragmentTransaction.add(containerId, fragment, Fragment::class.java.simpleName)
-        fragmentTransaction.addToBackStack(null)
-        fragmentTransaction.commit()
     }
 
     fun openDialog(fragment: DialogFragment) {
@@ -156,14 +196,5 @@ class MainActivity : AppCompatActivity() {
 
         fragmentTransaction.addToBackStack(null)
         fragment.show(fragmentTransaction, fragment::class.java.simpleName)
-    }
-
-    fun removeFragment(fragment: Fragment) {
-
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-
-        fragmentTransaction.setCustomAnimations(0, 0, 0, 0)
-        fragmentTransaction.remove(fragment)
-        fragmentTransaction.commitAllowingStateLoss()
     }
 }

@@ -22,26 +22,16 @@ class FramesViewController(
         scoreController.framesController = this
     }
 
-    fun canSelect(wantedIndex: Int, lastIndex: Int? = null): Boolean {
-        val canProceed = scoreController.bowler.lastPlayedFrameIndex >= wantedIndex
-
-        if (lastIndex != null) {
-            val frame: Frame = scoreController.bowler.frames[lastIndex]
-
-            val inProgress = frame.inProgress
-
-            if (inProgress && frame.missingRounds()) {
-                return false
-            }
-            return canProceed
-        }
-        return canProceed
+    fun checkCanSelectFrame(wantedIndex: Int, lastIndex: Int? = null): Boolean {
+        return scoreController.canSelectFrame(wantedIndex, lastIndex)
     }
 
     fun createFrames(bowler: Bowler){
         val frames = bowler.frames.toMutableList()
         viewComponent.createFrames(frames)
     }
+
+    fun framesCreated(): Boolean = viewComponent.framesCreated()
 
     fun updateFramesState(bowler: Bowler, current: Frame) {
         viewComponent.updateFrames(bowler, current)
@@ -51,19 +41,22 @@ class FramesViewController(
         viewComponent.resetFrames()
     }
 
-    fun revealFrames() {
-        viewComponent.revealFrames()
+    fun revealFrames(bowler: Bowler) {
+        viewComponent.revealFrames(bowler)
     }
 
-    fun performFrameSelection(index: Int) {
+    fun selectFrame(index: Int) {
         scoreController.onFrameSelected(index)
     }
 
-    fun setSourceFrames(bowler: Bowler?) {
+    fun setSourceFrames(bowler: Bowler?, onEnd: (() -> Unit)? = null) {
         if (bowler != null) {
             viewComponent.setSourceFrames(bowler.frames)
         } else {
-            viewComponent.setSourceFrames(emptyList())
+            viewComponent.concealFrames {
+                onEnd?.invoke()
+                viewComponent.setSourceFrames(emptyList())
+            }
         }
     }
 }

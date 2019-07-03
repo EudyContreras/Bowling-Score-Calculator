@@ -4,6 +4,10 @@ import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.components.views.LoaderViewComponent
 
+/**
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
+ */
 
 class LoaderViewController(
     context: MainActivity,
@@ -14,14 +18,6 @@ class LoaderViewController(
 
     init {
         scoreController.loaderController = this
-    }
-
-    fun bindLoader() {
-
-    }
-
-    fun unbindLoader() {
-
     }
 
     fun showLoader() {

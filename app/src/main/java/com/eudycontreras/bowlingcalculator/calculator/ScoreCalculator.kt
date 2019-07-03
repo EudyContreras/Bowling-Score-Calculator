@@ -2,30 +2,29 @@ package com.eudycontreras.bowlingcalculator.calculator
 
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
-import com.eudycontreras.bowlingcalculator.calculator.elements.FrameNormal
 import com.eudycontreras.bowlingcalculator.calculator.elements.Roll
 import com.eudycontreras.bowlingcalculator.calculator.listeners.ScoreStateListener
 import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_FRAME_CHANCES
 import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_FRAME_COUNT
-import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_PIN_COUNT
+import com.eudycontreras.bowlingcalculator.utilities.MAX_POSSIBLE_SCORE_GAME
 import com.eudycontreras.bowlingcalculator.utilities.ZERO
 import com.eudycontreras.bowlingcalculator.utilities.extensions.clone
 import com.eudycontreras.bowlingcalculator.utilities.extensions.next
 import com.eudycontreras.bowlingcalculator.utilities.extensions.previous
 import com.eudycontreras.bowlingcalculator.utilities.extensions.sum
 
-/************************************************************************
+/***********************************************************************
  *
- *  #############     ####     ####     ##########      #####      #####
- *  #############     ####     ####     ############     ####      ####
- *  ####              ####     ####     ####     ####     ####    ####
- *  ####              ####     ####     ####      ####     ####  ####
- *  #############     ####     ####     ####      ####      ########
- *  #############     ####     ####     ####      ####        ####
- *  ####              ####     ####     ####      ####        ####
- *  ####              #####   #####     ####     ####         ####
- *  #############      ###########      ############          ####
- *  #############        #######        ##########            ####
+ * #############     ####     ####     ##########      #####      #####
+ * #############     ####     ####     ############     ####      ####
+ * ####              ####     ####     ####     ####     ####    ####
+ * ####              ####     ####     ####      ####     ####  ####
+ * #############     ####     ####     ####      ####      ########
+ * #############     ####     ####     ####      ####        ####
+ * ####              ####     ####     ####      ####        ####
+ * ####              #####   #####     ####     ####         ####
+ * #############      ###########      ############          ####
+ * #############        #######        ##########            ####
  *
  * ######################   Class description  #########################
  *
@@ -38,22 +37,21 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.sum
  * 2: reset the bonus points and the added points from previous
  * 3: loop through each frame
  * 4: if the frame being looped has rolls
- * 5: and if the frame is a normal frame
- * 6: if the current frame in the loop has a strike
- * 7: if there are two next rolls
- * 8: add the points achieved on the next two rolls as a bonus
- * 9: else add the points from next roll
- * 10: else if the frame has a spare
- * 11: if there is a next roll
- * 12: add the points achieved by the next roll as a bonus
- * 13: if the current frame in the loop is not the first frame
- * 14: add the points achieved by the last frame to the current frame
+ * 5: if the current frame in the loop has a strike
+ * 6: if there are two next rolls
+ * 7: add the points achieved on the next two rolls as a bonus
+ * 8: else add the points from next roll
+ * 9: else if the frame has a spare
+ * 10: if there is a next roll
+ * 11: add the points achieved by the next roll as a bonus
+ * 12: if the current frame in the loop is not the first frame
+ * 13: add the points achieved by the last frame to the current frame
  *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
  * @since June 21 2019
  *
- ************************************************************************/
+ *********************************************************************/
 
 sealed class ScoreCalculator {
 
@@ -82,9 +80,7 @@ sealed class ScoreCalculator {
                 if (frame.rolls.isEmpty())
                     continue
 
-                if (frame is FrameNormal) {
-                    handleFrameCalculation(index, frames)
-                }
+                handleFrameCalculation(index, frames)
 
                 if (index > ZERO) {
                     frame.pointsFromPrevious = frames[index.previous()].getTotal(true)
@@ -115,16 +111,12 @@ sealed class ScoreCalculator {
             val frame = frames[index]
 
             if (frame.rolls.values.any { it.result == Roll.Result.STRIKE }) {
-                val rolls = getNextRolls(Roll.Result.STRIKE, index, frames)
-
-                frame.bonusPoints = rolls.sum()
+                frame.bonusPoints = getNextRolls(Roll.Result.STRIKE, index, frames).sum()
                 return
             }
 
             if (frame.rolls.values.any { it.result == Roll.Result.SPARE }) {
-                val rolls = getNextRolls(Roll.Result.SPARE, index, frames)
-
-                frame.bonusPoints = rolls.sum()
+                frame.bonusPoints = getNextRolls(Roll.Result.SPARE, index, frames).sum()
             }
         }
 
@@ -186,20 +178,27 @@ sealed class ScoreCalculator {
          * @return the final total score for said bowler after simulation
          */
         private fun simulateWith(reference: Bowler): Int {
+
+            if (!reference.hasStarted()) {
+                return MAX_POSSIBLE_SCORE_GAME
+            }
+
             val bowler = reference.clone()
             var counter = bowler.currentFrameIndex
 
-            while (counter < DEFAULT_FRAME_COUNT - 1) {
+            while (counter < DEFAULT_FRAME_COUNT) {
                 val current = bowler.getCurrentFrame()
 
-                if (!current.isCompleted) {
-                    val remaining = current.pinUpCount()
-                    bowler.performRoll(remaining, null, true)
+                if (current.isCompleted && current.hasStarted()) {
+                    counter ++
                     continue
                 }
 
-                bowler.performRoll(DEFAULT_PIN_COUNT, null, true)
-                counter ++
+                bowler.performRoll(current.pinUpCount(), null, true)
+
+                if (current.isCompleted)
+                    counter ++
+
             }
             return getTotalScore(bowler)
         }
@@ -212,6 +211,9 @@ sealed class ScoreCalculator {
          * @return The total sum of the score achieved on each frame
          */
         fun getTotalScore(bowler: Bowler): Int {
+            if (!bowler.hasStarted()) {
+                return 0
+            }
             return bowler.frames.sumBy { it.getTotal(false) }
         }
 

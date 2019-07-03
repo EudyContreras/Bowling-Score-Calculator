@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="BubbleView">
+        <attr name="bubble_pointer_length" format="dimension"/>
+        <attr name="bubble_pointer_width" format="dimension"/>
+        <attr name="bubble_corner_radius" format="dimension"/>
+        <attr name="bubble_elevation" format="dimension"/>
+    </declare-styleable>
+    <declare-styleable name="RoundedCornerLayout">
+        <attr name="rcl_corner_radius" format="dimension"/>
+    </declare-styleable>
+</resources>

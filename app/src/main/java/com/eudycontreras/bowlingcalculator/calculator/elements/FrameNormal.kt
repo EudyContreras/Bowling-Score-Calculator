@@ -31,14 +31,6 @@ data class FrameNormal(override var index: Int) : Frame() {
 
     override var pointsFromPrevious: Int = 0
 
-    override val inProgress: Boolean
-        get() = if (rolls.isNotEmpty()) {
-            state != State.CLEARED
-        } else false
-
-    override val isCompleted: Boolean
-        get() = !hasChances()
-
     override fun reset() {
         pointsFromPrevious = 0
         bonusPoints = 0
@@ -81,7 +73,6 @@ data class FrameNormal(override var index: Int) : Frame() {
 
     override fun updateState(roll: Roll) {
         if (chances <= 0 || state == State.CLEARED) {
-            reset()
             return
         }
 
@@ -97,9 +88,9 @@ data class FrameNormal(override var index: Int) : Frame() {
             assignState(chances)
         }
 
-        if (!rolls.containsKey(state)) {
-            roll.parentState = state
-        } else {
+        roll.parentState = state
+
+        if (rolls.containsKey(state)) {
             handleEditedFrame(roll)
         }
 
@@ -138,15 +129,6 @@ data class FrameNormal(override var index: Int) : Frame() {
                         rolls[State.SECOND_CHANCE] = second
                     }
                 }
-            }
-            State.SECOND_CHANCE -> {
-                val first = rolls.getValue(State.FIRST_CHANCE)
-                first.result = Roll.Result.from(roll, first.totalKnockdown)
-
-                if (first.result == Roll.Result.SPARE) {
-                    first.result = Roll.Result.NORMAL
-                }
-                rolls[State.FIRST_CHANCE] = first
             }
             else -> { }
         }

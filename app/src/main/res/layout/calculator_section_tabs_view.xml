@@ -9,7 +9,7 @@
         android:translationZ="8dp"
         android:background="@color/colorPrimary"
         android:orientation="horizontal"
-        android:layout_marginTop="@dimen/margin_small"
+        android:paddingTop="2dp"
         tools:listitem="@layout/item_tab_view"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
 </androidx.recyclerview.widget.RecyclerView>
