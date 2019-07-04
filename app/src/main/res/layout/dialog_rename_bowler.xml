@@ -54,6 +54,13 @@
                    android:backgroundTint="@color/white"
                    android:layout_width="18dp"
                    android:layout_height="18dp"/>
+           <com.github.ybq.android.spinkit.SpinKitView
+                   android:id="@+id/saveRenameLoader"
+                   android:layout_width="match_parent"
+                   android:layout_height="match_parent"
+                   android:layout_gravity="center"
+                   app:SpinKit_Style="ThreeBounce"
+                   app:SpinKit_Color="@color/white"/>
        </FrameLayout>
    </LinearLayout>
 </FrameLayout>

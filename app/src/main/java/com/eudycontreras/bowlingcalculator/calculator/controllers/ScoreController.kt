@@ -21,7 +21,9 @@ import com.eudycontreras.bowlingcalculator.utilities.runAfterMain
  * @author Eudy Contreras.
  */
 
-class ScoreController(private val activity: MainActivity) : ScoreStateListener, BowlerActionListener{
+class ScoreController(
+    private val activity: MainActivity
+) : ScoreStateListener, BowlerActionListener {
 
     lateinit var loaderController: LoaderViewController
     lateinit var inputNameController: InputViewController
@@ -204,7 +206,7 @@ class ScoreController(private val activity: MainActivity) : ScoreStateListener, 
             it.name = newName.trim()
             activity.app.persistenceManager.updateBowler(it) {
                 onSaved(newName)
-                tabsController.updateTabName(it.id, newName)
+                tabsController.updateTabName(it.id, it.name)
             }
         }
     }

@@ -70,6 +70,7 @@ dependencies {
     // External unofficial libs
     implementation "com.github.salomonbrys.kotson:kotson:2.5.0"
     implementation "com.github.EudyContreras:Indicator-Effect-View:1.1.2"
+    implementation 'com.github.ybq:Android-SpinKit:1.2.0'
 
     // External official libs
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0-M1"

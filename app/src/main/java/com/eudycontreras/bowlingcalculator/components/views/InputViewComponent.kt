@@ -11,12 +11,14 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.core.view.doOnLayout
+import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.components.controllers.InputViewController
 import com.eudycontreras.bowlingcalculator.listeners.AnimationListener
 import com.eudycontreras.bowlingcalculator.listeners.BackPressedListener
 import com.eudycontreras.bowlingcalculator.utilities.Action
 import com.eudycontreras.bowlingcalculator.utilities.extensions.*
+import com.github.ybq.android.spinkit.SpinKitView
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -27,15 +29,15 @@ class InputViewComponent(
     val controller: InputViewController
 ): ViewComponent, BackPressedListener {
 
-    private val doneIcon: Drawable = context.drawable(com.eudycontreras.bowlingcalculator.R.drawable.ic_done)
-    private val saveIcon: Drawable = context.drawable(com.eudycontreras.bowlingcalculator.R.drawable.ic_save_score)
+    private val doneIcon: Drawable = context.drawable(R.drawable.ic_done)
+    private val saveIcon: Drawable = context.drawable(R.drawable.ic_save_score)
 
     private val parentView: View? = context.inputNameArea
 
-
-    private val nameInput: EditText? = parentView?.findViewById(com.eudycontreras.bowlingcalculator.R.id.inputRename)
-    private val saveNameAction: FrameLayout? = parentView?.findViewById(com.eudycontreras.bowlingcalculator.R.id.saveRename)
-    private val saveNameIcon: View? = parentView?.findViewById(com.eudycontreras.bowlingcalculator.R.id.saveRenameIcon)
+    private val nameInput: EditText? = parentView?.findViewById(R.id.inputRename)
+    private val saveNameAction: FrameLayout? = parentView?.findViewById(R.id.saveRename)
+    private val saveNameIcon: View? = parentView?.findViewById(R.id.saveRenameIcon)
+    private val saveLoader: SpinKitView? = parentView?.findViewById(R.id.saveRenameLoader)
 
     private val handler: Handler = Handler()
 
@@ -59,6 +61,7 @@ class InputViewComponent(
     }
 
     override fun setDefaultValues() {
+        saveLoader?.hide()
         context.addBackPressListeners(this)
 
         parentView?.doOnLayout {
@@ -143,7 +146,9 @@ class InputViewComponent(
 
         saveNameIcon?.let { view ->
             val switchIcon: Action = {
+                saveLoader?.show(150)
                 controller.saveNewName(renameInfo) {
+                    saveLoader?.hide(150)
                     onNameSaved(view, renameInfo)
                 }
             }
