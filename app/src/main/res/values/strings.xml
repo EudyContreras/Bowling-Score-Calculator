@@ -24,4 +24,6 @@
     </string>
     <string name="exception_bowler_exists">The bowler created already exists</string>
     <string name="action_rename">Rename</string>
+    <string name="empty_state_results_title">No results found!</string>
+    <string name="empty_state_results_body">There are no save results. Your saved results will show here.</string>
 </resources>

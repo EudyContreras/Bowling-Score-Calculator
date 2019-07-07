@@ -1,14 +1,18 @@
 package com.eudycontreras.bowlingcalculator.components.controllers
 
+import android.view.View
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.adapters.TabViewAdapter
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
-import com.eudycontreras.bowlingcalculator.components.views.SkeletonViewComponent
+import com.eudycontreras.bowlingcalculator.components.views.EmptyStateViewComponent
 import com.eudycontreras.bowlingcalculator.components.views.TabsViewComponent
-import com.eudycontreras.bowlingcalculator.fragments.FragmentCreateBowler
+import com.eudycontreras.bowlingcalculator.libraries.morpher.MorphTransitioner
+import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
 import com.eudycontreras.bowlingcalculator.utilities.BowlerListener
 import com.eudycontreras.bowlingcalculator.utilities.extensions.app
+import kotlinx.android.synthetic.main.activity_main.*
 
 /**
  * @Project BowlingCalculator
@@ -27,18 +31,30 @@ class TabsViewController(
     }
 
 
-    fun onTabRequested(manual: Boolean, listener: BowlerListener = null) {
+    fun onTabRequested(manual: Boolean, shape: View, listener: BowlerListener = null) {
         val onDismiss = {
             if (!context.app.persistenceManager.hasBowlers()) {
-                scoreController.skeletonController.setState(SkeletonViewComponent.EmptyState.Default(context) {
-                    onTabRequested(true)
+                scoreController.emptyStateController.setState(EmptyStateViewComponent.EmptyState.Main(context) {
+                    onTabRequested(true, shape)
                 })
-                scoreController.skeletonController.revealState()
+                scoreController.emptyStateController.revealState()
             } else {
-                scoreController.skeletonController.concealState()
+                scoreController.emptyStateController.concealState()
             }
         }
-        context.openDialog(FragmentCreateBowler.instance(this, manual, listener, onDismiss))
+        val transition = MorphTransitioner(context.tab as MorphLayout, context.dialog as MorphLayout)
+        transition.animateTo(1f, 400, 400, interpolator =  FastOutSlowInInterpolator())
+
+/*        context.morphingUtility.setSourceView(context.tab)
+        context. morphingUtility.setDialogView(context.dialog as ViewGroup)
+
+        doWith(shape.backgroundTintList, context.dialog.backgroundTintList) { colorFrom, colorTo ->
+            context.morphingUtility.colorFrom = colorFrom.defaultColor
+            context.morphingUtility.colorTo = colorTo.defaultColor
+        }
+
+        context.morphingUtility.morphIntoDialog(300, null, null)*/
+        //context.openDialog(FragmentCreateBowler.instance(this, manual, listener, onDismiss))
     }
 
     fun requestTabRemoval(lastIndex: Int, index: Int, onEnd: (()-> Unit)? = null) {

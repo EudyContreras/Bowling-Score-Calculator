@@ -18,6 +18,7 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.attach
 import com.eudycontreras.bowlingcalculator.utilities.extensions.detach
 import com.eudycontreras.bowlingcalculator.utilities.extensions.dp
 import kotlinx.android.synthetic.main.item_tab_view.view.*
+import kotlinx.android.synthetic.main.item_tab_view_add.view.*
 import java.lang.ref.WeakReference
 
 
@@ -151,6 +152,7 @@ class TabViewAdapter(
     inner class TabViewHolderAdd(view: View) : TabViewHolder(view) {
 
         private var model: TabViewModel? = null
+        private var icon: View = view.addIcon
 
         init {
             resetValues()
@@ -177,7 +179,7 @@ class TabViewAdapter(
         override fun onClick(view: View?) {
             model?.let {
                 currentIndex = layoutPosition
-                viewComponent.controller.onTabRequested(true)
+                viewComponent.controller.onTabRequested(true, itemView)
             }
         }
     }

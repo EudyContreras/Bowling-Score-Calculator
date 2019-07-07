@@ -7,7 +7,7 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.FrameLast
 import com.eudycontreras.bowlingcalculator.calculator.listeners.BowlerActionListener
 import com.eudycontreras.bowlingcalculator.calculator.listeners.ScoreStateListener
 import com.eudycontreras.bowlingcalculator.components.controllers.*
-import com.eudycontreras.bowlingcalculator.components.views.SkeletonViewComponent
+import com.eudycontreras.bowlingcalculator.components.views.EmptyStateViewComponent
 import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_PIN_COUNT
 import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_START_INDEX
 import com.eudycontreras.bowlingcalculator.utilities.MAX_POSSIBLE_SCORE_GAME
@@ -27,7 +27,7 @@ class ScoreController(
 
     lateinit var loaderController: LoaderViewController
     lateinit var inputNameController: InputViewController
-    lateinit var skeletonController: SkeletonViewController
+    lateinit var emptyStateController: EmptyStateViewController
     lateinit var actionController: ActionViewController
     lateinit var framesController: FramesViewController
     lateinit var statsController: StatsViewController
@@ -133,10 +133,10 @@ class ScoreController(
         } else {
             framesController.setSourceFrames(bowler = null) {
                 runAfterMain(delay = 250) {
-                    skeletonController.setState(SkeletonViewComponent.EmptyState.Default(activity) {
-                        tabsController.onTabRequested(true)
+                    emptyStateController.setState(EmptyStateViewComponent.EmptyState.Main(activity) {
+                       // tabsController.onTabRequested(true)
                     })
-                    skeletonController.revealState()
+                    emptyStateController.revealState()
                 }
 
                 statsController.updateTotalScore(score = 0)

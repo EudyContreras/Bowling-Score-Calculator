@@ -12,7 +12,6 @@
         android:paddingBottom="@dimen/padding_large"
         android:paddingStart="@dimen/padding_large"
         android:paddingEnd="@dimen/padding_large"
-        app:rcl_corner_radius="24dp"
         android:layout_marginBottom="@dimen/margin_medium">
    <LinearLayout
            android:id="@+id/inputRenameContainer"

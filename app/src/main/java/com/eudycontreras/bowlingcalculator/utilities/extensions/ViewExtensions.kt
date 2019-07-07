@@ -11,8 +11,6 @@ import android.view.animation.Interpolator
 import android.widget.EditText
 import com.eudycontreras.bowlingcalculator.listeners.AnimationListener
 
-
-
 /**
  * @Project BowlingCalculator
  * @author Eudy Contreras.
@@ -59,6 +57,14 @@ fun View.show(duration: Long = 0L) {
         .alpha(1f)
         .setDuration(duration)
         .start()
+}
+
+fun View.setSize(width: Float, height: Float) {
+    val params = this.layoutParams
+    params.width = width.toInt()
+    params.height = height.toInt()
+    this.layoutParams = params
+    this.requestLayout()
 }
 
 fun EditText.AddChangeListener(

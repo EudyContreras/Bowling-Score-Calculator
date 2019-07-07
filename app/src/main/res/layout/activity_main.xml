@@ -84,8 +84,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ProgressBar
@@ -104,4 +102,16 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
+
+    <include
+            android:id="@+id/tab"
+        layout="@layout/item_tab_view_add_alt"/>
+    <include
+            android:id="@+id/dialog"
+            android:layout_marginStart="@dimen/spacing_extra_large"
+            android:layout_marginEnd="@dimen/spacing_extra_large"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            layout="@layout/dialog_create_bowlers"/>
 </FrameLayout>

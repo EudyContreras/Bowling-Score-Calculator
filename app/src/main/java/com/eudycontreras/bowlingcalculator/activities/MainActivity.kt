@@ -13,13 +13,11 @@ import androidx.lifecycle.Observer
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.components.controllers.*
+import com.eudycontreras.bowlingcalculator.libraries.morpher.utilities.MorphingUtility
 import com.eudycontreras.bowlingcalculator.listeners.BackPressedListener
-import com.eudycontreras.bowlingcalculator.utilities.BowlerListener
-import com.eudycontreras.bowlingcalculator.utilities.Bowlers
-import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_GRACE_PERIOD
+import com.eudycontreras.bowlingcalculator.utilities.*
 import com.eudycontreras.bowlingcalculator.utilities.extensions.addTouchAnimation
 import com.eudycontreras.bowlingcalculator.utilities.extensions.app
-import com.eudycontreras.bowlingcalculator.utilities.runAfterMain
 import com.eudycontreras.indicatoreffectlib.views.IndicatorView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_toolbar.view.*
@@ -35,9 +33,10 @@ import kotlinx.android.synthetic.main.activity_toolbar.view.*
 class MainActivity : AppCompatActivity() {
 
     private val backNavigationListeners = ArrayList<BackPressedListener>()
+
     private lateinit var scoreController: ScoreController
 
-    private lateinit var skeletonController: SkeletonViewController
+    private lateinit var emptyStateController: EmptyStateViewController
     private lateinit var inputNameController: InputViewController
     private lateinit var loaderController: LoaderViewController
     private lateinit var framesController: FramesViewController
@@ -46,6 +45,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tabsController: TabsViewController
 
     lateinit var indicator: IndicatorView
+
+    val morphingUtility = MorphingUtility()
+
     private var created = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,13 +59,23 @@ class MainActivity : AppCompatActivity() {
         initIndicator()
         registerListeners()
         initControllers()
+        setDefaults()
+    }
+
+    private fun setDefaults() {
+        morphingUtility.setSourceView(toolbar.toolbarMenu)
+        morphingUtility.setDialogView(dialog as ViewGroup)
+
+        doWith(toolbar.toolbarMenu.backgroundTintList, dialog.backgroundTintList) { sourceColor, dialogColor->
+            morphingUtility.colorFrom = sourceColor.defaultColor
+            morphingUtility.colorTo = dialogColor.defaultColor
+        }
     }
 
     private fun initControllers() {
-
         scoreController = ScoreController(this)
 
-        skeletonController = SkeletonViewController(this, scoreController)
+        emptyStateController = EmptyStateViewController(this, this.emptyStateArea, scoreController)
         inputNameController = InputViewController(this, scoreController)
         loaderController = LoaderViewController(this, scoreController)
         framesController = FramesViewController(this, scoreController)
@@ -108,7 +120,10 @@ class MainActivity : AppCompatActivity() {
         )
 
         toolbar.toolbarMenu.setOnClickListener {
-
+            morphingUtility.morphIntoDialog(
+                250,
+                null,
+                null)
         }
     }
 
@@ -147,7 +162,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onStorageEmpty() {
-        tabsController.onTabRequested(false)
+        //tabsController.onTabRequested(false)
     }
 
     private fun onStorageFull() {

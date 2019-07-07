@@ -35,10 +35,6 @@ fun <T> List<T>.asLiveData(): MediatorLiveData<List<T>> {
     return livaData
 }
 
-fun Any?.isNotNull(): Boolean {
-    return this != null
-}
-
 infix fun <T> Collection<T>.and(other: Collection<T>): Collection<T> {
     return this.plus(other)
 }

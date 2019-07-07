@@ -2,6 +2,7 @@
 <com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:tag="createBowler"
         android:orientation="vertical"
         android:backgroundTint="@color/colorPrimaryLight"
         android:clipToPadding="false"
@@ -23,6 +24,7 @@
             android:layout_gravity="end|center"
             android:layout_width="24dp"
             android:layout_height="24dp"
+            android:tag="addBowler"
             android:background="@drawable/shape_circle"
             android:backgroundTint="@color/white"
             android:elevation="1dp"
@@ -34,6 +36,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
         <com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.ViewLayout
+                android:tag="addBowlerIcon"
                 android:rotation="-180"
                 android:layout_gravity="center"
                 android:background="@drawable/ic_add"

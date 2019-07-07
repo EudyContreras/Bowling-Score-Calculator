@@ -1,23 +1,25 @@
 package com.eudycontreras.bowlingcalculator.components.controllers
 
+import android.view.View
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
-import com.eudycontreras.bowlingcalculator.components.views.SkeletonViewComponent
+import com.eudycontreras.bowlingcalculator.components.views.EmptyStateViewComponent
 
 /**
  * @Project BowlingCalculator
  * @author Eudy Contreras.
  */
 
-class SkeletonViewController(
+class EmptyStateViewController(
     context: MainActivity,
-    private val scoreController: ScoreController
+    parentView: View,
+    scoreController: ScoreController? = null
 ) {
 
-    private var viewComponent: SkeletonViewComponent = SkeletonViewComponent(context, this)
+    private var viewComponent: EmptyStateViewComponent = EmptyStateViewComponent(context, parentView, this)
 
     init {
-        scoreController.skeletonController = this
+        scoreController?.emptyStateController = this
     }
 
     fun concealState(onEnd: (() -> Unit)? = null) {
@@ -28,7 +30,7 @@ class SkeletonViewController(
         viewComponent.revealState(onEnd)
     }
 
-    fun setState(state: SkeletonViewComponent.EmptyState) {
+    fun setState(state: EmptyStateViewComponent.EmptyState) {
         viewComponent.setEmptyState(state)
     }
 }

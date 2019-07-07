@@ -15,6 +15,9 @@
     <color name="white">#FFF</color>
     <color name="gray">#D6D6D6</color>
 
+    <color name="empty">#ADADAD</color>
+    <color name="emptyShape">#C8C8C8</color>
+
     <color name="shadow">#40000000</color>
     <color name="shadowDark">#A0000000</color>
     <color name="transparent">#00000000</color>

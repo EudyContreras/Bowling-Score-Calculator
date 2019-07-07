@@ -1,6 +1,7 @@
 package com.eudycontreras.bowlingcalculator.components.views
 
 import android.app.Activity
+import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.animation.DecelerateInterpolator
@@ -9,24 +10,22 @@ import android.view.animation.OvershootInterpolator
 import android.widget.TextView
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
-import com.eudycontreras.bowlingcalculator.components.controllers.SkeletonViewController
+import com.eudycontreras.bowlingcalculator.components.controllers.EmptyStateViewController
 import com.eudycontreras.bowlingcalculator.listeners.AnimationListener
 import com.eudycontreras.bowlingcalculator.utilities.extensions.addTouchAnimation
 import com.eudycontreras.bowlingcalculator.utilities.extensions.color
 import com.eudycontreras.bowlingcalculator.utilities.extensions.dp
 import com.eudycontreras.bowlingcalculator.utilities.extensions.drawable
-import kotlinx.android.synthetic.main.activity_main.*
 
 /**
  * Created by eudycontreras.
  */
 
-class SkeletonViewComponent(
+class EmptyStateViewComponent(
     private val context: MainActivity,
-    val controller: SkeletonViewController
+    val parent: View,
+    val controller: EmptyStateViewController
 ) : ViewComponent {
-
-    private val parent: View = context.emptyStateArea
 
     private val iconContainer: View = parent.findViewById(R.id.emptyStateIconContainer)
     private val shape: View = parent.findViewById(R.id.emptyStateShape)
@@ -38,7 +37,7 @@ class SkeletonViewComponent(
     private val interpolatorIn: Interpolator = DecelerateInterpolator()
     private val interpolatorOut: Interpolator = OvershootInterpolator()
 
-    private var emptyState: EmptyState = EmptyState.Default(context, null)
+    private var emptyState: EmptyState = EmptyState.Main(context, null)
 
     private var showing = false
 
@@ -54,6 +53,9 @@ class SkeletonViewComponent(
         icon.background = emptyState.icon
         title.text = emptyState.title
         body.text = emptyState.body
+        emptyState.iconColor?.let {
+            icon.backgroundTintList = ColorStateList.valueOf(it)
+        }
 
         iconContainer.translationZ = 0f
         iconContainer.scaleX = 0f
@@ -198,6 +200,7 @@ class SkeletonViewComponent(
 
     sealed class EmptyState {
         abstract val icon: Drawable
+        abstract val iconColor: Int?
         abstract val shapeColor: Int
         abstract val actionColor: Int
         abstract val titleIcon: Drawable
@@ -207,8 +210,9 @@ class SkeletonViewComponent(
         abstract val action: (() -> Unit)?
         abstract val showActionButton: Boolean
 
-        class Default(context: Activity, override val action: (() -> Unit)? = null) : EmptyState() {
+        class Main(context: Activity, override val action: (() -> Unit)? = null) : EmptyState() {
             override val icon: Drawable = context.drawable(R.drawable.img_bowling_logo_alt)
+            override val iconColor: Int? = null
             override val actionColor: Int = context.color(R.color.colorAccentLight)
             override val shapeColor: Int = context.color(R.color.colorPrimary)
             override val titleIcon: Drawable = context.drawable(R.drawable.ic_add_bowler)
@@ -216,6 +220,18 @@ class SkeletonViewComponent(
             override var title: String = context.getString(R.string.empty_state_add_bowler_title)
             override var body: String = context.getString(R.string.empty_state_add_bowler_body)
             override val showActionButton: Boolean = true
+        }
+
+        class Results(context: Activity, override val action: (() -> Unit)? = null) : EmptyState() {
+            override val icon: Drawable = context.drawable(R.drawable.ic_list)
+            override val iconColor: Int? = context.color(R.color.white)
+            override val actionColor: Int = context.color(R.color.colorAccentLight)
+            override val shapeColor: Int = context.color(R.color.colorAccent)
+            override val titleIcon: Drawable = context.drawable(R.drawable.ic_add_bowler)
+            override val actionIcon: Drawable = context.drawable(R.drawable.ic_add)
+            override var title: String = context.getString(R.string.empty_state_results_title)
+            override var body: String = context.getString(R.string.empty_state_results_body)
+            override val showActionButton: Boolean = false
         }
 
         override fun equals(other: Any?): Boolean {
