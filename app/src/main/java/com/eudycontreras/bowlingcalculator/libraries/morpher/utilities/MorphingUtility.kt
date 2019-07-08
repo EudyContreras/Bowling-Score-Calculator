@@ -80,11 +80,11 @@ object MorphingUtility {
         )
 
         val listener = MorphAnimationListener(
-            onStart = {
+            {
                 resultView.show()
                 onStart?.invoke()
             },
-            onEnd = onEnd
+            onEnd
         )
 
         revealAnimator.addListener(listener)

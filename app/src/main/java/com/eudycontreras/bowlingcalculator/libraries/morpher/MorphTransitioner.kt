@@ -184,7 +184,7 @@ class MorphTransitioner() {
     fun setOffset(percent: Int) = setOffset(percent.toFloat() / 100f)
 
     class Morpher {
-        private var curveTranslation = true
+        private var curveTranslation = false
         private var morphChildren = true
         private var isMorphing = false
         private var isMorphed = false
@@ -240,10 +240,11 @@ class MorphTransitioner() {
 
             isMorphing = true
 
-            for (i in 0 until endingView.morphChildCount) {
-                val child = endingView.getChildViewAt(i)
-
+            for (child in endingView.getChildren()) {
                 if (child.visibility == View.GONE)
+                    continue
+
+                if (morphChildren && child.tag != null)
                     continue
 
                 child.alpha = 0f
@@ -278,6 +279,10 @@ class MorphTransitioner() {
 
             curveTranslator.setControlPoint(Coordintates.midPoint(midPoint, crossPoint))
 
+            val mappings: List<MorphMap> = if (morphChildren) {
+                getChildMappings(startingView, endingView)
+            } else emptyList()
+
             morph(
                 endingView,
                 fromState,
@@ -288,6 +293,7 @@ class MorphTransitioner() {
                 onStart,
                 onEnd,
                 offsetTrigger,
+                mappings,
                 ChildrenAction.REVEAL
             )
         }
@@ -302,8 +308,6 @@ class MorphTransitioner() {
                 endingView.morphVisibility = View.INVISIBLE
             }
 
-            applyProps(endingView, fromState)
-
             val curveTranslator = CurvedTranslator()
             curveTranslator.setStartPoint(toState.getDeltaCoordinates())
             curveTranslator.setEndPoint(fromState.getDeltaCoordinates())
@@ -312,6 +316,10 @@ class MorphTransitioner() {
             val crossPoint = Coordintates(fromState.translationX, toState.translationY)
 
             curveTranslator.setControlPoint(Coordintates.midPoint(midPoint, crossPoint))
+
+            val mappings: List<MorphMap> = if (morphChildren) {
+                getChildMappings(endingView, startingView)
+            } else emptyList()
 
             morph(
                 endingView,
@@ -323,12 +331,13 @@ class MorphTransitioner() {
                 onStart,
                 doOnEnd,
                 offsetTrigger,
+                mappings,
                 ChildrenAction.CONCEAL
             )
         }
 
         private fun morph(
-            morphView: MorphLayout,
+            endView: MorphLayout,
             startingProps: Properties,
             endingProps: Properties,
             interpolator: Interpolator?,
@@ -337,6 +346,7 @@ class MorphTransitioner() {
             onStart: Action,
             onEnd: Action,
             trigger: OffsetTrigger?,
+            mappings: List<MorphMap>,
             childrenAction: ChildrenAction
         ) {
 
@@ -357,25 +367,27 @@ class MorphTransitioner() {
 
                 remainingDuration = duration - (duration * offset).toLong()
 
-                if (curveTranslation) {
-                    morphView.morphTranslationX = curveTranslator.getCurvedTranslationX(offset).toFloat()
-                    morphView.morphTranslationY = curveTranslator.getCurvedTranslationY(offset).toFloat()
-                } else {
-                    morphView.morphTranslationX = (startingProps.translationX + (endingProps.translationX - startingProps.translationX) * offset)
-                    morphView.morphTranslationY = (startingProps.translationY + (endingProps.translationY - startingProps.translationY) * offset)
-                }
+                animateOffset(endView, startingProps, endingProps, offset)
+                moveWithOffset(endView, startingProps, endingProps, offset, curveTranslator)
 
-                animateOffset(morphView, startingProps, endingProps, offset)
+                if (morphChildren) {
+                    for (mapping in mappings) {
+                        animateOffset(mapping.endView, mapping.startProps, mapping.endProps, offset)
+
+                        mapping.endView.morphX = (mapping.startProps.x + (mapping.endProps.x - mapping.startProps.x) * offset)
+                        mapping.endView.morphY = (mapping.startProps.y + (mapping.endProps.y - mapping.startProps.y) * offset)
+                    }
+                }
 
                 when (childrenAction) {
                     ChildrenAction.CONCEAL -> {
                         if (animateChildren && childrenRevealed && offset >= concealChildrenOffset) {
-                            concealChildren(remainingDuration)
+                            concealChildren(morphChildren, remainingDuration)
                         }
                     }
                     ChildrenAction.REVEAL -> {
                         if (animateChildren && !childrenRevealed && offset >= revealChildrenOffset) {
-                            revealChildren(remainingDuration)
+                            revealChildren(morphChildren, remainingDuration)
                         }
                     }
                 }
@@ -394,14 +406,54 @@ class MorphTransitioner() {
             animator.start()
         }
 
-        private fun revealChildren(duration: Long) {
-            childrenRevealed = true
-            animateRevealChildren(endingView.getChildren(), duration, durationOffsetMultiplier)
+        private fun moveWithOffset(
+            endView: MorphLayout,
+            startingProps: Properties,
+            endingProps: Properties,
+            offset: Float,
+            curveTranslator: CurvedTranslator
+        ) {
+            if (curveTranslation) {
+                endView.morphTranslationX = curveTranslator.getCurvedTranslationX(offset).toFloat()
+                endView.morphTranslationY = curveTranslator.getCurvedTranslationY(offset).toFloat()
+            } else {
+                endView.morphTranslationX = (startingProps.translationX + (endingProps.translationX - startingProps.translationX) * offset)
+                endView.morphTranslationY = (startingProps.translationY + (endingProps.translationY - startingProps.translationY) * offset)
+            }
         }
 
-        private fun concealChildren(duration: Long) {
+        private fun getChildMappings(startView: MorphLayout, endView: MorphLayout): List<MorphMap> {
+            val startChildren = startView.getChildren().filter { it.tag != null }
+            val endChildren = endView.getChildren().filter { it.tag != null }
+
+            val mappings: ArrayList<MorphMap> = ArrayList()
+
+            startChildren.forEach { startChild ->
+                endChildren.forEach { endChild ->
+                    if (startChild.tag == endChild.tag) {
+                        val start: MorphLayout = startChild as MorphLayout
+                        val end: MorphLayout = endChild as MorphLayout
+
+                        val startProps = start.getProperties()
+                        val endProps = end.getProperties()
+
+                        mappings.add(MorphMap(start, end, startProps, endProps))
+                    }
+                }
+            }
+            return mappings
+        }
+
+        private fun revealChildren(skipTagged: Boolean, duration: Long) {
+            childrenRevealed = true
+            val children = if (skipTagged) endingView.getChildren().filter { it.tag == null } else endingView.getChildren()
+            animateRevealChildren(children, duration, durationOffsetMultiplier)
+        }
+
+        private fun concealChildren(skipTagged: Boolean, duration: Long) {
             childrenRevealed = false
-            animateConcealChildren(endingView.getChildren(), duration, durationOffsetMultiplier)
+            val children = if (skipTagged) endingView.getChildren().filter { it.tag == null } else endingView.getChildren()
+            animateConcealChildren(children, duration, durationOffsetMultiplier)
         }
     }
 
@@ -415,7 +467,7 @@ class MorphTransitioner() {
         const val DEFAULT_DURATION: Long = 300L
 
         const val DEFAULT_CHILDREN_REVEAL_OFFSET = 0.60f
-        const val DEFAULT_CHILDREN_CONCEAL_OFFSET = 0.05f
+        const val DEFAULT_CHILDREN_CONCEAL_OFFSET = 0.0f
 
         const val DEFAULT_REVEAL_DURATION_MULTIPLIER = 0.4f
 

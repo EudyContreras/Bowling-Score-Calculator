@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import androidx.lifecycle.Observer
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
@@ -69,9 +68,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setDefaults() {
-        morphTransitioner.interpolatorMorphTo = LinearOutSlowInInterpolator()
-        morphTransitioner.interpolatorMorphFrom = AccelerateInterpolator()
-        morphTransitioner.startingView = toolbar.toolbarMenu
+        morphTransitioner.interpolatorMorphTo = AccelerateInterpolator()
+        morphTransitioner.interpolatorMorphFrom = DecelerateInterpolator()
+
+        morphTransitioner.startingView = toolbar.toolbarMenuBorder
         morphTransitioner.endingView = dialog as MorphLayout
     }
 
@@ -123,7 +123,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         toolbar.toolbarMenu.setOnClickListener {
-            morphTransitioner.morphInto(350)
+            morphTransitioner.morphInto(24350)
         }
 
         dialog.findViewById<FrameLayout>(R.id.createDialogAddInput).addTouchAnimation(
@@ -135,7 +135,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         dialog.findViewById<FrameLayout>(R.id.createDialogAddInput).setOnClickListener {
-            morphTransitioner.morphFrom(350)
+            morphTransitioner.morphFrom(24350)
         }
     }
 
