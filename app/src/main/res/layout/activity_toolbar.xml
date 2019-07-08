@@ -82,8 +82,9 @@
                 android:layout_gravity="end|center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
-            <FrameLayout
+            <com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.FrameLayout
                     android:id="@+id/toolbarMenu"
+                    android:tag="addBowler"
                     android:layout_gravity="center"
                     android:layout_margin="4dp"
                     android:backgroundTint="@color/colorAccent"
@@ -91,13 +92,14 @@
                     android:elevation="1dp"
                     android:translationZ="6dp"
                     android:layout_width="32dp"
-                    android:layout_height="32dp">
+                    android:layout_height="32dp"
+                    app:fl_shapeType="CIRCULAR">
                 <View
                         android:layout_gravity="center"
                         android:background="@drawable/ic_menu"
                         android:layout_width="24dp"
                         android:layout_height="24dp"/>
-            </FrameLayout>
+            </com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.FrameLayout>
         </FrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

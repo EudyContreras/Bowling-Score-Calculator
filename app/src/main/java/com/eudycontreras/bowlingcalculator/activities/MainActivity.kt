@@ -3,25 +3,31 @@ package com.eudycontreras.bowlingcalculator.activities
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.ViewGroup
+import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import androidx.lifecycle.Observer
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.components.controllers.*
-import com.eudycontreras.bowlingcalculator.libraries.morpher.utilities.MorphingUtility
+import com.eudycontreras.bowlingcalculator.libraries.morpher.MorphTransitioner
+import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
+import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.FrameLayout
 import com.eudycontreras.bowlingcalculator.listeners.BackPressedListener
-import com.eudycontreras.bowlingcalculator.utilities.*
+import com.eudycontreras.bowlingcalculator.utilities.BowlerListener
+import com.eudycontreras.bowlingcalculator.utilities.Bowlers
+import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_GRACE_PERIOD
 import com.eudycontreras.bowlingcalculator.utilities.extensions.addTouchAnimation
 import com.eudycontreras.bowlingcalculator.utilities.extensions.app
+import com.eudycontreras.bowlingcalculator.utilities.runAfterMain
 import com.eudycontreras.indicatoreffectlib.views.IndicatorView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_toolbar.view.*
-
 
 /**
  * Copyright (C) 2019 Bowling Score Calculator Project
@@ -46,7 +52,7 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var indicator: IndicatorView
 
-    val morphingUtility = MorphingUtility()
+    val morphTransitioner = MorphTransitioner.Morpher()
 
     private var created = false
 
@@ -63,13 +69,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setDefaults() {
-        morphingUtility.setSourceView(toolbar.toolbarMenu)
-        morphingUtility.setDialogView(dialog as ViewGroup)
-
-        doWith(toolbar.toolbarMenu.backgroundTintList, dialog.backgroundTintList) { sourceColor, dialogColor->
-            morphingUtility.colorFrom = sourceColor.defaultColor
-            morphingUtility.colorTo = dialogColor.defaultColor
-        }
+        morphTransitioner.interpolatorMorphTo = LinearOutSlowInInterpolator()
+        morphTransitioner.interpolatorMorphFrom = AccelerateInterpolator()
+        morphTransitioner.startingView = toolbar.toolbarMenu
+        morphTransitioner.endingView = dialog as MorphLayout
     }
 
     private fun initControllers() {
@@ -120,10 +123,19 @@ class MainActivity : AppCompatActivity() {
         )
 
         toolbar.toolbarMenu.setOnClickListener {
-            morphingUtility.morphIntoDialog(
-                250,
-                null,
-                null)
+            morphTransitioner.morphInto(350)
+        }
+
+        dialog.findViewById<FrameLayout>(R.id.createDialogAddInput).addTouchAnimation(
+            clickTarget = null,
+            scale = 0.90f,
+            depth = 0f,
+            interpolatorPress = DecelerateInterpolator(),
+            interpolatorRelease = OvershootInterpolator()
+        )
+
+        dialog.findViewById<FrameLayout>(R.id.createDialogAddInput).setOnClickListener {
+            morphTransitioner.morphFrom(350)
         }
     }
 

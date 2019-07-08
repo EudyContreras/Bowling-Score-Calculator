@@ -3,6 +3,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:visibility="invisible"
         android:backgroundTint="@color/colorPrimary"
         android:tag="createBowler"
         android:layout_gravity="center"

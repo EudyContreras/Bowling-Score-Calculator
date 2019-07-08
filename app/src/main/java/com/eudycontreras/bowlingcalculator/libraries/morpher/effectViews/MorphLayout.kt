@@ -46,7 +46,10 @@ interface MorphLayout {
     var morphVisibility: Int
     val morphChildCount: Int
     var showMutateCorners: Boolean
+    val morphShape: Int
     val morphTag: Any?
+    val windowLocationX: Int
+    val windowLocationY: Int
     fun animator(): ViewPropertyAnimator
     fun updateLayout()
     fun hasChildren(): Boolean

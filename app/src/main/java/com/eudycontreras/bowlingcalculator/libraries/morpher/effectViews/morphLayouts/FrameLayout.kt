@@ -37,94 +37,94 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.toStateList
 class FrameLayout : FrameLayout, MorphLayout {
 
     override var morphX: Float
-        get() = this@FrameLayout.x
+        get() = this.x
         set(value) {
-            this@FrameLayout.x = value
+            this.x = value
         }
     override var morphY: Float
-        get() = this@FrameLayout.y
+        get() = this.y
         set(value) {
-            this@FrameLayout.y = value
+            this.y = value
         }
     override var morphWidth: Float
-        get() = this@FrameLayout.width.toFloat()
+        get() = this.width.toFloat()
         set(value) {
-            this@FrameLayout.layoutParams.width = value.toInt()
+            this.layoutParams.width = value.toInt()
         }
     override var morphHeight: Float
-        get() = this@FrameLayout.layoutParams.height.toFloat()
+        get() = this.height.toFloat()
         set(value) {
-            this@FrameLayout.layoutParams.height = value.toInt()
+            this.layoutParams.height = value.toInt()
         }
     override var morphAlpha: Float
-        get() = this@FrameLayout.alpha
+        get() = this.alpha
         set(value) {
-            this@FrameLayout.alpha = value
+            this.alpha = value
         }
     override var morphElevation: Float
-        get() = this@FrameLayout.elevation
+        get() = this.elevation
         set(value) {
-            this@FrameLayout.elevation = value
+            this.elevation = value
         }
     override var morphTranslationX: Float
-        get() = this@FrameLayout.translationX
+        get() = this.translationX
         set(value) {
-            this@FrameLayout.translationX = value
+            this.translationX = value
         }
     override var morphTranslationY: Float
-        get() = this@FrameLayout.translationY
+        get() = this.translationY
         set(value) {
-            this@FrameLayout.translationY = value
+            this.translationY = value
         }
     override var morphTranslationZ: Float
-        get() = this@FrameLayout.translationZ
+        get() = this.translationZ
         set(value) {
-            this@FrameLayout.translationZ = value
+            this.translationZ = value
         }
     override var morphPivotX: Float
-        get() = this@FrameLayout.pivotX
+        get() = this.pivotX
         set(value) {
-            this@FrameLayout.pivotX = value
+            this.pivotX = value
         }
     override var morphPivotY: Float
-        get() = this@FrameLayout.pivotY
+        get() = this.pivotY
         set(value) {
-            this@FrameLayout.pivotY = value
+            this.pivotY = value
         }
     override var morphRotation: Float
-        get() = this@FrameLayout.rotation
+        get() = this.rotation
         set(value) {
-            this@FrameLayout.rotation = value
+            this.rotation = value
         }
     override var morphRotationX: Float
-        get() = this@FrameLayout.rotationX
+        get() = this.rotationX
         set(value) {
-            this@FrameLayout.rotationX = value
+            this.rotationX = value
         }
     override var morphRotationY: Float
-        get() = this@FrameLayout.rotationY
+        get() = this.rotationY
         set(value) {
-            this@FrameLayout.rotationY = value
+            this.rotationY = value
         }
     override var morphScaleX: Float
-        get() = this@FrameLayout.scaleX
+        get() = this.scaleX
         set(value) {
-            this@FrameLayout.scaleX = value
+            this.scaleX = value
         }
     override var morphScaleY: Float
-        get() = this@FrameLayout.scaleY
+        get() = this.scaleY
         set(value) {
-            this@FrameLayout.scaleY = value
+            this.scaleY = value
         }
     override var morphColor: Int
-        get() = this@FrameLayout.getColor()
+        get() = this.getColor()
         set(value) {
-            this@FrameLayout.backgroundTintList = value.toStateList()
+            this.backgroundTintList = value.toStateList()
         }
     override var morphStateList: ColorStateList?
-        get() = this@FrameLayout.backgroundTintList
+        get() = this.backgroundTintList
         set(value) {
-            this@FrameLayout.backgroundTintList = value
+            this.backgroundTintList = value
         }
     override var morphCornerRadii: CornerRadii
         get() = cornerRadii
@@ -132,23 +132,41 @@ class FrameLayout : FrameLayout, MorphLayout {
             updateCorners(value)
         }
     override val morphChildCount: Int
-        get() = this@FrameLayout.childCount
+        get() = this.childCount
 
     override var morphVisibility: Int
-        get() = this@FrameLayout.visibility
+        get() = this.visibility
         set(value) {
-            this@FrameLayout.visibility = value
+            this.visibility = value
         }
     override var showMutateCorners: Boolean = true
 
     override val morphTag: Any?
-        get() = this@FrameLayout.tag
+        get() = this.tag
 
-    private lateinit var mutableDrawable: GradientDrawable
+    override val windowLocationX: Int
+        get() {
+            this.getLocationInWindow(location)
+            return location[0]
+        }
+    override val windowLocationY: Int
+        get() {
+            this.getLocationInWindow(location)
+            return location[1]
+        }
+
+    override val morphShape: Int
+        get() = shape
+
+    private var shape: Int = RECTANGULAR
+    
+    private val location: IntArray = IntArray(2)
 
     private var cornerRadii: CornerRadii = CornerRadii()
 
     private var drawListener: DrawDispatchListener? = null
+
+    private lateinit var mutableDrawable: GradientDrawable
 
     constructor(context: Context) : super(context)
 
@@ -163,7 +181,7 @@ class FrameLayout : FrameLayout, MorphLayout {
     private fun setUpAttributes(attrs: AttributeSet) {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.FrameLayout)
         try {
-            val shape = typedArray.getInt(R.styleable.FrameLayout_fl_shapeType,
+            shape = typedArray.getInt(R.styleable.FrameLayout_fl_shapeType,
                 RECTANGULAR
             )
             val radius = typedArray.getDimension(R.styleable.FrameLayout_fl_radius, 0f)
@@ -221,6 +239,28 @@ class FrameLayout : FrameLayout, MorphLayout {
         background = drawable
     }
 
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        if (shape == CIRCULAR) {
+
+            val drawable = (background as GradientDrawable).mutate() as GradientDrawable
+            
+            val corners = floatArrayOf(
+                w.toFloat(), h.toFloat(),
+                w.toFloat(), h.toFloat(),
+                w.toFloat(), h.toFloat(),
+                w.toFloat(), h.toFloat()
+            )
+
+            drawable.cornerRadii = corners
+
+            cornerRadii = CornerRadii(corners)
+
+            mutableDrawable = drawable
+            background = drawable
+        }
+    }
+
     override fun hasVectorDrawable(): Boolean {
         return background is VectorDrawable
     }
@@ -271,29 +311,12 @@ class FrameLayout : FrameLayout, MorphLayout {
         return children
     }
 
-    override fun dispatchDraw(canvas: Canvas) {
-        val save = canvas.save()
-
-        drawListener?.onDrawDispatched(canvas)
-
-        super.dispatchDraw(canvas)
-        canvas.restoreToCount(save)
-    }
-
-    public override fun onDraw(canvas: Canvas) {
-        val save = canvas.save()
-
-        drawListener?.onDraw(canvas)
-
-        super.dispatchDraw(canvas)
-        canvas.restoreToCount(save)
-    }
-
     fun setListener(listener: DrawDispatchListener) {
         this.drawListener = listener
     }
 
     companion object {
+        const val CIRCULAR = 0
         const val RECTANGULAR = 1
     }
 }

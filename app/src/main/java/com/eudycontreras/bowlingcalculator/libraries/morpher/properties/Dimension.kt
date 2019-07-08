@@ -19,4 +19,10 @@ package com.eudycontreras.bowlingcalculator.libraries.morpher.properties
 data class Dimension(
     var width: Float = 0f,
     var height: Float = 0f
-)
+) {
+    var padding = Padding()
+
+    fun copy(): Dimension {
+        return Dimension(width, height)
+    }
+}

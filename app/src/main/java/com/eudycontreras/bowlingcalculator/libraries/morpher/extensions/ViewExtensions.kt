@@ -43,7 +43,11 @@ fun MorphLayout.getProperties(): MorphTransitioner.Properties {
     val height = this.morphHeight
     val alpha = this.morphAlpha
     val elevation = this.morphElevation
+    val translationX = this.morphTranslationX
+    val translationY = this.morphTranslationY
     val translationZ = this.morphTranslationZ
+    val locationX = this.windowLocationX
+    val locationY = this.windowLocationY
     val pivotX = this.morphPivotX
     val pivotY = this.morphPivotY
     val rotation = this.morphRotation
@@ -62,6 +66,8 @@ fun MorphLayout.getProperties(): MorphTransitioner.Properties {
         height,
         alpha,
         elevation,
+        translationX,
+        translationY,
         translationZ,
         pivotX,
         pivotY,
@@ -73,6 +79,8 @@ fun MorphLayout.getProperties(): MorphTransitioner.Properties {
         color,
         stateList,
         cornerRadii,
+        locationX,
+        locationY,
         tag
     )
 }

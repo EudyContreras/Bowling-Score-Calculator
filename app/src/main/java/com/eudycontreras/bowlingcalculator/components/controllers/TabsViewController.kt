@@ -43,18 +43,7 @@ class TabsViewController(
             }
         }
         val transition = MorphTransitioner(context.tab as MorphLayout, context.dialog as MorphLayout)
-        transition.animateTo(1f, 400, 400, interpolator =  FastOutSlowInInterpolator())
-
-/*        context.morphingUtility.setSourceView(context.tab)
-        context. morphingUtility.setDialogView(context.dialog as ViewGroup)
-
-        doWith(shape.backgroundTintList, context.dialog.backgroundTintList) { colorFrom, colorTo ->
-            context.morphingUtility.colorFrom = colorFrom.defaultColor
-            context.morphingUtility.colorTo = colorTo.defaultColor
-        }
-
-        context.morphingUtility.morphIntoDialog(300, null, null)*/
-        //context.openDialog(FragmentCreateBowler.instance(this, manual, listener, onDismiss))
+        transition.animateTo(1f, 350, 400, interpolator =  FastOutSlowInInterpolator())
     }
 
     fun requestTabRemoval(lastIndex: Int, index: Int, onEnd: (()-> Unit)? = null) {

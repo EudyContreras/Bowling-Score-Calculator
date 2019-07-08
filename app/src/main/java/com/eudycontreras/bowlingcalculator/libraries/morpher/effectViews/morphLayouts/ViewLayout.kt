@@ -2,7 +2,6 @@ package com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphL
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Canvas
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.VectorDrawable
 import android.os.Build
@@ -32,122 +31,139 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.toStateList
  * @version 1.0
  * @since   2018-03-31
  */
-class ViewLayout : View,
-    MorphLayout {
+class ViewLayout : View, MorphLayout {
 
     override var morphX: Float
-        get() = this@ViewLayout.x
+        get() = this.x
         set(value) {
-            this@ViewLayout.x = value
+            this.x = value
         }
     override var morphY: Float
-        get() = this@ViewLayout.y
+        get() = this.y
         set(value) {
-            this@ViewLayout.y = value
+            this.y = value
         }
     override var morphWidth: Float
-        get() = this@ViewLayout.width.toFloat()
+        get() = this.width.toFloat()
         set(value) {
-            this@ViewLayout.layoutParams.width = value.toInt()
+            this.layoutParams.width = value.toInt()
         }
     override var morphHeight: Float
-        get() = this@ViewLayout.height.toFloat()
+        get() = this.height.toFloat()
         set(value) {
-            this@ViewLayout.layoutParams.height = value.toInt()
+            this.layoutParams.height = value.toInt()
         }
     override var morphAlpha: Float
-        get() = this@ViewLayout.alpha
+        get() = this.alpha
         set(value) {
-            this@ViewLayout.alpha = value
+            this.alpha = value
         }
     override var morphElevation: Float
-        get() = this@ViewLayout.elevation
+        get() = this.elevation
         set(value) {
-            this@ViewLayout.elevation = value
+            this.elevation = value
         }
     override var morphTranslationX: Float
-        get() = this@ViewLayout.translationX
+        get() = this.translationX
         set(value) {
-            this@ViewLayout.translationX = value
+            this.translationX = value
         }
     override var morphTranslationY: Float
-        get() = this@ViewLayout.translationY
+        get() = this.translationY
         set(value) {
-            this@ViewLayout.translationY = value
+            this.translationY = value
         }
     override var morphTranslationZ: Float
-        get() = this@ViewLayout.translationZ
+        get() = this.translationZ
         set(value) {
-            this@ViewLayout.translationZ = value
+            this.translationZ = value
         }
     override var morphPivotX: Float
-        get() = this@ViewLayout.pivotX
+        get() = this.pivotX
         set(value) {
-            this@ViewLayout.pivotX = value
+            this.pivotX = value
         }
     override var morphPivotY: Float
-        get() = this@ViewLayout.pivotY
+        get() = this.pivotY
         set(value) {
-            this@ViewLayout.pivotY = value
+            this.pivotY = value
         }
     override var morphRotation: Float
-        get() = this@ViewLayout.rotation
+        get() = this.rotation
         set(value) {
-            this@ViewLayout.rotation = value
+            this.rotation = value
         }
     override var morphRotationX: Float
-        get() = this@ViewLayout.rotationX
+        get() = this.rotationX
         set(value) {
-            this@ViewLayout.rotationX = value
+            this.rotationX = value
         }
     override var morphRotationY: Float
-        get() = this@ViewLayout.rotationY
+        get() = this.rotationY
         set(value) {
-            this@ViewLayout.rotationY = value
+            this.rotationY = value
         }
     override var morphScaleX: Float
-        get() = this@ViewLayout.scaleX
+        get() = this.scaleX
         set(value) {
-            this@ViewLayout.scaleX = value
+            this.scaleX = value
         }
     override var morphScaleY: Float
-        get() = this@ViewLayout.scaleY
+        get() = this.scaleY
         set(value) {
-            this@ViewLayout.scaleY = value
+            this.scaleY = value
         }
     override var morphColor: Int
-        get() = this@ViewLayout.getColor()
+        get() = this.getColor()
         set(value) {
-            this@ViewLayout.backgroundTintList = value.toStateList()
+            this.backgroundTintList = value.toStateList()
         }
     override var morphStateList: ColorStateList?
-        get() = this@ViewLayout.backgroundTintList
+        get() = this.backgroundTintList
         set(value) {
-            this@ViewLayout.backgroundTintList = value
+            this.backgroundTintList = value
         }
     override var morphCornerRadii: CornerRadii
         get() = cornerRadii
         set(value) {
             updateCorners(value)
         }
-    override var showMutateCorners: Boolean = true
-
     override val morphChildCount: Int
         get() = 0
 
     override var morphVisibility: Int
-        get() = this@ViewLayout.visibility
+        get() = this.visibility
         set(value) {
-            this@ViewLayout.visibility = value
+            this.visibility = value
         }
+    override var showMutateCorners: Boolean = true
+
     override val morphTag: Any?
-        get() = this@ViewLayout.tag
+        get() = this.tag
+
+    override val windowLocationX: Int
+        get() {
+            this.getLocationInWindow(location)
+            return location[0]
+        }
+    override val windowLocationY: Int
+        get() {
+            this.getLocationInWindow(location)
+            return location[1]
+        }
+
+    override val morphShape: Int
+        get() = shape
+
+    private var shape: Int = RECTANGULAR
+
+    private val location: IntArray = IntArray(2)
+
+    private var cornerRadii: CornerRadii = CornerRadii()
 
     private var drawListener: DrawDispatchListener? = null
 
     private lateinit var mutableDrawable: GradientDrawable
-
-    private var cornerRadii: CornerRadii = CornerRadii()
 
     constructor(context: Context) : super(context)
 
@@ -162,7 +178,7 @@ class ViewLayout : View,
     private fun setUpAttributes(attrs: AttributeSet) {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ViewLayout)
         try {
-            val shape = typedArray.getInt(R.styleable.ViewLayout_vl_shapeType,
+            shape = typedArray.getInt(R.styleable.LinearLayout_ll_shapeType,
                 RECTANGULAR
             )
             val radius = typedArray.getDimension(R.styleable.ViewLayout_vl_radius, 0f)
@@ -220,6 +236,28 @@ class ViewLayout : View,
         background = drawable
     }
 
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        if (shape == CIRCULAR) {
+
+            val drawable = (background as GradientDrawable).mutate() as GradientDrawable
+
+            val corners = floatArrayOf(
+                w.toFloat(), h.toFloat(),
+                w.toFloat(), h.toFloat(),
+                w.toFloat(), h.toFloat(),
+                w.toFloat(), h.toFloat()
+            )
+
+            drawable.cornerRadii = corners
+
+            cornerRadii = CornerRadii(corners)
+
+            mutableDrawable = drawable
+            background = drawable
+        }
+    }
+
     override fun hasVectorDrawable(): Boolean {
         return background is VectorDrawable
     }
@@ -270,29 +308,12 @@ class ViewLayout : View,
         return emptySequence()
     }
 
-    override fun dispatchDraw(canvas: Canvas) {
-        val save = canvas.save()
-
-        drawListener?.onDrawDispatched(canvas)
-
-        super.dispatchDraw(canvas)
-        canvas.restoreToCount(save)
-    }
-
-    public override fun onDraw(canvas: Canvas) {
-        val save = canvas.save()
-
-        drawListener?.onDraw(canvas)
-
-        super.dispatchDraw(canvas)
-        canvas.restoreToCount(save)
-    }
-
     fun setListener(listener: DrawDispatchListener) {
         this.drawListener = listener
     }
 
     companion object {
+        const val CIRCULAR = 0
         const val RECTANGULAR = 1
     }
 }

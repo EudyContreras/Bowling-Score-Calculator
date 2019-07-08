@@ -34,122 +34,139 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.toStateList
  * @version 1.0
  * @since   2018-03-31
  */
-class ConstraintLayout : ConstraintLayout,
-    MorphLayout {
+class ConstraintLayout : ConstraintLayout, MorphLayout {
 
     override var morphX: Float
-        get() = this@ConstraintLayout.x
+        get() = this.x
         set(value) {
-            this@ConstraintLayout.x = value
+            this.x = value
         }
     override var morphY: Float
-        get() = this@ConstraintLayout.y
+        get() = this.y
         set(value) {
-            this@ConstraintLayout.y = value
+            this.y = value
         }
     override var morphWidth: Float
-        get() = this@ConstraintLayout.width.toFloat()
+        get() = this.width.toFloat()
         set(value) {
-            this@ConstraintLayout.layoutParams.width = value.toInt()
+            this.layoutParams.width = value.toInt()
         }
     override var morphHeight: Float
-        get() = this@ConstraintLayout.height.toFloat()
+        get() = this.height.toFloat()
         set(value) {
-            this@ConstraintLayout.layoutParams.height = value.toInt()
+            this.layoutParams.height = value.toInt()
         }
     override var morphAlpha: Float
-        get() = this@ConstraintLayout.alpha
+        get() = this.alpha
         set(value) {
-            this@ConstraintLayout.alpha = value
+            this.alpha = value
         }
     override var morphElevation: Float
-        get() = this@ConstraintLayout.elevation
+        get() = this.elevation
         set(value) {
-            this@ConstraintLayout.elevation = value
+            this.elevation = value
         }
     override var morphTranslationX: Float
-        get() = this@ConstraintLayout.translationX
+        get() = this.translationX
         set(value) {
-            this@ConstraintLayout.translationX = value
+            this.translationX = value
         }
     override var morphTranslationY: Float
-        get() = this@ConstraintLayout.translationY
+        get() = this.translationY
         set(value) {
-            this@ConstraintLayout.translationY = value
+            this.translationY = value
         }
     override var morphTranslationZ: Float
-        get() = this@ConstraintLayout.translationZ
+        get() = this.translationZ
         set(value) {
-            this@ConstraintLayout.translationZ = value
+            this.translationZ = value
         }
     override var morphPivotX: Float
-        get() = this@ConstraintLayout.pivotX
+        get() = this.pivotX
         set(value) {
-            this@ConstraintLayout.pivotX = value
+            this.pivotX = value
         }
     override var morphPivotY: Float
-        get() = this@ConstraintLayout.pivotY
+        get() = this.pivotY
         set(value) {
-            this@ConstraintLayout.pivotY = value
+            this.pivotY = value
         }
     override var morphRotation: Float
-        get() = this@ConstraintLayout.rotation
+        get() = this.rotation
         set(value) {
-            this@ConstraintLayout.rotation = value
+            this.rotation = value
         }
     override var morphRotationX: Float
-        get() = this@ConstraintLayout.rotationX
+        get() = this.rotationX
         set(value) {
-            this@ConstraintLayout.rotationX = value
+            this.rotationX = value
         }
     override var morphRotationY: Float
-        get() = this@ConstraintLayout.rotationY
+        get() = this.rotationY
         set(value) {
-            this@ConstraintLayout.rotationY = value
+            this.rotationY = value
         }
     override var morphScaleX: Float
-        get() = this@ConstraintLayout.scaleX
+        get() = this.scaleX
         set(value) {
-            this@ConstraintLayout.scaleX = value
+            this.scaleX = value
         }
     override var morphScaleY: Float
-        get() = this@ConstraintLayout.scaleY
+        get() = this.scaleY
         set(value) {
-            this@ConstraintLayout.scaleY = value
+            this.scaleY = value
         }
     override var morphColor: Int
-        get() = this@ConstraintLayout.getColor()
+        get() = this.getColor()
         set(value) {
-            this@ConstraintLayout.backgroundTintList = value.toStateList()
+            this.backgroundTintList = value.toStateList()
         }
     override var morphStateList: ColorStateList?
-        get() = this@ConstraintLayout.backgroundTintList
+        get() = this.backgroundTintList
         set(value) {
-            this@ConstraintLayout.backgroundTintList = value
+            this.backgroundTintList = value
         }
     override var morphCornerRadii: CornerRadii
         get() = cornerRadii
         set(value) {
-            cornerRadii = value
+            updateCorners(value)
         }
     override val morphChildCount: Int
-        get() = this@ConstraintLayout.childCount
+        get() = this.childCount
 
     override var morphVisibility: Int
-        get() = this@ConstraintLayout.visibility
+        get() = this.visibility
         set(value) {
-            this@ConstraintLayout.visibility = value
+            this.visibility = value
         }
     override var showMutateCorners: Boolean = true
 
     override val morphTag: Any?
-        get() = this@ConstraintLayout.tag
+        get() = this.tag
+
+    override val windowLocationX: Int
+        get() {
+            this.getLocationInWindow(location)
+            return location[0]
+        }
+    override val windowLocationY: Int
+        get() {
+            this.getLocationInWindow(location)
+            return location[1]
+        }
+
+    override val morphShape: Int
+        get() = shape
+
+    private var shape: Int = RECTANGULAR
+
+    private val location: IntArray = IntArray(2)
+
+    private var cornerRadii: CornerRadii = CornerRadii()
 
     private var drawListener: DrawDispatchListener? = null
 
     private lateinit var mutableDrawable: GradientDrawable
-
-    private var cornerRadii: CornerRadii = CornerRadii()
 
     constructor(context: Context) : super(context)
 
@@ -164,7 +181,7 @@ class ConstraintLayout : ConstraintLayout,
     private fun setUpAttributes(attrs: AttributeSet) {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ConstraintLayout)
         try {
-            val shape = typedArray.getInt(R.styleable.ConstraintLayout_cl_shapeType,
+            shape = typedArray.getInt(R.styleable.ConstraintLayout_cl_shapeType,
                 RECTANGULAR
             )
             val radius = typedArray.getDimension(R.styleable.ConstraintLayout_cl_radius, 0f)
@@ -222,6 +239,28 @@ class ConstraintLayout : ConstraintLayout,
         background = drawable
     }
 
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        if (shape == CIRCULAR) {
+
+            val drawable = (background as GradientDrawable).mutate() as GradientDrawable
+
+            val corners = floatArrayOf(
+                w.toFloat(), h.toFloat(),
+                w.toFloat(), h.toFloat(),
+                w.toFloat(), h.toFloat(),
+                w.toFloat(), h.toFloat()
+            )
+
+            drawable.cornerRadii = corners
+
+            cornerRadii = CornerRadii(corners)
+
+            mutableDrawable = drawable
+            background = drawable
+        }
+    }
+
     override fun hasVectorDrawable(): Boolean {
         return background is VectorDrawable
     }
@@ -272,29 +311,12 @@ class ConstraintLayout : ConstraintLayout,
         return children
     }
 
-    override fun dispatchDraw(canvas: Canvas) {
-        val save = canvas.save()
-
-        drawListener?.onDrawDispatched(canvas)
-
-        super.dispatchDraw(canvas)
-        canvas.restoreToCount(save)
-    }
-
-    public override fun onDraw(canvas: Canvas) {
-        val save = canvas.save()
-
-        drawListener?.onDraw(canvas)
-
-        super.dispatchDraw(canvas)
-        canvas.restoreToCount(save)
-    }
-
     fun setListener(listener: DrawDispatchListener) {
         this.drawListener = listener
     }
 
     companion object {
+        const val CIRCULAR = 0
         const val RECTANGULAR = 1
     }
 }
