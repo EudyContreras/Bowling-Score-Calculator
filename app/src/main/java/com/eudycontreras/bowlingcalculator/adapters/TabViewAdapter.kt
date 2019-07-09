@@ -166,19 +166,19 @@ class TabViewAdapter(
 
         override fun performBinding(model: TabViewModel) {
             this.model = model
-            this.itemView.addTouchAnimation(
+     /*       this.itemView.addTouchAnimation(
                 clickTarget = null,
                 scale = 0.90f,
                 depth = (-8).dp,
                 interpolatorPress = DecelerateInterpolator(),
                 interpolatorRelease = OvershootInterpolator()
-            )
+            )*/
         }
 
         override fun onClick(view: View?) {
             model?.let {
                 currentIndex = layoutPosition
-                viewComponent.controller.onTabRequested(true)
+                viewComponent.controller.onTabRequested(true, view = itemView)
             }
         }
     }
@@ -199,7 +199,6 @@ class TabViewAdapter(
                 viewComponent.controller.requestRename(model)
             }
         })
-
 
         init {
             resetValues()

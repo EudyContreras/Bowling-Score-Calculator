@@ -44,7 +44,7 @@
 
         <FrameLayout
                 android:visibility="gone"
-                app:layout_constraintEnd_toStartOf="@+id/toolbarMenuBorder"
+                app:layout_constraintEnd_toStartOf="@+id/toolbarMenuContainer"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/shape_circle"
@@ -71,38 +71,50 @@
             </FrameLayout>
         </FrameLayout>
 
-        <com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.FrameLayout
-                android:id="@+id/toolbarMenuBorder"
-                android:tag="createBowler"
+        <FrameLayout
+                android:id="@+id/toolbarMenuContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/shape_circle"
                 android:backgroundTint="@color/colorAccentDark"
                 android:layout_marginEnd="@dimen/margin_large"
-                android:layout_gravity="end|center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:fl_shapeType="CIRCULAR">
+                android:layout_gravity="end|center">
             <com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.FrameLayout
-                    android:id="@+id/toolbarMenu"
-                    android:tag="addBowler"
-                    android:layout_gravity="center"
-                    android:layout_margin="4dp"
-                    android:backgroundTint="@color/colorAccent"
+                    android:id="@+id/toolbarMenuBorder"
+                    android:tag="createBowler"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:background="@drawable/shape_circle"
-                    android:elevation="1dp"
-                    android:translationZ="6dp"
+                    android:backgroundTint="@color/colorPrimaryLight"
+                    android:layout_margin="4dp"
+                    android:layout_gravity="end|center"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     app:fl_shapeType="CIRCULAR">
-                <View
+                <com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.FrameLayout
+                        android:id="@+id/toolbarMenu"
+                        android:tag="addBowler"
                         android:layout_gravity="center"
-                        android:background="@drawable/ic_menu"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"/>
+                        android:layout_margin="4dp"
+                        android:backgroundTint="@color/colorAccent"
+                        android:background="@drawable/shape_circle"
+                        android:elevation="1dp"
+                        android:translationZ="6dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        app:fl_shapeType="CIRCULAR">
+                    <View
+                            android:layout_gravity="center"
+                            android:background="@drawable/ic_menu"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"/>
+                </com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.FrameLayout>
             </com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.FrameLayout>
-        </com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.FrameLayout>
+        </FrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.appcompat.widget.Toolbar>

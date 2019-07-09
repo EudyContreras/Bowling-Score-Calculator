@@ -36,3 +36,15 @@ fun FloatArray.apply(cornerRadii: CornerRadii): FloatArray {
     }
     return this
 }
+
+fun <T> List<T>.toArrayList(): ArrayList<T> {
+    val arrayList = ArrayList<T>()
+    arrayList.addAll(this)
+    return arrayList
+}
+
+fun <T> Sequence<T>.toArrayList(): ArrayList<T> {
+    val arrayList = ArrayList<T>()
+    arrayList.addAll(this)
+    return arrayList
+}

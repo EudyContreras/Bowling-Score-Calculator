@@ -6,4 +6,7 @@ TODO PRIORITY 1:
     Cull children for lighter transition
 
 
+LIMITATIONS:
 
+    -May not work as expected with recyclerview items
+        : Workarounds:

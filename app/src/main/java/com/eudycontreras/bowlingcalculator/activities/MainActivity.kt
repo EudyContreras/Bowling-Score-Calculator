@@ -2,7 +2,6 @@ package com.eudycontreras.bowlingcalculator.activities
 
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
@@ -75,7 +74,6 @@ class MainActivity : AppCompatActivity() {
 
         morphTransitioner.startingView = toolbar.toolbarMenuBorder
         morphTransitioner.endingView = dialog as MorphLayout
-        morphTransitioner.targetView = dialog.findViewById<View>(R.id.createDialogAddInput) as MorphLayout
     }
 
     private fun initControllers() {
@@ -138,7 +136,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         dialog.findViewById<FrameLayout>(R.id.createDialogAddInput).setOnClickListener {
-            morphTransitioner.morphFrom(350)
+            morphTransitioner.morphFrom(2350)
         }
     }
 

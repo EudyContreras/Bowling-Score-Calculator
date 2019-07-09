@@ -1,5 +1,6 @@
 package com.eudycontreras.bowlingcalculator.components.controllers
 
+import android.view.View
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.adapters.TabViewAdapter
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
@@ -7,8 +8,10 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.components.views.EmptyStateViewComponent
 import com.eudycontreras.bowlingcalculator.components.views.TabsViewComponent
 import com.eudycontreras.bowlingcalculator.fragments.FragmentCreateBowler
+import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
 import com.eudycontreras.bowlingcalculator.utilities.BowlerListener
 import com.eudycontreras.bowlingcalculator.utilities.extensions.app
+import kotlinx.android.synthetic.main.activity_main.*
 
 /**
  * @Project BowlingCalculator
@@ -27,7 +30,7 @@ class TabsViewController(
     }
 
 
-    fun onTabRequested(manual: Boolean, listener: BowlerListener = null) {
+    fun onTabRequested(manual: Boolean, listener: BowlerListener = null, view: View? = null) {
         val onDismiss = {
             if (!context.app.persistenceManager.hasBowlers()) {
                 scoreController.emptyStateController.setState(EmptyStateViewComponent.EmptyState.Main(context) {
@@ -38,9 +41,19 @@ class TabsViewController(
                 scoreController.emptyStateController.concealState()
             }
         }
-       // val transition = MorphTransitioner(context.tab as MorphLayout, context.dialog as MorphLayout)
-        //transition.animateTo(1f, 350, 400, interpolator =  FastOutSlowInInterpolator())
-        context.openDialog(FragmentCreateBowler.instance(this, manual, listener, onDismiss))
+
+        if (view != null) {
+            context.morphTransitioner.startingView = view as MorphLayout
+            context.morphTransitioner.endingView = context.dialog as MorphLayout
+
+            context.morphTransitioner.morphInto(2350)
+        } else {
+            context.openDialog(FragmentCreateBowler.instance(this, manual, listener, onDismiss))
+        }
+
+      /*  val transition = MorphTransitioner(view as MorphLayout, context.dialog as MorphLayout)
+        transition.animateTo(1f, 2350, interpolator =  FastOutSlowInInterpolator())*/
+        //
     }
 
     fun requestTabRemoval(lastIndex: Int, index: Int, onEnd: (()-> Unit)? = null) {

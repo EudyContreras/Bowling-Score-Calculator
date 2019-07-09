@@ -238,7 +238,7 @@ class ViewLayout : View, MorphLayout {
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        if (shape == CIRCULAR) {
+        if (shape == CIRCULAR && background !is VectorDrawable) {
 
             val drawable = (background as GradientDrawable).mutate() as GradientDrawable
 

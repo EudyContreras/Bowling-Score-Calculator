@@ -7,11 +7,12 @@ import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import android.view.animation.Interpolator
-import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
 import com.eudycontreras.bowlingcalculator.libraries.morpher.extensions.getProperties
+import com.eudycontreras.bowlingcalculator.libraries.morpher.extensions.toArrayList
 import com.eudycontreras.bowlingcalculator.libraries.morpher.listeners.MorphAnimationListener
 import com.eudycontreras.bowlingcalculator.libraries.morpher.properties.Coordintates
 import com.eudycontreras.bowlingcalculator.libraries.morpher.properties.CornerRadii
@@ -33,29 +34,21 @@ class MorphTransitioner() {
     }
 
     lateinit var startingView: MorphLayout
-
     lateinit var endingView: MorphLayout
 
     private var remainingDuration: Long = 0L
 
-    private var percentage = MIN_PERCENTAGE
-
-    private var morphMaps: ArrayList<MorphMap> = ArrayList()
+    private var percentage: Float = MIN_PERCENTAGE
 
     private var startingChildViews: ArrayList<View> = ArrayList()
     private var endingChildViews: ArrayList<View> = ArrayList()
+    private var morphMaps: ArrayList<MorphMap> = ArrayList()
 
     private var offsetListener: OffsetListener = null
     private var onTransitionEnd: Action = null
 
     private var initialValuesApplied: Boolean = false
 
-    var revealChildrenOffset: Float = DEFAULT_CHILDREN_REVEAL_OFFSET
-        set(value) {
-            if (value in 0f..1f) {
-                field = value
-            }
-        }
     var durationOffsetMultiplier: Float = DEFAULT_REVEAL_DURATION_MULTIPLIER
 
     var animateRevealChildren: Boolean = true
@@ -63,6 +56,12 @@ class MorphTransitioner() {
     var childrenRevealed: Boolean = false
         private set
 
+    var revealChildrenOffset: Float = DEFAULT_CHILDREN_REVEAL_OFFSET
+        set(value) {
+            if (value in 0f..1f) {
+                field = value
+            }
+        }
     init {
         if (this@MorphTransitioner::startingView.isInitialized && this@MorphTransitioner::endingView.isInitialized) {
             performSetup(true)
@@ -70,8 +69,8 @@ class MorphTransitioner() {
     }
 
     private fun performSetup(hideUntagged: Boolean) {
-        startingChildViews = getAllChildren(startingView as View)
-        endingChildViews =  getAllChildren(endingView as View)
+        startingChildViews = getAllChildren(startingView, true)
+        endingChildViews =  getAllChildren(endingView, true)
 
         if (hideUntagged) {
             endingChildViews.forEach {
@@ -131,7 +130,7 @@ class MorphTransitioner() {
         percent: Float = MAX_PERCENTAGE,
         duration: Long = DEFAULT_DURATION,
         startDelay: Long = 0L,
-        interpolator: TimeInterpolator? = null,
+        interpolator: TimeInterpolator? = DecelerateInterpolator(),
         trigger: OffsetTrigger? = null
     ) {
         this.remainingDuration = duration
@@ -169,7 +168,7 @@ class MorphTransitioner() {
         }
         animator.duration = duration
         animator.startDelay = startDelay
-        animator.interpolator = interpolator ?: DEFAULT_INTERPOLATOR
+        animator.interpolator = interpolator
         animator.start()
     }
 
@@ -184,10 +183,7 @@ class MorphTransitioner() {
     fun setOffset(percent: Int) = setOffset(percent.toFloat() / 100f)
 
     class Morpher {
-        private var curveTranslation = true
-        private var morphChildren = true
-        private var isMorphing = false
-        private var isMorphed = false
+
         private var isSetup = false
 
         private lateinit var mappings: List<MorphMap>
@@ -201,10 +197,19 @@ class MorphTransitioner() {
 
         lateinit var startingView: MorphLayout
         lateinit var endingView: MorphLayout
-        lateinit var targetView: MorphLayout
 
         var interpolatorMorphTo: Interpolator? = null
         var interpolatorMorphFrom: Interpolator? = null
+
+        var curveTranslation = true
+
+        var morphChildren = true
+
+        var isMorphing = false
+            private set
+
+        var isMorphed = false
+            private set
 
         var revealChildrenOffset: Float = DEFAULT_CHILDREN_REVEAL_OFFSET
             set(value) {
@@ -363,7 +368,6 @@ class MorphTransitioner() {
             }
 
             animator.addListener(listener)
-
             animator.addUpdateListener {
                 val offset = it.animatedValue as Float
 
@@ -435,8 +439,8 @@ class MorphTransitioner() {
         }
 
         private fun getChildMappings(startView: MorphLayout, endView: MorphLayout): List<MorphMap> {
-            val startChildren = startView.getChildren().filter { it.tag != null }
-            val endChildren = endView.getChildren().filter { it.tag != null }
+            val startChildren = getAllChildren(startView, true) { it.tag != null }
+            val endChildren = getAllChildren(endView, true) { it.tag != null }
 
             val mappings: ArrayList<MorphMap> = ArrayList()
 
@@ -486,8 +490,6 @@ class MorphTransitioner() {
         const val DEFAULT_CHILDREN_CONCEAL_OFFSET = 0.0f
 
         const val DEFAULT_REVEAL_DURATION_MULTIPLIER = 0.2f
-
-        val DEFAULT_INTERPOLATOR: TimeInterpolator = FastOutSlowInInterpolator()
 
         private fun applyProps(view: MorphLayout, props: Properties) {
             view.morphX = props.x
@@ -571,10 +573,18 @@ class MorphTransitioner() {
             }
         }
 
-        private fun getAllChildren(view: View, predicate: ((View) -> Boolean)? = null): ArrayList<View> {
+        private fun getAllChildren(view: MorphLayout, deepSearch: Boolean, predicate: ((View) -> Boolean)? = null): ArrayList<View> {
+
+            if (!deepSearch) {
+                return if (predicate != null) {
+                    view.getChildren().filter(predicate).toArrayList()
+                } else {
+                    view.getChildren().toArrayList()
+                }
+            }
 
             val visited = ArrayList<View>()
-            val unvisited = arrayListOf(view)
+            val unvisited = arrayListOf(view as View)
 
             while (unvisited.isNotEmpty()) {
                 val child = unvisited.removeAt(0)
@@ -592,7 +602,12 @@ class MorphTransitioner() {
 
                 (0 until child.childCount).mapTo(unvisited) { child.getChildAt(it) }
             }
-            return visited
+
+            return if (predicate != null) {
+                visited.filter(predicate).toArrayList()
+            } else {
+                visited.toArrayList()
+            }
         }
 
         private fun <T: View> animateRevealChildren(children: Sequence<T>, duration: Long, durationOffsetMultiplier: Float) {
@@ -625,9 +640,7 @@ class MorphTransitioner() {
                     .setDuration((duration * durationOffsetMultiplier).roundToLong())
                     .setStartDelay(0)
                     .alpha(0f)
-                    .scaleX(0.8f)
-                    .scaleY(0.8f)
-                    .translationY(12.dp)
+                    .translationY(8.dp)
                     .setInterpolator(AccelerateInterpolator())
                     .start()
             }
