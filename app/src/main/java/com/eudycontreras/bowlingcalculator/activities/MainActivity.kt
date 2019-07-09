@@ -2,14 +2,16 @@ package com.eudycontreras.bowlingcalculator.activities
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateInterpolator
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.Observer
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
@@ -68,11 +70,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setDefaults() {
-        morphTransitioner.interpolatorMorphTo = AccelerateInterpolator()
-        morphTransitioner.interpolatorMorphFrom = DecelerateInterpolator()
+        morphTransitioner.interpolatorMorphTo = FastOutSlowInInterpolator()
+        morphTransitioner.interpolatorMorphFrom = AccelerateDecelerateInterpolator()
 
         morphTransitioner.startingView = toolbar.toolbarMenuBorder
         morphTransitioner.endingView = dialog as MorphLayout
+        morphTransitioner.targetView = dialog.findViewById<View>(R.id.createDialogAddInput) as MorphLayout
     }
 
     private fun initControllers() {
@@ -123,7 +126,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         toolbar.toolbarMenu.setOnClickListener {
-            morphTransitioner.morphInto(24350)
+            morphTransitioner.morphInto(350)
         }
 
         dialog.findViewById<FrameLayout>(R.id.createDialogAddInput).addTouchAnimation(
@@ -135,7 +138,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         dialog.findViewById<FrameLayout>(R.id.createDialogAddInput).setOnClickListener {
-            morphTransitioner.morphFrom(24350)
+            morphTransitioner.morphFrom(350)
         }
     }
 
@@ -174,7 +177,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onStorageEmpty() {
-        //tabsController.onTabRequested(false)
+        tabsController.onTabRequested(false)
     }
 
     private fun onStorageFull() {

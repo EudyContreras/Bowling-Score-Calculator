@@ -6,7 +6,6 @@ import android.view.animation.DecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
@@ -179,7 +178,7 @@ class TabViewAdapter(
         override fun onClick(view: View?) {
             model?.let {
                 currentIndex = layoutPosition
-                viewComponent.controller.onTabRequested(true, itemView)
+                viewComponent.controller.onTabRequested(true)
             }
         }
     }
@@ -197,7 +196,6 @@ class TabViewAdapter(
 
         private val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
             override fun onLongPress(e: MotionEvent) {
-                Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
                 viewComponent.controller.requestRename(model)
             }
         })

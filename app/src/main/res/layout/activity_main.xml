@@ -104,9 +104,6 @@
             app:layout_constraintEnd_toEndOf="parent"/>
 
     <include
-            android:id="@+id/tab"
-        layout="@layout/item_tab_view_add_alt"/>
-    <include
             android:id="@+id/dialog"
             android:layout_marginStart="@dimen/spacing_extra_large"
             android:layout_marginEnd="@dimen/spacing_extra_large"

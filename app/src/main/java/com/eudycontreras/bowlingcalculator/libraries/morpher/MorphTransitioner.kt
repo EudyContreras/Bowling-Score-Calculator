@@ -184,11 +184,13 @@ class MorphTransitioner() {
     fun setOffset(percent: Int) = setOffset(percent.toFloat() / 100f)
 
     class Morpher {
-        private var curveTranslation = false
+        private var curveTranslation = true
         private var morphChildren = true
         private var isMorphing = false
         private var isMorphed = false
         private var isSetup = false
+
+        private lateinit var mappings: List<MorphMap>
 
         private lateinit var fromState: Properties
         private lateinit var toState: Properties
@@ -199,6 +201,7 @@ class MorphTransitioner() {
 
         lateinit var startingView: MorphLayout
         lateinit var endingView: MorphLayout
+        lateinit var targetView: MorphLayout
 
         var interpolatorMorphTo: Interpolator? = null
         var interpolatorMorphFrom: Interpolator? = null
@@ -230,6 +233,10 @@ class MorphTransitioner() {
 
             fromState = startingView.getProperties()
             toState = endingView.getProperties()
+
+            mappings = if (morphChildren) {
+                getChildMappings(startingView, endingView)
+            } else emptyList()
 
             isSetup = true
         }
@@ -279,22 +286,19 @@ class MorphTransitioner() {
 
             curveTranslator.setControlPoint(Coordintates.midPoint(midPoint, crossPoint))
 
-            val mappings: List<MorphMap> = if (morphChildren) {
-                getChildMappings(startingView, endingView)
-            } else emptyList()
-
             morph(
                 endingView,
                 fromState,
                 toState,
+                mappings,
                 interpolatorMorphTo,
                 curveTranslator,
                 duration,
                 onStart,
                 onEnd,
                 offsetTrigger,
-                mappings,
-                ChildrenAction.REVEAL
+                ChildrenAction.REVEAL,
+                MorphType.INTO
             )
         }
 
@@ -317,22 +321,19 @@ class MorphTransitioner() {
 
             curveTranslator.setControlPoint(Coordintates.midPoint(midPoint, crossPoint))
 
-            val mappings: List<MorphMap> = if (morphChildren) {
-                getChildMappings(endingView, startingView)
-            } else emptyList()
-
             morph(
                 endingView,
                 toState,
                 fromState,
+                mappings,
                 interpolatorMorphFrom,
                 curveTranslator,
                 duration,
                 onStart,
                 doOnEnd,
                 offsetTrigger,
-                mappings,
-                ChildrenAction.CONCEAL
+                ChildrenAction.CONCEAL,
+                MorphType.FROM
             )
         }
 
@@ -340,14 +341,15 @@ class MorphTransitioner() {
             endView: MorphLayout,
             startingProps: Properties,
             endingProps: Properties,
+            mappings: List<MorphMap>,
             interpolator: Interpolator?,
             curveTranslator: CurvedTranslator,
             duration: Long,
             onStart: Action,
             onEnd: Action,
             trigger: OffsetTrigger?,
-            mappings: List<MorphMap>,
-            childrenAction: ChildrenAction
+            childrenAction: ChildrenAction,
+            morphType: MorphType
         ) {
 
             this.remainingDuration = duration
@@ -370,12 +372,22 @@ class MorphTransitioner() {
                 animateOffset(endView, startingProps, endingProps, offset)
                 moveWithOffset(endView, startingProps, endingProps, offset, curveTranslator)
 
-                if (morphChildren) {
+                if (morphChildren && mappings.isNotEmpty()) {
                     for (mapping in mappings) {
-                        animateOffset(mapping.endView, mapping.startProps, mapping.endProps, offset)
+                        when (morphType) {
+                            MorphType.INTO -> {
+                                animateOffset(mapping.endView, mapping.startProps, mapping.endProps, offset)
 
-                        mapping.endView.morphX = (mapping.startProps.x + (mapping.endProps.x - mapping.startProps.x) * offset)
-                        mapping.endView.morphY = (mapping.startProps.y + (mapping.endProps.y - mapping.startProps.y) * offset)
+                                mapping.endView.morphX = (mapping.startProps.x + (mapping.endProps.x - mapping.startProps.x) * offset)
+                                mapping.endView.morphY = (mapping.startProps.y + (mapping.endProps.y - mapping.startProps.y) * offset)
+                            }
+                            MorphType.FROM -> {
+                                animateOffset(mapping.endView, mapping.endProps, mapping.startProps, offset)
+
+                                mapping.endView.morphX = (mapping.endProps.x + (mapping.startProps.x - mapping.endProps.x) * offset)
+                                mapping.endView.morphY = (mapping.endProps.y + (mapping.startProps.y - mapping.endProps.y) * offset)
+                            }
+                        }
                     }
                 }
 
@@ -455,6 +467,10 @@ class MorphTransitioner() {
             val children = if (skipTagged) endingView.getChildren().filter { it.tag == null } else endingView.getChildren()
             animateConcealChildren(children, duration, durationOffsetMultiplier)
         }
+
+        enum class MorphType {
+            INTO, FROM
+        }
     }
 
     enum class ChildrenAction { REVEAL, CONCEAL }
@@ -469,7 +485,7 @@ class MorphTransitioner() {
         const val DEFAULT_CHILDREN_REVEAL_OFFSET = 0.60f
         const val DEFAULT_CHILDREN_CONCEAL_OFFSET = 0.0f
 
-        const val DEFAULT_REVEAL_DURATION_MULTIPLIER = 0.4f
+        const val DEFAULT_REVEAL_DURATION_MULTIPLIER = 0.2f
 
         val DEFAULT_INTERPOLATOR: TimeInterpolator = FastOutSlowInInterpolator()
 
@@ -582,7 +598,7 @@ class MorphTransitioner() {
         private fun <T: View> animateRevealChildren(children: Sequence<T>, duration: Long, durationOffsetMultiplier: Float) {
             children.forEach {
                 it.visibility = View.VISIBLE
-                it.translationY = (16.dp)
+                it.translationY = (12.dp)
                 it.scaleX = 0.8f
                 it.scaleY = 0.8f
                 it.alpha = 0f
@@ -611,7 +627,7 @@ class MorphTransitioner() {
                     .alpha(0f)
                     .scaleX(0.8f)
                     .scaleY(0.8f)
-                    .translationY(-(12.dp))
+                    .translationY(12.dp)
                     .setInterpolator(AccelerateInterpolator())
                     .start()
             }
