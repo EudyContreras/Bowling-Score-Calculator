@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewPropertyAnimator
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
+import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphShape
 import com.eudycontreras.bowlingcalculator.libraries.morpher.extensions.getColor
 import com.eudycontreras.bowlingcalculator.libraries.morpher.listeners.DrawDispatchListener
 import com.eudycontreras.bowlingcalculator.libraries.morpher.properties.CornerRadii
@@ -280,7 +281,7 @@ class ViewLayout : View, MorphLayout {
             cornerRadii[index] = corner
         }
 
-        mutableDrawable.cornerRadii = cornerRadii.asArray()
+        mutableDrawable.cornerRadii = cornerRadii.corners
         return true
     }
 
@@ -290,8 +291,12 @@ class ViewLayout : View, MorphLayout {
         }
 
         cornerRadii[index] = corner
-        mutableDrawable.cornerRadii = cornerRadii.asArray()
+        mutableDrawable.cornerRadii = cornerRadii.corners
         return true
+    }
+
+    override fun getMorphShape(): MorphShape {
+        return MorphShape()
     }
 
     override fun updateLayout() {
@@ -306,6 +311,10 @@ class ViewLayout : View, MorphLayout {
 
     override fun getChildren(): Sequence<View> {
         return emptySequence()
+    }
+
+    override fun setLayer(layer: Int) {
+        setLayerType(layer, null)
     }
 
     fun setListener(listener: DrawDispatchListener) {

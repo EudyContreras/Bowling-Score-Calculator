@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import androidx.core.view.children
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
+import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphShape
 import com.eudycontreras.bowlingcalculator.libraries.morpher.extensions.getColor
 import com.eudycontreras.bowlingcalculator.libraries.morpher.listeners.DrawDispatchListener
 import com.eudycontreras.bowlingcalculator.libraries.morpher.properties.CornerRadii
@@ -282,7 +283,7 @@ class LinearLayout : LinearLayout, MorphLayout {
             cornerRadii[index] = corner
         }
 
-        mutableDrawable.cornerRadii = cornerRadii.asArray()
+        mutableDrawable.cornerRadii = cornerRadii.corners
         return true
     }
 
@@ -292,8 +293,12 @@ class LinearLayout : LinearLayout, MorphLayout {
         }
 
         cornerRadii[index] = corner
-        mutableDrawable.cornerRadii = cornerRadii.asArray()
+        mutableDrawable.cornerRadii = cornerRadii.corners
         return true
+    }
+
+    override fun getMorphShape(): MorphShape {
+        return MorphShape()
     }
 
     override fun updateLayout() {
@@ -308,6 +313,10 @@ class LinearLayout : LinearLayout, MorphLayout {
 
     override fun getChildren(): Sequence<View> {
         return children
+    }
+
+    override fun setLayer(layer: Int) {
+        setLayerType(layer, null)
     }
 
     fun setListener(listener: DrawDispatchListener) {

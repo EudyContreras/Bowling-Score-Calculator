@@ -2,7 +2,6 @@ package com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphL
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Canvas
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.VectorDrawable
 import android.os.Build
@@ -13,6 +12,7 @@ import android.widget.FrameLayout
 import androidx.core.view.children
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
+import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphShape
 import com.eudycontreras.bowlingcalculator.libraries.morpher.extensions.getColor
 import com.eudycontreras.bowlingcalculator.libraries.morpher.listeners.DrawDispatchListener
 import com.eudycontreras.bowlingcalculator.libraries.morpher.properties.CornerRadii
@@ -283,7 +283,7 @@ class FrameLayout : FrameLayout, MorphLayout {
             cornerRadii[index] = corner
         }
 
-        mutableDrawable.cornerRadii = cornerRadii.asArray()
+        mutableDrawable.cornerRadii = cornerRadii.corners
         return true
     }
 
@@ -293,8 +293,12 @@ class FrameLayout : FrameLayout, MorphLayout {
         }
 
         cornerRadii[index] = corner
-        mutableDrawable.cornerRadii = cornerRadii.asArray()
+        mutableDrawable.cornerRadii = cornerRadii.corners
         return true
+    }
+
+    override fun getMorphShape(): MorphShape {
+        return MorphShape()
     }
 
     override fun updateLayout() {
@@ -309,6 +313,10 @@ class FrameLayout : FrameLayout, MorphLayout {
 
     override fun getChildren(): Sequence<View> {
         return children
+    }
+
+    override fun setLayer(layer: Int) {
+        setLayerType(layer, null)
     }
 
     fun setListener(listener: DrawDispatchListener) {

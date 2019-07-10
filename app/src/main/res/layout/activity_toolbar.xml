@@ -107,8 +107,10 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         app:fl_shapeType="CIRCULAR">
-                    <View
+                    <com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.ViewLayout
+                            android:tag="addBowlerIcon"
                             android:layout_gravity="center"
+                            android:backgroundTint="@color/white"
                             android:background="@drawable/ic_menu"
                             android:layout_width="24dp"
                             android:layout_height="24dp"/>

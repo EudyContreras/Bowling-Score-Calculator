@@ -1,6 +1,5 @@
 TODO PRIORITY 1:
 
-    Allow shared element from Morpher
     Morph icons
     Optimize layout transition
     Cull children for lighter transition

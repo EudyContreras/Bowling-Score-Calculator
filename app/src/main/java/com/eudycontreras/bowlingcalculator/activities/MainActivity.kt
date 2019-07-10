@@ -124,7 +124,9 @@ class MainActivity : AppCompatActivity() {
         )
 
         toolbar.toolbarMenu.setOnClickListener {
-            morphTransitioner.morphInto(350)
+            morphTransitioner.startingView = toolbar.toolbarMenuBorder
+            morphTransitioner.endingView = dialog as MorphLayout
+            morphTransitioner.morphInto(2350)
         }
 
         dialog.findViewById<FrameLayout>(R.id.createDialogAddInput).addTouchAnimation(
@@ -136,7 +138,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         dialog.findViewById<FrameLayout>(R.id.createDialogAddInput).setOnClickListener {
-            morphTransitioner.morphFrom(2350)
+            morphTransitioner.morphFrom(350)
         }
     }
 

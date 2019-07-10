@@ -8,8 +8,7 @@ import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewPropertyAnimator
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.children
+import android.widget.TextView
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphShape
@@ -34,7 +33,7 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.toStateList
  * @version 1.0
  * @since   2018-03-31
  */
-class ConstraintLayout : ConstraintLayout, MorphLayout {
+class TextLayout : TextView, MorphLayout {
 
     override var morphX: Float
         get() = this.x
@@ -132,7 +131,7 @@ class ConstraintLayout : ConstraintLayout, MorphLayout {
             updateCorners(value)
         }
     override val morphChildCount: Int
-        get() = this.childCount
+        get() = 0
 
     override var morphVisibility: Int
         get() = this.visibility
@@ -179,16 +178,16 @@ class ConstraintLayout : ConstraintLayout, MorphLayout {
     }
 
     private fun setUpAttributes(attrs: AttributeSet) {
-        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ConstraintLayout)
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ViewLayout)
         try {
-            shape = typedArray.getInt(R.styleable.ConstraintLayout_cl_shapeType,
+            shape = typedArray.getInt(R.styleable.LinearLayout_ll_shapeType,
                 RECTANGULAR
             )
-            val radius = typedArray.getDimension(R.styleable.ConstraintLayout_cl_radius, 0f)
-            val topLeft = typedArray.getDimension(R.styleable.ConstraintLayout_cl_topLeftCornerRadius, radius)
-            val topRight = typedArray.getDimension(R.styleable.ConstraintLayout_cl_topRightCornerRadius, radius)
-            val bottomRight = typedArray.getDimension(R.styleable.ConstraintLayout_cl_bottomRightCornerRadius, radius)
-            val bottomLeft = typedArray.getDimension(R.styleable.ConstraintLayout_cl_bottomLeftCornerRadius, radius)
+            val radius = typedArray.getDimension(R.styleable.ViewLayout_vl_radius, 0f)
+            val topLeft = typedArray.getDimension(R.styleable.ViewLayout_vl_topLeftCornerRadius, radius)
+            val topRight = typedArray.getDimension(R.styleable.ViewLayout_vl_topRightCornerRadius, radius)
+            val bottomRight = typedArray.getDimension(R.styleable.ViewLayout_vl_bottomRightCornerRadius, radius)
+            val bottomLeft = typedArray.getDimension(R.styleable.ViewLayout_vl_bottomLeftCornerRadius, radius)
 
             applyDrawable(shape, topLeft, topRight, bottomRight, bottomLeft)
         } finally {
@@ -228,9 +227,9 @@ class ConstraintLayout : ConstraintLayout, MorphLayout {
                 bottomLeft, bottomLeft
             )
 
-            cornerRadii = CornerRadii(corners)
+            drawable.cornerRadii = corners
 
-            drawable.cornerRadii = cornerRadii.corners
+            cornerRadii = CornerRadii(corners)
         } else {
             showMutateCorners = false
         }
@@ -241,7 +240,7 @@ class ConstraintLayout : ConstraintLayout, MorphLayout {
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        if (shape == CIRCULAR) {
+        if (shape == CIRCULAR && background !is VectorDrawable) {
 
             val drawable = (background as GradientDrawable).mutate() as GradientDrawable
 
@@ -307,12 +306,12 @@ class ConstraintLayout : ConstraintLayout, MorphLayout {
 
     override fun animator(): ViewPropertyAnimator = animate()
 
-    override fun getChildViewAt(index: Int): View = getChildAt(index)
+    override fun hasChildren(): Boolean = false
 
-    override fun hasChildren(): Boolean = childCount > 0
+    override fun getChildViewAt(index: Int): View = this
 
     override fun getChildren(): Sequence<View> {
-        return children
+        return emptySequence()
     }
 
     override fun setLayer(layer: Int) {

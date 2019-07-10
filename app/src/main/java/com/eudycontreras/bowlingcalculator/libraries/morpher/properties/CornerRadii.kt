@@ -34,7 +34,7 @@ class CornerRadii(
     val bottomLeft: Float
         get() = corners[6]
 
-    private val corners = FloatArray(8)
+    val corners = FloatArray(8)
 
     val size: Int
         get() = corners.size
@@ -71,10 +71,6 @@ class CornerRadii(
 
         corners[6] = bottomLeft
         corners[7] = bottomLeft
-    }
-
-    fun asArray(): FloatArray {
-        return corners
     }
 
     fun getCopy(): CornerRadii {

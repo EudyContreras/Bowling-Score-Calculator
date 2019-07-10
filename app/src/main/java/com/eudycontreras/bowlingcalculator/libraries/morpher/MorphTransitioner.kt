@@ -72,6 +72,9 @@ class MorphTransitioner() {
         startingChildViews = getAllChildren(startingView, true)
         endingChildViews =  getAllChildren(endingView, true)
 
+        startingChildViews.add(0, startingView as View)
+        endingChildViews.add(0, endingView as View)
+
         if (hideUntagged) {
             endingChildViews.forEach {
                 if (it.tag == null) {
@@ -225,9 +228,12 @@ class MorphTransitioner() {
                 }
             }
 
-        var durationOffsetMultiplier: Float = DEFAULT_REVEAL_DURATION_MULTIPLIER
+        var childRevealOffsetMultiplier: Float = DEFAULT_REVEAL_DURATION_MULTIPLIER
+        var childConcealOffsetMultiplier: Float = DEFAULT_CONCEAL_DURATION_MULTIPLIER
 
         var animateChildren: Boolean = true
+
+        var deepChildSearch: Boolean = true
 
         var childrenRevealed: Boolean = false
             private set
@@ -439,8 +445,8 @@ class MorphTransitioner() {
         }
 
         private fun getChildMappings(startView: MorphLayout, endView: MorphLayout): List<MorphMap> {
-            val startChildren = getAllChildren(startView, true) { it.tag != null }
-            val endChildren = getAllChildren(endView, true) { it.tag != null }
+            val startChildren = getAllChildren(startView, deepChildSearch) { it.tag != null }
+            val endChildren = getAllChildren(endView, deepChildSearch) { it.tag != null }
 
             val mappings: ArrayList<MorphMap> = ArrayList()
 
@@ -463,13 +469,13 @@ class MorphTransitioner() {
         private fun revealChildren(skipTagged: Boolean, duration: Long) {
             childrenRevealed = true
             val children = if (skipTagged) endingView.getChildren().filter { it.tag == null } else endingView.getChildren()
-            animateRevealChildren(children, duration, durationOffsetMultiplier)
+            animateRevealChildren(children, duration, childRevealOffsetMultiplier)
         }
 
         private fun concealChildren(skipTagged: Boolean, duration: Long) {
             childrenRevealed = false
             val children = if (skipTagged) endingView.getChildren().filter { it.tag == null } else endingView.getChildren()
-            animateConcealChildren(children, duration, durationOffsetMultiplier)
+            animateConcealChildren(children, duration, childConcealOffsetMultiplier)
         }
 
         enum class MorphType {
@@ -490,6 +496,7 @@ class MorphTransitioner() {
         const val DEFAULT_CHILDREN_CONCEAL_OFFSET = 0.0f
 
         const val DEFAULT_REVEAL_DURATION_MULTIPLIER = 0.2f
+        const val DEFAULT_CONCEAL_DURATION_MULTIPLIER = 0.4f
 
         private fun applyProps(view: MorphLayout, props: Properties) {
             view.morphX = props.x
@@ -584,23 +591,33 @@ class MorphTransitioner() {
             }
 
             val visited = ArrayList<View>()
-            val unvisited = arrayListOf(view as View)
+            val unvisited = ArrayList<View>()
 
-            while (unvisited.isNotEmpty()) {
-                val child = unvisited.removeAt(0)
+            var initialCondition = true
 
-                if(predicate != null) {
-                    if (predicate(child)) {
+            while (unvisited.isNotEmpty() || initialCondition) {
+
+                if (!initialCondition) {
+                    val child = unvisited.removeAt(0)
+
+                    if (predicate != null) {
+                        if (predicate(child)) {
+                            visited.add(child)
+                        }
+                    } else {
                         visited.add(child)
                     }
+
+
+                    if (child !is ViewGroup)
+                        continue
+
+                    (0 until child.childCount).mapTo(unvisited) { child.getChildAt(it) }
                 } else {
-                    visited.add(child)
+                    (0 until view.morphChildCount).mapTo(unvisited) { view.getChildViewAt(it) }
+
+                    initialCondition = false
                 }
-
-                if (child !is ViewGroup)
-                    continue
-
-                (0 until child.childCount).mapTo(unvisited) { child.getChildAt(it) }
             }
 
             return if (predicate != null) {
@@ -640,7 +657,9 @@ class MorphTransitioner() {
                     .setDuration((duration * durationOffsetMultiplier).roundToLong())
                     .setStartDelay(0)
                     .alpha(0f)
-                    .translationY(8.dp)
+                    .scaleX(0.8f)
+                    .scaleY(0.8f)
+                    .translationY((-8).dp)
                     .setInterpolator(AccelerateInterpolator())
                     .start()
             }

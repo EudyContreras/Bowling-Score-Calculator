@@ -61,4 +61,6 @@ interface MorphLayout {
     fun getVectorDrawable(): VectorDrawable
     fun updateCorners(cornerRadii: CornerRadii): Boolean
     fun updateCorners(index: Int, corner: Float): Boolean
+    fun getMorphShape(): MorphShape
+    fun setLayer(layer: Int)
 }
