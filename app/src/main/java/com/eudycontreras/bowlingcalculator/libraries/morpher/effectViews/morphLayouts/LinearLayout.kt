@@ -139,7 +139,7 @@ class LinearLayout : LinearLayout, MorphLayout {
         set(value) {
             this.visibility = value
         }
-    override var showMutateCorners: Boolean = true
+    override var mutateCorners: Boolean = true
 
     override val morphTag: Any?
         get() = this.tag
@@ -232,7 +232,7 @@ class LinearLayout : LinearLayout, MorphLayout {
 
             cornerRadii = CornerRadii(corners)
         } else {
-            showMutateCorners = false
+            mutateCorners = false
         }
 
         mutableDrawable = drawable
@@ -318,6 +318,8 @@ class LinearLayout : LinearLayout, MorphLayout {
     override fun setLayer(layer: Int) {
         setLayerType(layer, null)
     }
+
+    override fun toString(): String = tag.toString()
 
     fun setListener(listener: DrawDispatchListener) {
         this.drawListener = listener

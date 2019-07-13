@@ -19,54 +19,62 @@
             app:layout_constraintBottom_toTopOf="@+id/midSectionSpacing"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
-        <View
+        <com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.ConstraintLayout
                 android:id="@+id/emptyStateShape"
+                android:tag="createBowler"
+                android:clipToPadding="false"
+                android:clipChildren="false"
                 android:layout_gravity="center"
                 android:layout_width="@dimen/state_icon_size_large"
                 android:layout_height="@dimen/state_icon_size_large"
-                android:background="@drawable/shape_circle"
                 android:backgroundTint="@color/colorPrimaryLight"
                 android:elevation="4dp"
+                app:cl_shapeType="CIRCULAR"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintEnd_toEndOf="parent">
+            <View
+                    android:id="@+id/emptyStateIcon"
+                    android:translationX="5dp"
+                    android:layout_gravity="center"
+                    android:layout_margin="@dimen/margin_extra_large"
+                    android:layout_width="@dimen/state_icon_size_default"
+                    android:layout_height="@dimen/state_icon_size_default"
+                    android:background="@drawable/img_logo"
+                    android:elevation="4dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+            <com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.FrameLayout
+                    android:visibility="visible"
+                    android:id="@+id/emptyStateAction"
+                    android:tag="addBowler"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:backgroundTint="@color/colorAccentLight"
+                    android:layout_width="@dimen/default_icon_size_medium"
+                    android:layout_height="@dimen/default_icon_size_medium"
+                    android:elevation="1dp"
+                    android:translationZ="12dp"
+                    app:fl_shapeType="CIRCULAR"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
 
-        <View
-                android:id="@+id/emptyStateIcon"
-                android:translationX="5dp"
-                android:layout_gravity="center"
-                android:layout_margin="@dimen/margin_extra_large"
-                android:layout_width="@dimen/state_icon_size_default"
-                android:layout_height="@dimen/state_icon_size_default"
-                android:background="@drawable/img_logo"
-                android:elevation="4dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
-    </FrameLayout>
+                <com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.ViewLayout
+                        android:rotation="90"
+                        android:tag="addBowlerIcon"
+                        android:layout_gravity="center"
+                        android:backgroundTint="@color/white"
+                        android:background="@drawable/ic_add"
+                        android:layout_margin="@dimen/margin_small"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+            </com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.FrameLayout>
 
-    <FrameLayout
-            android:visibility="visible"
-            android:id="@+id/emptyStateAction"
-            android:backgroundTint="@color/colorAccentLight"
-            android:background="@drawable/shape_circle"
-            android:layout_width="@dimen/default_icon_size_medium"
-            android:layout_height="@dimen/default_icon_size_medium"
-            android:elevation="1dp"
-            android:translationZ="12dp"
-            app:layout_constraintBottom_toBottomOf="@id/emptyStateIconContainer"
-            app:layout_constraintEnd_toEndOf="@id/emptyStateIconContainer">
+        </com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.ConstraintLayout>
 
-        <View
-                android:rotation="90"
-                android:layout_gravity="center"
-                android:backgroundTint="@color/white"
-                android:background="@drawable/ic_add"
-                android:layout_margin="@dimen/margin_small"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
     </FrameLayout>
 
     <Space
@@ -77,7 +85,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintVertical_bias="0.60"/>
+            app:layout_constraintVertical_bias="0.57"/>
 
     <LinearLayout
             android:id="@+id/emptyStateTextContainer"

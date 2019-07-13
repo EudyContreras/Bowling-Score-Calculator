@@ -1,504 +1,457 @@
 package com.eudycontreras.bowlingcalculator.libraries.morpher
 
-import android.animation.TimeInterpolator
 import android.animation.ValueAnimator
 import android.content.res.ColorStateList
 import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
-import android.view.animation.DecelerateInterpolator
 import android.view.animation.Interpolator
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
 import com.eudycontreras.bowlingcalculator.libraries.morpher.extensions.getProperties
 import com.eudycontreras.bowlingcalculator.libraries.morpher.extensions.toArrayList
+import com.eudycontreras.bowlingcalculator.libraries.morpher.helpers.CurvedTranslationHelper
 import com.eudycontreras.bowlingcalculator.libraries.morpher.listeners.MorphAnimationListener
 import com.eudycontreras.bowlingcalculator.libraries.morpher.properties.Coordintates
 import com.eudycontreras.bowlingcalculator.libraries.morpher.properties.CornerRadii
-import com.eudycontreras.bowlingcalculator.libraries.morpher.utilities.Action
 import com.eudycontreras.bowlingcalculator.libraries.morpher.utilities.ColorUtility
-import com.eudycontreras.bowlingcalculator.libraries.morpher.utilities.CurvedTranslator
-import com.eudycontreras.bowlingcalculator.libraries.morpher.utilities.OffsetListener
 import com.eudycontreras.bowlingcalculator.utilities.extensions.dp
 import com.eudycontreras.bowlingcalculator.utilities.extensions.toStateList
 import kotlin.math.abs
 import kotlin.math.roundToLong
 
 
-class MorphTransitioner() {
-
-    constructor(fromView: MorphLayout, toView: MorphLayout): this() {
-        startingView = fromView
-        endingView = toView
-    }
-
-    lateinit var startingView: MorphLayout
-    lateinit var endingView: MorphLayout
+class MorphTransitioner {
 
     private var remainingDuration: Long = 0L
 
-    private var percentage: Float = MIN_PERCENTAGE
-
-    private var startingChildViews: ArrayList<View> = ArrayList()
-    private var endingChildViews: ArrayList<View> = ArrayList()
-    private var morphMaps: ArrayList<MorphMap> = ArrayList()
-
-    private var offsetListener: OffsetListener = null
-    private var onTransitionEnd: Action = null
-
+    private var mappingsCreated: Boolean = false
     private var initialValuesApplied: Boolean = false
 
-    var durationOffsetMultiplier: Float = DEFAULT_REVEAL_DURATION_MULTIPLIER
+    private val curveTranslator = CurvedTranslationHelper()
 
-    var animateRevealChildren: Boolean = true
+    private var offsetListener: OffsetListener = null
+
+    private lateinit var startingView: MorphLayout
+    private lateinit var endingView: MorphLayout
+
+    private lateinit var startingState: Properties
+    private lateinit var endingState: Properties
+
+    private lateinit var mappings: List<MorphMap>
+
+    private var children: List<View>? = null
+
+    var morphIntoInterpolator: Interpolator? = null
+    var morphFromInterpolator: Interpolator? = null
+
+    var childRevealOffsetMultiplier: Float = DEFAULT_REVEAL_DURATION_MULTIPLIER
+    var childConcealOffsetMultiplier: Float = DEFAULT_CONCEAL_DURATION_MULTIPLIER
+
+    var useDeepChildSearch: Boolean = true
+    var useArcTranslator: Boolean = true
+    var animateChildren: Boolean = true
+    var morphChildren: Boolean = true
+
+    var childTransitionProperties: ChildTransitionProperties = ChildTransitionProperties()
+        private set
 
     var childrenRevealed: Boolean = false
         private set
 
-    var revealChildrenOffset: Float = DEFAULT_CHILDREN_REVEAL_OFFSET
+    var isMorphing: Boolean = false
+        private set
+
+    var isMorphed: Boolean = false
+        private set
+
+    var startView: MorphLayout
+        get() = startingView
+        set(value) {
+            startingView = value
+            mappingsCreated = false
+        }
+
+    var endView: MorphLayout
+        get() = endingView
+        set(value) {
+            endingView = value
+            mappingsCreated = false
+        }
+
+    var childRevealOffset: Float = DEFAULT_CHILDREN_REVEAL_OFFSET
         set(value) {
             if (value in 0f..1f) {
                 field = value
             }
         }
-    init {
-        if (this@MorphTransitioner::startingView.isInitialized && this@MorphTransitioner::endingView.isInitialized) {
-            performSetup(true)
-        }
-    }
 
-    private fun performSetup(hideUntagged: Boolean) {
-        startingChildViews = getAllChildren(startingView, true)
-        endingChildViews =  getAllChildren(endingView, true)
-
-        startingChildViews.add(0, startingView as View)
-        endingChildViews.add(0, endingView as View)
-
-        if (hideUntagged) {
-            endingChildViews.forEach {
-                if (it.tag == null) {
-                    it.visibility = View.INVISIBLE
-                }
+    var childConcealOffset: Float = DEFAULT_CHILDREN_CONCEAL_OFFSET
+        set(value) {
+            if (value in 0f..1f) {
+                field = value
             }
         }
 
-        for (startView in startingChildViews) {
-            endingChildViews
-                .filter { startView.tag == it.tag }
-                .forEach { endView->
-                    val start: MorphLayout = startView as MorphLayout
-                    val end: MorphLayout = endView as MorphLayout
+    fun setDestinationView(view: MorphLayout) {
 
-                    val startProps = start.getProperties()
-                    val endProps = end.getProperties()
+    }
 
-                    applyProps(end, startProps)
+    fun setReferenceView(view: MorphLayout) {
 
-                    end.morphVisibility = View.VISIBLE
-                    morphMaps.add(MorphMap(start, end, startProps, endProps))
-                }
+    }
+
+    private fun createMappings() {
+        startingState = startingView.getProperties()
+        endingState = endingView.getProperties()
+
+        mappings = if (morphChildren) {
+            getChildMappings(startingView, endingView)
+        } else emptyList()
+    }
+
+
+    private fun performSetup() {
+        for (child in endingView.getChildren()) {
+            if (child.visibility == View.GONE)
+                continue
+
+            if (morphChildren && child.tag != null)
+                continue
+
+            child.alpha = 0f
+            child.layoutParams.width = child.width
+            child.layoutParams.height = child.height
         }
 
-        endingView.morphAlpha = 0f
+        if (!mappingsCreated) {
+            createMappings()
+            mappingsCreated = true
+        }
+
+        applyProps(endingView, startingState)
+
         endingView.morphVisibility = View.VISIBLE
-    }
+        startingView.morphVisibility = View.INVISIBLE
 
-    private fun revealChildren(duration: Long) {
-        childrenRevealed = true
-        val children = endingChildViews.filter { it.visibility == View.INVISIBLE}
-        animateRevealChildren(children.asSequence(), duration, durationOffsetMultiplier)
-    }
+        val startX: Float = startingState.windowLocationX - (endingState.width / 2f - startingState.width / 2f)
+        val startY: Float = startingState.windowLocationY - (endingState.height / 2f - startingState.height / 2f)
 
-    private fun applyInitialValues() {
-        endingView.morphAlpha = 1f
+        val endX: Float = endingState.windowLocationX.toFloat()
+        val endY: Float = endingState.windowLocationY.toFloat()
+
+        val translationX: Float = abs(endX - startX)
+        val translationY: Float = abs(endY - startY)
+
+        startingState.translationX =  if (startX < endX) -translationX else translationX
+        startingState.translationY =  if (startY < endY) -translationY else translationY
+
+        endingView.morphTranslationX = startingState.translationX
+        endingView.morphTranslationY = startingState.translationY
+
+        curveTranslator.setStartPoint(startingState.getDeltaCoordinates())
+        curveTranslator.setEndPoint(endingState.getDeltaCoordinates())
+
+        curveTranslator.setControlPoint(Coordintates(endingState.translationX, startingState.translationY))
+
         initialValuesApplied = true
     }
 
-    private fun setOffset(offset: Float) {
-        percentage = offset
+    fun morphInto(
+        duration: Long = DEFAULT_DURATION,
+        onStart: Action = null,
+        onEnd: Action = null,
+        offsetTrigger: OffsetTrigger? = null
+    ) {
 
-        morphMaps.forEach {
+        isMorphed = false
+        isMorphing = true
 
-            it.endView.morphX = (it.startProps.x + (it.endProps.x - it.startProps.x) * offset)
-            it.endView.morphY = (it.startProps.y + (it.endProps.y - it.startProps.y) * offset)
+        val doOnEnd = {
+            onEnd?.invoke()
 
-            animateOffset(it.endView, it.startProps, it.endProps, offset)
+            //applyProps(endingView, endingState)
+
+            mappings.forEach {
+              //  applyProps(it.endView, it.endProps)
+            }
+
+            isMorphing = false
+            isMorphed = true
         }
 
-        offsetListener?.invoke(offset)
+        performSetup()
+
+        morph(
+            endingView,
+            endingView,
+            startingState,
+            endingState,
+            mappings,
+            morphIntoInterpolator,
+            curveTranslator,
+            duration,
+            onStart,
+            doOnEnd,
+            offsetTrigger,
+            ChildrenAction.REVEAL,
+            MorphType.INTO
+        )
     }
 
-    fun animateTo(
-        percent: Float = MAX_PERCENTAGE,
+    fun morphFrom(
         duration: Long = DEFAULT_DURATION,
-        startDelay: Long = 0L,
-        interpolator: TimeInterpolator? = DecelerateInterpolator(),
-        trigger: OffsetTrigger? = null
+        onStart: Action = null,
+        onEnd: Action = null,
+        offsetTrigger: OffsetTrigger? = null
     ) {
+
+        if (!mappingsCreated) {
+            createMappings()
+            mappingsCreated = true
+        }
+
+        isMorphed = false
+        isMorphing = true
+
+        val doOnEnd = {
+            onEnd?.invoke()
+
+            startingView.morphVisibility = View.VISIBLE
+            endingView.morphVisibility = View.INVISIBLE
+
+        //    applyProps(endingView, endingState)
+
+            mappings.forEach {
+               // applyProps(it.endView, it.endProps)
+            }
+
+            isMorphing = false
+            isMorphed = true
+        }
+
+        curveTranslator.setStartPoint(endingState.getDeltaCoordinates())
+        curveTranslator.setEndPoint(startingState.getDeltaCoordinates())
+
+        curveTranslator.setControlPoint(Coordintates(endingState.translationX, startingState.translationY))
+
+        morph(
+            startingView,
+            endingView,
+            endingState,
+            startingState,
+            mappings,
+            morphFromInterpolator,
+            curveTranslator,
+            duration,
+            onStart,
+            doOnEnd,
+            offsetTrigger,
+            ChildrenAction.CONCEAL,
+            MorphType.FROM
+        )
+    }
+
+    private var lastOffset = MIN_OFFSET
+
+    fun setMorphTransitionOffset(percent: Int) {
+        if (percent in 0..100) {
+            setMorphTransitionOffset(percent.toFloat() / 100.0f)
+        }
+    }
+
+    private fun setMorphTransitionOffset(fraction: Float) {
+
+        if (!initialValuesApplied) {
+            performSetup()
+        }
+
+        val startingProps = startingState
+        val endingProps = endingState
+
+        animateProperties(endView, startingProps, endingProps, fraction)
+
+        endView.morphTranslationX = startingProps.translationX + (endingProps.translationX - startingProps.translationX) * fraction
+        endView.morphTranslationY = startingProps.translationY + (endingProps.translationY - startingProps.translationY) * fraction
+
+        if (morphChildren && mappings.isNotEmpty()) {
+            for (mapping in mappings) {
+                animateProperties(mapping.endView, mapping.startProps, mapping.endProps, fraction)
+
+                mapping.endView.animator().x(mapping.startProps.x + (mapping.endProps.x - mapping.startProps.x) * fraction).setDuration(0).start()
+                mapping.endView.animator().y(mapping.startProps.y + (mapping.endProps.y - mapping.startProps.y) * fraction).setDuration(0).start()
+            }
+        }
+
+        if (children == null) {
+            children = getAllChildren(endingView, false) { it.tag == null}
+        }
+
+        children?.let { list ->
+            for (it in list) {
+                it.animate()
+                    .alpha(MIN_OFFSET + (MAX_OFFSET - MIN_OFFSET) * fraction )
+                    .setDuration(0)
+                    .start()
+            }
+        }
+
+        lastOffset = fraction
+    }
+
+    private fun morph(
+        startView: MorphLayout,
+        endView: MorphLayout,
+        startingProps: Properties,
+        endingProps: Properties,
+        mappings: List<MorphMap>,
+        interpolator: Interpolator?,
+        curveTranslationHelper: CurvedTranslationHelper?,
+        duration: Long,
+        onStart: Action,
+        onEnd: Action,
+        trigger: OffsetTrigger?,
+        childrenAction: ChildrenAction,
+        morphType: MorphType
+    ) {
+
         this.remainingDuration = duration
 
-        if (percentage == percent)
-            return
+        val animator: ValueAnimator = ValueAnimator.ofFloat(MIN_OFFSET, MAX_OFFSET)
 
-        if (percent < MIN_PERCENTAGE || percent > MAX_PERCENTAGE)
-            return
-
-        performSetup(true)
-
-        val animator: ValueAnimator = ValueAnimator.ofFloat(percentage, percent)
-
-        val listener = MorphAnimationListener({ applyInitialValues() },onTransitionEnd)
-
-        animator.addListener(listener)
+        animator.addListener(MorphAnimationListener(onStart, onEnd))
         animator.addUpdateListener {
-            val value = it.animatedValue as Float
+            val fraction = it.animatedValue as Float
 
-            remainingDuration = duration - (duration * value).toLong()
+            remainingDuration = duration - (duration * fraction).toLong()
 
-            setOffset(value)
+            animateProperties(endView, startingProps, endingProps, fraction)
+            moveWithOffset(endView, startingProps, endingProps, fraction, curveTranslationHelper)
 
-            if (animateRevealChildren && !childrenRevealed && value >= revealChildrenOffset) {
-                revealChildren(duration)
+            if (morphChildren && mappings.isNotEmpty()) {
+                for (mapping in mappings) {
+                    when (morphType) {
+                        MorphType.INTO -> {
+                            animateProperties(mapping.endView, mapping.startProps, mapping.endProps, fraction)
+
+                            mapping.endView.morphX = mapping.startProps.x + (mapping.endProps.x - mapping.startProps.x) * fraction
+                            mapping.endView.morphY = mapping.startProps.y + (mapping.endProps.y - mapping.startProps.y) * fraction
+                        }
+                        MorphType.FROM -> {
+                            animateProperties(mapping.endView, mapping.endProps, mapping.startProps, fraction)
+
+                            mapping.endView.morphX = mapping.endProps.x + (mapping.startProps.x - mapping.endProps.x) * fraction
+                            mapping.endView.morphY = mapping.endProps.y + (mapping.startProps.y - mapping.endProps.y) * fraction
+                        }
+                    }
+                }
+            }
+
+            when (childrenAction) {
+                ChildrenAction.CONCEAL -> {
+                    if (animateChildren && childrenRevealed && fraction >= childConcealOffset) {
+                        concealChildren(endingView, morphChildren, remainingDuration)
+                    }
+                    if (animateChildren && childrenRevealed && fraction >= childRevealOffset) {
+                        revealChildren(startingView, morphChildren, remainingDuration)
+                    }
+                }
+                ChildrenAction.REVEAL -> {
+                    if (animateChildren && !childrenRevealed && fraction >= childRevealOffset) {
+                        revealChildren(endingView, morphChildren, remainingDuration)
+                    }
+                    if (animateChildren && !childrenRevealed && fraction >= childConcealOffset) {
+                        concealChildren(startingView, morphChildren, remainingDuration)
+                    }
+                }
             }
 
             if (trigger != null && !trigger.hasTriggered) {
-                if (value >= trigger.percentage) {
+                if (fraction >= trigger.percentage) {
                     trigger.triggerAction?.invoke()
                     trigger.hasTriggered = true
                 }
             }
+            offsetListener?.invoke(fraction)
         }
-        animator.duration = duration
-        animator.startDelay = startDelay
+
         animator.interpolator = interpolator
+        animator.duration = duration
         animator.start()
     }
 
-    fun doWhenTransitionEnds(action: Action) {
-        this.onTransitionEnd = action
-    }
-
-    fun onOffsetChanged(progressListener: (percent: Float) -> Unit) {
-        this.offsetListener = progressListener
-    }
-
-    fun setOffset(percent: Int) = setOffset(percent.toFloat() / 100f)
-
-    class Morpher {
-
-        private var isSetup = false
-
-        private lateinit var mappings: List<MorphMap>
-
-        private lateinit var fromState: Properties
-        private lateinit var toState: Properties
-
-        private var offsetListener: OffsetListener = null
-
-        private var remainingDuration: Long = 0L
-
-        lateinit var startingView: MorphLayout
-        lateinit var endingView: MorphLayout
-
-        var interpolatorMorphTo: Interpolator? = null
-        var interpolatorMorphFrom: Interpolator? = null
-
-        var curveTranslation = true
-
-        var morphChildren = true
-
-        var isMorphing = false
-            private set
-
-        var isMorphed = false
-            private set
-
-        var revealChildrenOffset: Float = DEFAULT_CHILDREN_REVEAL_OFFSET
-            set(value) {
-                if (value in 0f..1f) {
-                    field = value
-                }
-            }
-
-        var concealChildrenOffset: Float = DEFAULT_CHILDREN_CONCEAL_OFFSET
-            set(value) {
-                if (value in 0f..1f) {
-                    field = value
-                }
-            }
-
-        var childRevealOffsetMultiplier: Float = DEFAULT_REVEAL_DURATION_MULTIPLIER
-        var childConcealOffsetMultiplier: Float = DEFAULT_CONCEAL_DURATION_MULTIPLIER
-
-        var animateChildren: Boolean = true
-
-        var deepChildSearch: Boolean = true
-
-        var childrenRevealed: Boolean = false
-            private set
-
-        private fun setUp() {
-            if (isSetup)
-                return
-
-            fromState = startingView.getProperties()
-            toState = endingView.getProperties()
-
-            mappings = if (morphChildren) {
-                getChildMappings(startingView, endingView)
-            } else emptyList()
-
-            isSetup = true
-        }
-
-        fun morphInto(duration: Long, onStart: Action = null, onEnd: Action = null, offsetTrigger: OffsetTrigger? = null) {
-
-            setUp()
-
-            isMorphing = true
-
-            for (child in endingView.getChildren()) {
-                if (child.visibility == View.GONE)
-                    continue
-
-                if (morphChildren && child.tag != null)
-                    continue
-
-                child.alpha = 0f
-            }
-
-            applyProps(endingView, fromState)
-
-            endingView.morphVisibility = View.VISIBLE
-            startingView.morphVisibility = View.INVISIBLE
-
-            val startX: Float = fromState.windowLocationX - (toState.width / 2f - fromState.width / 2f)
-            val startY: Float = fromState.windowLocationY - (toState.height / 2f - fromState.height / 2f)
-
-            val endX: Float = toState.windowLocationX.toFloat()
-            val endY: Float = toState.windowLocationY.toFloat()
-
-            val translationX: Float = abs(endX - startX)
-            val translationY: Float = abs(endY - startY)
-
-            fromState.translationX =  if (startX < endX) -translationX else translationX
-            fromState.translationY =  if (startY < endY) -translationY else translationY
-
-            endingView.morphTranslationX = fromState.translationX
-            endingView.morphTranslationY = fromState.translationY
-
-            val curveTranslator = CurvedTranslator()
-            curveTranslator.setStartPoint(fromState.getDeltaCoordinates())
-            curveTranslator.setEndPoint(toState.getDeltaCoordinates())
-
-            val midPoint = Coordintates.midPoint(fromState.getDeltaCoordinates(), toState.getDeltaCoordinates())
-            val crossPoint = Coordintates(fromState.translationX, toState.translationY)
-
-            curveTranslator.setControlPoint(Coordintates.midPoint(midPoint, crossPoint))
-
-            morph(
-                endingView,
-                fromState,
-                toState,
-                mappings,
-                interpolatorMorphTo,
-                curveTranslator,
-                duration,
-                onStart,
-                onEnd,
-                offsetTrigger,
-                ChildrenAction.REVEAL,
-                MorphType.INTO
-            )
-        }
-
-        fun morphFrom(duration: Long, onStart: Action = null, onEnd: Action = null, offsetTrigger: OffsetTrigger? = null) {
-
-            isMorphing = true
-
-            val doOnEnd = {
-                onEnd?.invoke()
-                startingView.morphVisibility = View.VISIBLE
-                endingView.morphVisibility = View.INVISIBLE
-            }
-
-            val curveTranslator = CurvedTranslator()
-            curveTranslator.setStartPoint(toState.getDeltaCoordinates())
-            curveTranslator.setEndPoint(fromState.getDeltaCoordinates())
-
-            val midPoint = Coordintates.midPoint(fromState.getDeltaCoordinates(), toState.getDeltaCoordinates())
-            val crossPoint = Coordintates(fromState.translationX, toState.translationY)
-
-            curveTranslator.setControlPoint(Coordintates.midPoint(midPoint, crossPoint))
-
-            morph(
-                endingView,
-                toState,
-                fromState,
-                mappings,
-                interpolatorMorphFrom,
-                curveTranslator,
-                duration,
-                onStart,
-                doOnEnd,
-                offsetTrigger,
-                ChildrenAction.CONCEAL,
-                MorphType.FROM
-            )
-        }
-
-        private fun morph(
-            endView: MorphLayout,
-            startingProps: Properties,
-            endingProps: Properties,
-            mappings: List<MorphMap>,
-            interpolator: Interpolator?,
-            curveTranslator: CurvedTranslator,
-            duration: Long,
-            onStart: Action,
-            onEnd: Action,
-            trigger: OffsetTrigger?,
-            childrenAction: ChildrenAction,
-            morphType: MorphType
-        ) {
-
-            this.remainingDuration = duration
-
-            val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
-
-            val listener = MorphAnimationListener(onStart) {
-                onEnd?.invoke()
-                isMorphing = false
-                isMorphed = true
-            }
-
-            animator.addListener(listener)
-            animator.addUpdateListener {
-                val offset = it.animatedValue as Float
-
-                remainingDuration = duration - (duration * offset).toLong()
-
-                animateOffset(endView, startingProps, endingProps, offset)
-                moveWithOffset(endView, startingProps, endingProps, offset, curveTranslator)
-
-                if (morphChildren && mappings.isNotEmpty()) {
-                    for (mapping in mappings) {
-                        when (morphType) {
-                            MorphType.INTO -> {
-                                animateOffset(mapping.endView, mapping.startProps, mapping.endProps, offset)
-
-                                mapping.endView.morphX = (mapping.startProps.x + (mapping.endProps.x - mapping.startProps.x) * offset)
-                                mapping.endView.morphY = (mapping.startProps.y + (mapping.endProps.y - mapping.startProps.y) * offset)
-                            }
-                            MorphType.FROM -> {
-                                animateOffset(mapping.endView, mapping.endProps, mapping.startProps, offset)
-
-                                mapping.endView.morphX = (mapping.endProps.x + (mapping.startProps.x - mapping.endProps.x) * offset)
-                                mapping.endView.morphY = (mapping.endProps.y + (mapping.startProps.y - mapping.endProps.y) * offset)
-                            }
-                        }
-                    }
-                }
-
-                when (childrenAction) {
-                    ChildrenAction.CONCEAL -> {
-                        if (animateChildren && childrenRevealed && offset >= concealChildrenOffset) {
-                            concealChildren(morphChildren, remainingDuration)
-                        }
-                    }
-                    ChildrenAction.REVEAL -> {
-                        if (animateChildren && !childrenRevealed && offset >= revealChildrenOffset) {
-                            revealChildren(morphChildren, remainingDuration)
-                        }
-                    }
-                }
-
-                if (trigger != null && !trigger.hasTriggered) {
-                    if (offset >= trigger.percentage) {
-                        trigger.triggerAction?.invoke()
-                        trigger.hasTriggered = true
-                    }
-                }
-                offsetListener?.invoke(offset)
-            }
-
-            animator.interpolator = interpolator
-            animator.duration = duration
-            animator.start()
-        }
-
-        private fun moveWithOffset(
-            endView: MorphLayout,
-            startingProps: Properties,
-            endingProps: Properties,
-            offset: Float,
-            curveTranslator: CurvedTranslator
-        ) {
-            if (curveTranslation) {
-                endView.morphTranslationX = curveTranslator.getCurvedTranslationX(offset).toFloat()
-                endView.morphTranslationY = curveTranslator.getCurvedTranslationY(offset).toFloat()
-            } else {
-                endView.morphTranslationX = (startingProps.translationX + (endingProps.translationX - startingProps.translationX) * offset)
-                endView.morphTranslationY = (startingProps.translationY + (endingProps.translationY - startingProps.translationY) * offset)
-            }
-        }
-
-        private fun getChildMappings(startView: MorphLayout, endView: MorphLayout): List<MorphMap> {
-            val startChildren = getAllChildren(startView, deepChildSearch) { it.tag != null }
-            val endChildren = getAllChildren(endView, deepChildSearch) { it.tag != null }
-
-            val mappings: ArrayList<MorphMap> = ArrayList()
-
-            startChildren.forEach { startChild ->
-                endChildren.forEach { endChild ->
-                    if (startChild.tag == endChild.tag) {
-                        val start: MorphLayout = startChild as MorphLayout
-                        val end: MorphLayout = endChild as MorphLayout
-
-                        val startProps = start.getProperties()
-                        val endProps = end.getProperties()
-
-                        mappings.add(MorphMap(start, end, startProps, endProps))
-                    }
-                }
-            }
-            return mappings
-        }
-
-        private fun revealChildren(skipTagged: Boolean, duration: Long) {
-            childrenRevealed = true
-            val children = if (skipTagged) endingView.getChildren().filter { it.tag == null } else endingView.getChildren()
-            animateRevealChildren(children, duration, childRevealOffsetMultiplier)
-        }
-
-        private fun concealChildren(skipTagged: Boolean, duration: Long) {
-            childrenRevealed = false
-            val children = if (skipTagged) endingView.getChildren().filter { it.tag == null } else endingView.getChildren()
-            animateConcealChildren(children, duration, childConcealOffsetMultiplier)
-        }
-
-        enum class MorphType {
-            INTO, FROM
+    private fun moveWithOffset(
+        endView: MorphLayout,
+        startingProps: Properties,
+        endingProps: Properties,
+        fraction: Float,
+        curveTranslationHelper: CurvedTranslationHelper?
+    ) {
+        if (useArcTranslator && curveTranslationHelper != null) {
+            endView.morphTranslationX = curveTranslationHelper.getCurvedTranslationX(fraction).toFloat()
+            endView.morphTranslationY = curveTranslationHelper.getCurvedTranslationY(fraction).toFloat()
+        } else {
+            endView.morphTranslationX = startingProps.translationX + (endingProps.translationX - startingProps.translationX) * fraction
+            endView.morphTranslationY = startingProps.translationY + (endingProps.translationY - startingProps.translationY) * fraction
         }
     }
 
-    enum class ChildrenAction { REVEAL, CONCEAL }
+    private fun getChildMappings(startView: MorphLayout, endView: MorphLayout): List<MorphMap> {
+        val startChildren = getAllChildren(startView, useDeepChildSearch) { it.tag != null }
+        val endChildren = getAllChildren(endView, useDeepChildSearch) { it.tag != null }
+
+        val mappings: ArrayList<MorphMap> = ArrayList()
+
+        startChildren.forEach { startChild ->
+            endChildren.forEach { endChild ->
+                if (startChild.tag == endChild.tag) {
+
+                    val start: MorphLayout = startChild as MorphLayout
+                    val end: MorphLayout = endChild as MorphLayout
+
+                    val startProps = start.getProperties()
+                    val endProps = end.getProperties()
+
+                    mappings.add(MorphMap(start, end, startProps, endProps))
+                }
+            }
+        }
+        return mappings
+    }
+
+    private fun revealChildren(parentView: MorphLayout, skipTagged: Boolean, duration: Long) {
+        if (!parentView.hasChildren())
+            return
+
+        val children = getAllChildren(parentView, !skipTagged) { it.tag == null}.asSequence()
+
+        animateRevealChildren(children, childTransitionProperties, duration, childRevealOffsetMultiplier) { childrenRevealed = true }
+    }
+
+    private fun concealChildren(parentView: MorphLayout, skipTagged: Boolean, duration: Long) {
+        if (!parentView.hasChildren())
+            return
+
+        val children = getAllChildren(parentView, !skipTagged) { it.tag == null}.asSequence()
+
+        animateConcealChildren(children, childTransitionProperties, duration, childConcealOffsetMultiplier) { childrenRevealed = false }
+    }
 
     companion object {
 
-        const val MAX_PERCENTAGE: Float = 1f
-        const val MIN_PERCENTAGE: Float = 0f
+        const val MAX_OFFSET: Float = 1f
+        const val MIN_OFFSET: Float = 0f
 
-        const val DEFAULT_DURATION: Long = 300L
+        const val DEFAULT_DURATION: Long = 350L
 
-        const val DEFAULT_CHILDREN_REVEAL_OFFSET = 0.60f
-        const val DEFAULT_CHILDREN_CONCEAL_OFFSET = 0.0f
+        const val DEFAULT_CHILDREN_REVEAL_OFFSET: Float = 0.60f
+        const val DEFAULT_CHILDREN_CONCEAL_OFFSET: Float = 0.0f
 
-        const val DEFAULT_REVEAL_DURATION_MULTIPLIER = 0.2f
-        const val DEFAULT_CONCEAL_DURATION_MULTIPLIER = 0.4f
+        const val DEFAULT_REVEAL_DURATION_MULTIPLIER: Float = 0.2f
+        const val DEFAULT_CONCEAL_DURATION_MULTIPLIER: Float = 0.4f
 
-        private fun applyProps(view: MorphLayout, props: Properties) {
+        private fun applyProps(view: MorphLayout, props: Properties, translate: Boolean = true) {
             view.morphX = props.x
             view.morphY = props.y
             view.morphAlpha = props.alpha
@@ -517,70 +470,85 @@ class MorphTransitioner() {
             view.morphWidth = props.width
             view.morphHeight = props.height
 
-            if (!view.hasVectorDrawable()) {
-                view.updateCorners(props.cornerRadii)
+            if (!view.hasVectorDrawable() && view.mutateCorners) {
+                view.updateCorners(0, props.cornerRadii[0])
+                view.updateCorners(1, props.cornerRadii[1])
+                view.updateCorners(2, props.cornerRadii[2])
+                view.updateCorners(3, props.cornerRadii[3])
+                view.updateCorners(4, props.cornerRadii[4])
+                view.updateCorners(5, props.cornerRadii[5])
+                view.updateCorners(6, props.cornerRadii[6])
+                view.updateCorners(7, props.cornerRadii[7])
             }
 
             view.updateLayout()
         }
 
-        private fun animateOffset(
+        private fun animateProperties(
             morphView: MorphLayout,
             startingProps: Properties,
             endingProps: Properties,
-            offset: Float
+            fraction: Float
         ) {
             if (endingProps.alpha != startingProps.alpha) {
-                morphView.morphAlpha = startingProps.alpha + (endingProps.alpha - startingProps.alpha) * offset
+                morphView.morphAlpha = startingProps.alpha + (endingProps.alpha - startingProps.alpha) * fraction
             }
 
             if (endingProps.scaleX != startingProps.scaleX || endingProps.scaleY != startingProps.scaleY) {
-                morphView.morphScaleX = startingProps.scaleX + (endingProps.scaleX - startingProps.scaleX) * offset
-                morphView.morphScaleY = startingProps.scaleY + (endingProps.scaleY - startingProps.scaleY) * offset
+                morphView.morphScaleX = startingProps.scaleX + (endingProps.scaleX - startingProps.scaleX) * fraction
+                morphView.morphScaleY = startingProps.scaleY + (endingProps.scaleY - startingProps.scaleY) * fraction
             }
 
             if (endingProps.pivotX != startingProps.pivotX || endingProps.pivotY != startingProps.pivotY) {
-                morphView.morphPivotX = startingProps.pivotX + (endingProps.pivotX - startingProps.pivotX) * offset
-                morphView.morphPivotY = startingProps.pivotY + (endingProps.pivotY - startingProps.pivotY) * offset
+                morphView.morphPivotX = startingProps.pivotX + (endingProps.pivotX - startingProps.pivotX) * fraction
+                morphView.morphPivotY = startingProps.pivotY + (endingProps.pivotY - startingProps.pivotY) * fraction
             }
 
             if (endingProps.rotation != startingProps.rotation) {
-                morphView.morphRotation = startingProps.rotation + (endingProps.rotation - startingProps.rotation) * offset
+                morphView.morphRotation = startingProps.rotation + (endingProps.rotation - startingProps.rotation) * fraction
             }
 
             if (endingProps.rotationX != startingProps.rotationX || endingProps.rotationY != startingProps.rotationY) {
-                morphView.morphRotationX = startingProps.rotationX + (endingProps.rotationX - startingProps.rotationX) * offset
-                morphView.morphRotationY = startingProps.rotationY + (endingProps.rotationY - startingProps.rotationY) * offset
+                morphView.morphRotationX = startingProps.rotationX + (endingProps.rotationX - startingProps.rotationX) * fraction
+                morphView.morphRotationY = startingProps.rotationY + (endingProps.rotationY - startingProps.rotationY) * fraction
             }
 
             if (endingProps.translationZ != startingProps.translationZ) {
-                morphView.morphTranslationZ = startingProps.translationZ + (endingProps.translationZ - startingProps.translationZ) * offset
+                morphView.morphTranslationZ = startingProps.translationZ + (endingProps.translationZ - startingProps.translationZ) * fraction
             }
 
-            if (morphView.showMutateCorners && !morphView.hasVectorDrawable() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                morphView.updateCorners(0, startingProps.cornerRadii[0] + (endingProps.cornerRadii[0] - startingProps.cornerRadii[0]) * offset)
-                morphView.updateCorners(1, startingProps.cornerRadii[1] + (endingProps.cornerRadii[1] - startingProps.cornerRadii[1]) * offset)
-                morphView.updateCorners(2, startingProps.cornerRadii[2] + (endingProps.cornerRadii[2] - startingProps.cornerRadii[2]) * offset)
-                morphView.updateCorners(3, startingProps.cornerRadii[3] + (endingProps.cornerRadii[3] - startingProps.cornerRadii[3]) * offset)
-                morphView.updateCorners(4, startingProps.cornerRadii[4] + (endingProps.cornerRadii[4] - startingProps.cornerRadii[4]) * offset)
-                morphView.updateCorners(5, startingProps.cornerRadii[5] + (endingProps.cornerRadii[5] - startingProps.cornerRadii[5]) * offset)
-                morphView.updateCorners(6, startingProps.cornerRadii[6] + (endingProps.cornerRadii[6] - startingProps.cornerRadii[6]) * offset)
-                morphView.updateCorners(7, startingProps.cornerRadii[7] + (endingProps.cornerRadii[7] - startingProps.cornerRadii[7]) * offset)
+            if (endingProps.elevation != startingProps.elevation) {
+                morphView.morphElevation = startingProps.elevation + (endingProps.elevation - startingProps.elevation) * fraction
+            }
+
+            if (morphView.mutateCorners && !morphView.hasVectorDrawable() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                morphView.updateCorners(0, startingProps.cornerRadii[0] + (endingProps.cornerRadii[0] - startingProps.cornerRadii[0]) * fraction)
+                morphView.updateCorners(1, startingProps.cornerRadii[1] + (endingProps.cornerRadii[1] - startingProps.cornerRadii[1]) * fraction)
+                morphView.updateCorners(2, startingProps.cornerRadii[2] + (endingProps.cornerRadii[2] - startingProps.cornerRadii[2]) * fraction)
+                morphView.updateCorners(3, startingProps.cornerRadii[3] + (endingProps.cornerRadii[3] - startingProps.cornerRadii[3]) * fraction)
+                morphView.updateCorners(4, startingProps.cornerRadii[4] + (endingProps.cornerRadii[4] - startingProps.cornerRadii[4]) * fraction)
+                morphView.updateCorners(5, startingProps.cornerRadii[5] + (endingProps.cornerRadii[5] - startingProps.cornerRadii[5]) * fraction)
+                morphView.updateCorners(6, startingProps.cornerRadii[6] + (endingProps.cornerRadii[6] - startingProps.cornerRadii[6]) * fraction)
+                morphView.updateCorners(7, startingProps.cornerRadii[7] + (endingProps.cornerRadii[7] - startingProps.cornerRadii[7]) * fraction)
             }
 
             if (startingProps.color != endingProps.color) {
-                morphView.morphStateList = ColorUtility.interpolateColor(offset, startingProps.color, endingProps.color).toStateList()
+                morphView.morphStateList = ColorUtility.interpolateColor(fraction, startingProps.color, endingProps.color).toStateList()
             }
 
             if (endingProps.width != startingProps.width || endingProps.height != startingProps.height) {
-                morphView.morphWidth = startingProps.width + (endingProps.width - startingProps.width) * offset
-                morphView.morphHeight = startingProps.height + (endingProps.height - startingProps.height) * offset
+                morphView.morphWidth = startingProps.width + (endingProps.width - startingProps.width) * fraction
+                morphView.morphHeight = startingProps.height + (endingProps.height - startingProps.height) * fraction
 
                 morphView.updateLayout()
             }
         }
 
-        private fun getAllChildren(view: MorphLayout, deepSearch: Boolean, predicate: ((View) -> Boolean)? = null): ArrayList<View> {
+        private fun getAllChildren(
+            view: MorphLayout,
+            deepSearch: Boolean,
+            predicate: ((View) -> Boolean)? = null
+        ): List<View> {
 
             if (!deepSearch) {
                 return if (predicate != null) {
@@ -608,7 +576,6 @@ class MorphTransitioner() {
                         visited.add(child)
                     }
 
-
                     if (child !is ViewGroup)
                         continue
 
@@ -620,46 +587,62 @@ class MorphTransitioner() {
                 }
             }
 
-            return if (predicate != null) {
-                visited.filter(predicate).toArrayList()
-            } else {
-                visited.toArrayList()
-            }
+            return visited
         }
 
-        private fun <T: View> animateRevealChildren(children: Sequence<T>, duration: Long, durationOffsetMultiplier: Float) {
+        private fun <T: View> animateRevealChildren(
+            children: Sequence<T>,
+            transitionProps: ChildTransitionProperties,
+            duration: Long,
+            durationOffsetMultiplier: Float,
+            onEnd: Action = null
+        ) {
+            if (!children.any())
+                return
+
+            onEnd?.invoke()
             children.forEach {
-                it.visibility = View.VISIBLE
-                it.translationY = (12.dp)
-                it.scaleX = 0.8f
-                it.scaleY = 0.8f
-                it.alpha = 0f
+                it.visibility = transitionProps.revealProperties.visibility
+                it.translationY = transitionProps.revealProperties.translationY
+                it.scaleX = transitionProps.revealProperties.scaleX
+                it.scaleY = transitionProps.revealProperties.scaleY
+                it.alpha = transitionProps.revealProperties.alpha
                 it.animate()
                     .setListener(null)
                     .setDuration((duration + (duration * durationOffsetMultiplier)).roundToLong())
                     .setStartDelay(0)
-                    .alpha(1f)
-                    .scaleX(1f)
-                    .scaleY(1f)
-                    .translationY(0f)
+                    .alpha(transitionProps.concealProperties.alpha)
+                    .scaleX(transitionProps.concealProperties.scaleX)
+                    .scaleY(transitionProps.concealProperties.scaleY)
+                    .translationY(transitionProps.concealProperties.translationY)
                     .setInterpolator(LinearOutSlowInInterpolator())
                     .start()
             }
         }
 
-        private fun <T: View> animateConcealChildren(children: Sequence<T>, duration: Long, durationOffsetMultiplier: Float) {
+        private fun <T: View> animateConcealChildren(
+            children: Sequence<T>,
+            transitionProps: ChildTransitionProperties,
+            duration: Long,
+            durationOffsetMultiplier: Float,
+            onEnd: Action = null
+        ) {
+            if (!children.any())
+                return
+
+            onEnd?.invoke()
             children.forEach {
-                it.visibility = View.VISIBLE
-                it.translationY = 0f
-                it.alpha = 1f
+                it.visibility = transitionProps.concealProperties.visibility
+                it.translationY = transitionProps.concealProperties.translationY
+                it.alpha = transitionProps.concealProperties.alpha
                 it.animate()
                     .setListener(null)
                     .setDuration((duration * durationOffsetMultiplier).roundToLong())
                     .setStartDelay(0)
-                    .alpha(0f)
-                    .scaleX(0.8f)
-                    .scaleY(0.8f)
-                    .translationY((-8).dp)
+                    .alpha(transitionProps.revealProperties.alpha)
+                    .scaleX(transitionProps.revealProperties.scaleX)
+                    .scaleY(transitionProps.revealProperties.scaleY)
+                    .translationY(-transitionProps.revealProperties.translationY)
                     .setInterpolator(AccelerateInterpolator())
                     .start()
             }
@@ -673,6 +656,11 @@ class MorphTransitioner() {
         var endProps: Properties
     )
 
+    private data class ViewMappingData(
+        val fromViewChildren: ArrayList<View>,
+        val toViewChildren:  ArrayList<View>
+    )
+
     data class OffsetTrigger(
         val percentage: Float,
         val triggerAction: Action,
@@ -680,31 +668,63 @@ class MorphTransitioner() {
     )
 
     data class Properties(
-        var x: Float,
-        var y: Float,
-        var width: Float,
-        var height: Float,
-        var alpha: Float,
-        var elevation: Float,
+        val x: Float,
+        val y: Float,
+        val width: Float,
+        val height: Float,
+        val alpha: Float,
+        val elevation: Float,
         var translationX: Float,
         var translationY: Float,
-        var translationZ: Float,
-        var pivotX: Float,
-        var pivotY: Float,
-        var rotation: Float,
-        var rotationX: Float,
-        var rotationY: Float,
-        var scaleX: Float,
-        var scaleY: Float,
-        var color: Int,
-        var stateList: ColorStateList?,
-        var cornerRadii: CornerRadii,
-        var windowLocationX: Int,
-        var windowLocationY: Int,
-        var tag: String
+        val translationZ: Float,
+        val pivotX: Float,
+        val pivotY: Float,
+        val rotation: Float,
+        val rotationX: Float,
+        val rotationY: Float,
+        val scaleX: Float,
+        val scaleY: Float,
+        val color: Int,
+        val stateList: ColorStateList?,
+        val cornerRadii: CornerRadii,
+        val windowLocationX: Int,
+        val windowLocationY: Int,
+        val tag: String
     ) {
         fun getDeltaCoordinates() = Coordintates(translationX, translationY)
 
         fun getCoordinates() = Coordintates(x, y)
+
+        override fun toString() = tag
     }
+
+    data class ChildProperties(
+        var alpha: Float = 1f,
+        var elevation: Float = 0f,
+        var translationX: Float = 0f,
+        var translationY: Float = 0f,
+        var translationZ: Float = 0f,
+        var rotation: Float = 0f,
+        var rotationX: Float = 0f,
+        var rotationY: Float = 0f,
+        var scaleX: Float = 1f,
+        var scaleY: Float = 1f,
+        var visibility: Int = View.VISIBLE
+    )
+
+    data class ChildTransitionProperties(
+        val revealProperties: ChildProperties = ChildProperties(
+            alpha = 0f,
+            scaleX = 0.8f,
+            scaleY = 0.8f,
+            translationY = 12.dp,
+            visibility = View.VISIBLE
+        ),
+        val concealProperties: ChildProperties = ChildProperties()
+    )
+
+    enum class MorphType { INTO, FROM }
+
+    enum class ChildrenAction { REVEAL, CONCEAL }
+
 }

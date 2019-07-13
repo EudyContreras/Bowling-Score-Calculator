@@ -1,4 +1,4 @@
-package com.eudycontreras.bowlingcalculator.libraries.morpher.utilities
+package com.eudycontreras.bowlingcalculator.libraries.morpher
 
 typealias Action = (()-> Unit)?
 

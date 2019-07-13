@@ -33,9 +33,10 @@ class TabsViewController(
     fun onTabRequested(manual: Boolean, listener: BowlerListener = null, view: View? = null) {
         val onDismiss = {
             if (!context.app.persistenceManager.hasBowlers()) {
-                scoreController.emptyStateController.setState(EmptyStateViewComponent.EmptyState.Main(context) {
-                    onTabRequested(true)
-                })
+                val state = EmptyStateViewComponent.EmptyState.Main(context) {
+                    onTabRequested(true, null, it)
+                }
+                scoreController.emptyStateController.setState(state)
                 scoreController.emptyStateController.revealState()
             } else {
                 scoreController.emptyStateController.concealState()
@@ -43,10 +44,10 @@ class TabsViewController(
         }
 
         if (view != null) {
-            context.morphTransitioner.startingView = view as MorphLayout
-            context.morphTransitioner.endingView = context.dialog as MorphLayout
-            context.morphTransitioner.curveTranslation = false
-            context.morphTransitioner.morphInto(350)
+            context.morphTransitioner.startView = view as MorphLayout
+            context.morphTransitioner.endView = context.dialog as MorphLayout
+
+            context.morphTransitioner.morphInto(3350)
         } else {
             context.openDialog(FragmentCreateBowler.instance(this, manual, listener, onDismiss))
         }

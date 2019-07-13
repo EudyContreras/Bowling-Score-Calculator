@@ -73,7 +73,7 @@ class EmptyStateViewComponent(
         if (emptyState.showActionButton) {
             assignInteraction(action)
             action.setOnClickListener {
-                emptyState.action?.invoke()
+                emptyState.action?.invoke(shape)
             }
         } else {
             action.visibility = View.GONE
@@ -207,10 +207,10 @@ class EmptyStateViewComponent(
         abstract val actionIcon: Drawable
         abstract var title: String
         abstract var body: String
-        abstract val action: (() -> Unit)?
+        abstract val action: ((View) -> Unit)?
         abstract val showActionButton: Boolean
 
-        class Main(context: Activity, override val action: (() -> Unit)? = null) : EmptyState() {
+        class Main(context: Activity, override val action: ((View) -> Unit)? = null) : EmptyState() {
             override val icon: Drawable = context.drawable(R.drawable.img_bowling_logo_alt)
             override val iconColor: Int? = null
             override val actionColor: Int = context.color(R.color.colorAccentLight)
@@ -222,7 +222,7 @@ class EmptyStateViewComponent(
             override val showActionButton: Boolean = true
         }
 
-        class Results(context: Activity, override val action: (() -> Unit)? = null) : EmptyState() {
+        class Results(context: Activity, override val action: ((View) -> Unit)? = null) : EmptyState() {
             override val icon: Drawable = context.drawable(R.drawable.ic_list)
             override val iconColor: Int? = context.color(R.color.white)
             override val actionColor: Int = context.color(R.color.colorAccentLight)

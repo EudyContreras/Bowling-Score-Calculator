@@ -289,7 +289,7 @@ class TabViewAdapter(
         }
 
         private fun removeTab() {
-            val lastTabIndex = currentIndex
+            val lastTabIndex = layoutPosition
             removed = true
             currentIndex = if (layoutPosition == (itemCount - 2) && layoutPosition != 0) {
                 layoutPosition - 1

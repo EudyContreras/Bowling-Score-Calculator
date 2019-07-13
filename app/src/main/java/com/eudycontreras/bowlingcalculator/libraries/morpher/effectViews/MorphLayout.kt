@@ -45,7 +45,7 @@ interface MorphLayout {
     var morphCornerRadii: CornerRadii
     var morphVisibility: Int
     val morphChildCount: Int
-    var showMutateCorners: Boolean
+    var mutateCorners: Boolean
     val morphShape: Int
     val morphTag: Any?
     val windowLocationX: Int

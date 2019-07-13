@@ -47,7 +47,7 @@ class FragmentCreateBowler: DialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         createDialog = inflater.inflate(R.layout.dialog_create_bowlers, container) as ConstraintLayout
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.FullScreenDialogStyle)
+        setStyle(STYLE_NORMAL, R.style.FullScreenDialogStyle)
 
         setDefaultValues()
         registerListeners()

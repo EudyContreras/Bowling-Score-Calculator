@@ -103,8 +103,7 @@
             app:fl_radius="40dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/dialogCreateCancel"
-            app:layout_constraintBottom_toBottomOf="@+id/dialogCreateCancel">
+            app:layout_constraintBottom_toBottomOf="parent">
         <com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.ViewLayout
                 android:tag="addBowlerIcon"
                 android:layout_gravity="center"

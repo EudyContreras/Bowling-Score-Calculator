@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import android.view.animation.Interpolator
-import com.eudycontreras.bowlingcalculator.libraries.morpher.effects.RectangularReveal
+import com.eudycontreras.bowlingcalculator.libraries.morpher.efffectShapes.RectangularReveal
 import com.eudycontreras.bowlingcalculator.libraries.morpher.listeners.MorphAnimationListener
 import com.eudycontreras.bowlingcalculator.libraries.morpher.properties.CornerRadii
 import com.eudycontreras.bowlingcalculator.libraries.morpher.properties.Dimension

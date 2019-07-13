@@ -43,6 +43,16 @@
                     android:id="@+id/emptyStateArea"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
+
+            <SeekBar
+                    android:layout_marginStart="@dimen/margin_extra_large"
+                    android:layout_marginEnd="@dimen/margin_extra_large"
+                    android:layout_marginBottom="@dimen/margin_extra_large"
+                    android:id="@+id/transitionSeekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+            />
         </FrameLayout>
 
         <include
@@ -105,7 +115,6 @@
 
     <include
             android:id="@+id/dialog"
-            android:visibility="invisible"
             android:layout_marginStart="@dimen/spacing_extra_large"
             android:layout_marginEnd="@dimen/spacing_extra_large"
             android:layout_width="match_parent"

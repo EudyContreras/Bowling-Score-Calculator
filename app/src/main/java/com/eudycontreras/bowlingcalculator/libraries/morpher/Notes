@@ -3,9 +3,8 @@ TODO PRIORITY 1:
     Morph icons
     Optimize layout transition
     Cull children for lighter transition
-
-
+    Deal with children of the starting view (Fade them)
+    Find out why inner tag elements are not correctly positioned at the end of animations
+    
 LIMITATIONS:
 
-    -May not work as expected with recyclerview items
-        : Workarounds:

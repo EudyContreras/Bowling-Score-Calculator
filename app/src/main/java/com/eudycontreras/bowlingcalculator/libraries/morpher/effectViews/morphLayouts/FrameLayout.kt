@@ -9,7 +9,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewPropertyAnimator
 import android.widget.FrameLayout
-import androidx.core.view.children
+import androidx.core.view.*
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphShape
@@ -37,12 +37,12 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.toStateList
 class FrameLayout : FrameLayout, MorphLayout {
 
     override var morphX: Float
-        get() = this.x
+        get() = this.x + (this.marginEnd - this.marginStart)
         set(value) {
             this.x = value
         }
     override var morphY: Float
-        get() = this.y
+        get() = this.y + (this.marginBottom - this.marginTop)
         set(value) {
             this.y = value
         }
@@ -139,7 +139,7 @@ class FrameLayout : FrameLayout, MorphLayout {
         set(value) {
             this.visibility = value
         }
-    override var showMutateCorners: Boolean = true
+    override var mutateCorners: Boolean = true
 
     override val morphTag: Any?
         get() = this.tag
@@ -232,7 +232,7 @@ class FrameLayout : FrameLayout, MorphLayout {
 
             cornerRadii = CornerRadii(corners)
         } else {
-            showMutateCorners = false
+            mutateCorners = false
         }
 
         mutableDrawable = drawable
@@ -318,6 +318,8 @@ class FrameLayout : FrameLayout, MorphLayout {
     override fun setLayer(layer: Int) {
         setLayerType(layer, null)
     }
+
+    override fun toString(): String = tag.toString()
 
     fun setListener(listener: DrawDispatchListener) {
         this.drawListener = listener

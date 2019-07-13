@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.OvershootInterpolator
+import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -52,7 +53,7 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var indicator: IndicatorView
 
-    val morphTransitioner = MorphTransitioner.Morpher()
+    val morphTransitioner = MorphTransitioner()
 
     private var created = false
 
@@ -69,11 +70,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setDefaults() {
-        morphTransitioner.interpolatorMorphTo = FastOutSlowInInterpolator()
-        morphTransitioner.interpolatorMorphFrom = AccelerateDecelerateInterpolator()
+        morphTransitioner.morphIntoInterpolator = FastOutSlowInInterpolator()
+        morphTransitioner.morphFromInterpolator = AccelerateDecelerateInterpolator()
 
-        morphTransitioner.startingView = toolbar.toolbarMenuBorder
-        morphTransitioner.endingView = dialog as MorphLayout
+        morphTransitioner.useArcTranslator = true
+
+        transitionSeekBar.max = 100
     }
 
     private fun initControllers() {
@@ -124,9 +126,10 @@ class MainActivity : AppCompatActivity() {
         )
 
         toolbar.toolbarMenu.setOnClickListener {
-            morphTransitioner.startingView = toolbar.toolbarMenuBorder
-            morphTransitioner.endingView = dialog as MorphLayout
-            morphTransitioner.morphInto(2350)
+            morphTransitioner.startView = toolbar.toolbarMenuBorder
+            morphTransitioner.endView = dialog as MorphLayout
+
+            morphTransitioner.morphInto(3350)
         }
 
         dialog.findViewById<FrameLayout>(R.id.createDialogAddInput).addTouchAnimation(
@@ -138,8 +141,17 @@ class MainActivity : AppCompatActivity() {
         )
 
         dialog.findViewById<FrameLayout>(R.id.createDialogAddInput).setOnClickListener {
-            morphTransitioner.morphFrom(350)
+            morphTransitioner.morphFrom(3350)
         }
+
+        transitionSeekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(view: SeekBar?, progress: Int, fromUser: Boolean) {
+                morphTransitioner.setMorphTransitionOffset(progress)
+            }
+
+            override fun onStartTrackingTouch(p0: SeekBar?) {}
+            override fun onStopTrackingTouch(p0: SeekBar?) {}
+        })
     }
 
     override fun onBackPressed() {

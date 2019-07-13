@@ -1,4 +1,4 @@
-package com.eudycontreras.bowlingcalculator.libraries.morpher.utilities
+package com.eudycontreras.bowlingcalculator.libraries.morpher.helpers
 
 import com.eudycontreras.bowlingcalculator.libraries.morpher.properties.Coordintates
 import java.lang.StrictMath.pow

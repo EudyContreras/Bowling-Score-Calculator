@@ -139,7 +139,7 @@ class ConstraintLayout : ConstraintLayout, MorphLayout {
         set(value) {
             this.visibility = value
         }
-    override var showMutateCorners: Boolean = true
+    override var mutateCorners: Boolean = true
 
     override val morphTag: Any?
         get() = this.tag
@@ -232,7 +232,7 @@ class ConstraintLayout : ConstraintLayout, MorphLayout {
 
             drawable.cornerRadii = cornerRadii.corners
         } else {
-            showMutateCorners = false
+            mutateCorners = false
         }
 
         mutableDrawable = drawable
@@ -280,10 +280,10 @@ class ConstraintLayout : ConstraintLayout, MorphLayout {
 
         for (index in 0 until cornerRadii.size) {
             val corner = cornerRadii[index]
-            cornerRadii[index] = corner
+            this.cornerRadii[index] = corner
         }
 
-        mutableDrawable.cornerRadii = cornerRadii.corners
+        mutableDrawable.cornerRadii = this.cornerRadii.corners
         return true
     }
 
@@ -318,6 +318,8 @@ class ConstraintLayout : ConstraintLayout, MorphLayout {
     override fun setLayer(layer: Int) {
         setLayerType(layer, null)
     }
+
+    override fun toString(): String = tag.toString()
 
     fun setListener(listener: DrawDispatchListener) {
         this.drawListener = listener

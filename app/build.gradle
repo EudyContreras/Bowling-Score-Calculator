@@ -10,9 +10,10 @@ android {
     compileSdkVersion 28
 
     defaultConfig {
-        applicationId "com.eudycontreras.bowlingcalculator"
         minSdkVersion 21
         targetSdkVersion 28
+
+        applicationId "com.eudycontreras.bowlingcalculator"
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -21,6 +22,9 @@ android {
                 arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
         }
+
+        renderscriptTargetApi 21
+        renderscriptSupportModeEnabled true
     }
 
     compileOptions {

@@ -138,7 +138,7 @@ class TextLayout : TextView, MorphLayout {
         set(value) {
             this.visibility = value
         }
-    override var showMutateCorners: Boolean = true
+    override var mutateCorners: Boolean = true
 
     override val morphTag: Any?
         get() = this.tag
@@ -231,7 +231,7 @@ class TextLayout : TextView, MorphLayout {
 
             cornerRadii = CornerRadii(corners)
         } else {
-            showMutateCorners = false
+            mutateCorners = false
         }
 
         mutableDrawable = drawable
@@ -317,6 +317,8 @@ class TextLayout : TextView, MorphLayout {
     override fun setLayer(layer: Int) {
         setLayerType(layer, null)
     }
+
+    override fun toString(): String = tag.toString()
 
     fun setListener(listener: DrawDispatchListener) {
         this.drawListener = listener

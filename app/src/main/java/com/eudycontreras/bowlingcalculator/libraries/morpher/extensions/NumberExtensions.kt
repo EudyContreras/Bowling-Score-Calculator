@@ -24,3 +24,11 @@ val Int.dp: Float
 
 val Float.dp: Float
     get() = this * Resources.getSystem().displayMetrics.density
+
+fun Int.clamp(min: Int, max: Int): Int {
+    return if (this < min) min else if (this > max) max else this
+}
+
+fun Float.clamp(min: Float, max: Float): Float {
+    return if (this < min) min else if (this > max) max else this
+}
