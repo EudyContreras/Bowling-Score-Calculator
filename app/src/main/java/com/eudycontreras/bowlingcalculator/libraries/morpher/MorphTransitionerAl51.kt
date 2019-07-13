@@ -358,7 +358,7 @@ abstract class MorphTransitionerAl51 {
                 onStart,
                 onEnd,
                 offsetTrigger,
-                ChildrenAction.REVEAL,
+                AnimationType.REVEAL,
                 MorphType.INTO
             )
         }
@@ -401,7 +401,7 @@ abstract class MorphTransitionerAl51 {
                 onStart,
                 doOnEnd,
                 offsetTrigger,
-                ChildrenAction.CONCEAL,
+                AnimationType.CONCEAL,
                 MorphType.FROM
             )
         }
@@ -417,7 +417,7 @@ abstract class MorphTransitionerAl51 {
             onStart: Action,
             onEnd: Action,
             trigger: OffsetTrigger?,
-            childrenAction: ChildrenAction,
+            childrenAction: AnimationType,
             morphType: MorphType
         ) {
 
@@ -460,12 +460,12 @@ abstract class MorphTransitionerAl51 {
                 }
 
                 when (childrenAction) {
-                    ChildrenAction.CONCEAL -> {
+                    AnimationType.CONCEAL -> {
                         if (animateChildren && childrenRevealed && fraction >= childConcealOffset) {
                             concealChildren(morphChildren, remainingDuration)
                         }
                     }
-                    ChildrenAction.REVEAL -> {
+                    AnimationType.REVEAL -> {
                         if (animateChildren && !childrenRevealed && fraction >= childRevealOffset) {
                             revealChildren(morphChildren, remainingDuration)
                         }
@@ -696,19 +696,19 @@ abstract class MorphTransitionerAl51 {
             onEnd: Action = null
         ) {
             children.forEach {
-                it.visibility = transitionProps.revealProperties.visibility
-                it.translationY = transitionProps.revealProperties.translationY
-                it.scaleX = transitionProps.revealProperties.scaleX
-                it.scaleY = transitionProps.revealProperties.scaleY
-                it.alpha = transitionProps.revealProperties.alpha
+                it.visibility = transitionProps.revealAnimationProperties.visibility
+                it.translationY = transitionProps.revealAnimationProperties.translationY
+                it.scaleX = transitionProps.revealAnimationProperties.scaleX
+                it.scaleY = transitionProps.revealAnimationProperties.scaleY
+                it.alpha = transitionProps.revealAnimationProperties.alpha
                 it.animate()
                     .setListener(null)
                     .setDuration((duration + (duration * durationOffsetMultiplier)).roundToLong())
                     .setStartDelay(0)
-                    .alpha(transitionProps.concealProperties.alpha)
-                    .scaleX(transitionProps.concealProperties.scaleX)
-                    .scaleY(transitionProps.concealProperties.scaleY)
-                    .translationY(transitionProps.concealProperties.translationY)
+                    .alpha(transitionProps.concealAnimationProperties.alpha)
+                    .scaleX(transitionProps.concealAnimationProperties.scaleX)
+                    .scaleY(transitionProps.concealAnimationProperties.scaleY)
+                    .translationY(transitionProps.concealAnimationProperties.translationY)
                     .setInterpolator(LinearOutSlowInInterpolator())
                     .start()
             }
@@ -723,17 +723,17 @@ abstract class MorphTransitionerAl51 {
             onEnd: Action = null
         ) {
             children.forEach {
-                it.visibility = transitionProps.concealProperties.visibility
-                it.translationY = transitionProps.concealProperties.translationY
-                it.alpha = transitionProps.concealProperties.alpha
+                it.visibility = transitionProps.concealAnimationProperties.visibility
+                it.translationY = transitionProps.concealAnimationProperties.translationY
+                it.alpha = transitionProps.concealAnimationProperties.alpha
                 it.animate()
                     .setListener(null)
                     .setDuration((duration * durationOffsetMultiplier).roundToLong())
                     .setStartDelay(0)
-                    .alpha(transitionProps.revealProperties.alpha)
-                    .scaleX(transitionProps.revealProperties.scaleX)
-                    .scaleY(transitionProps.revealProperties.scaleY)
-                    .translationY(-transitionProps.revealProperties.translationY)
+                    .alpha(transitionProps.revealAnimationProperties.alpha)
+                    .scaleX(transitionProps.revealAnimationProperties.scaleX)
+                    .scaleY(transitionProps.revealAnimationProperties.scaleY)
+                    .translationY(-transitionProps.revealAnimationProperties.translationY)
                     .setInterpolator(AccelerateInterpolator())
                     .start()
             }
@@ -790,7 +790,7 @@ abstract class MorphTransitionerAl51 {
         override fun toString() = tag
     }
 
-    data class ChildProperties(
+    data class AnimationProperties(
         var alpha: Float = 1f,
         var elevation: Float = 0f,
         var translationX: Float = 0f,
@@ -805,18 +805,18 @@ abstract class MorphTransitionerAl51 {
     )
 
     data class ChildTransitionProperties(
-        val revealProperties: ChildProperties = ChildProperties(
+        val revealAnimationProperties: AnimationProperties = AnimationProperties(
             alpha = 0f,
             scaleX = 0.8f,
             scaleY = 0.8f,
             translationY = 12.dp,
             visibility = View.VISIBLE
         ),
-        val concealProperties: ChildProperties = ChildProperties()
+        val concealAnimationProperties: AnimationProperties = AnimationProperties()
     )
 
     enum class MorphType { INTO, FROM }
 
-    enum class ChildrenAction { REVEAL, CONCEAL }
+    enum class AnimationType { REVEAL, CONCEAL }
 }
 */

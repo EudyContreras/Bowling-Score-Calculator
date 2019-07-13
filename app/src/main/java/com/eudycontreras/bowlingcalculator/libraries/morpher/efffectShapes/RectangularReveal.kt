@@ -1,4 +1,4 @@
-package com.eudycontreras.bowlingcalculator.libraries.morpher.effects
+package com.eudycontreras.bowlingcalculator.libraries.morpher.efffectShapes
 
 import android.animation.Animator
 import android.animation.ValueAnimator

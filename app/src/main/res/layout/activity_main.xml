@@ -115,6 +115,7 @@
 
     <include
             android:id="@+id/dialog"
+            android:visibility="invisible"
             android:layout_marginStart="@dimen/spacing_extra_large"
             android:layout_marginEnd="@dimen/spacing_extra_large"
             android:layout_width="match_parent"

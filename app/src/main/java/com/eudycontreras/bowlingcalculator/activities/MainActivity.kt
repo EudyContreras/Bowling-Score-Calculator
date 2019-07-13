@@ -70,6 +70,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setDefaults() {
+        morphTransitioner.startView = toolbar.toolbarMenuBorder
+        morphTransitioner.endView = dialog as MorphLayout
+
         morphTransitioner.morphIntoInterpolator = FastOutSlowInInterpolator()
         morphTransitioner.morphFromInterpolator = AccelerateDecelerateInterpolator()
 
@@ -126,9 +129,6 @@ class MainActivity : AppCompatActivity() {
         )
 
         toolbar.toolbarMenu.setOnClickListener {
-            morphTransitioner.startView = toolbar.toolbarMenuBorder
-            morphTransitioner.endView = dialog as MorphLayout
-
             morphTransitioner.morphInto(3350)
         }
 

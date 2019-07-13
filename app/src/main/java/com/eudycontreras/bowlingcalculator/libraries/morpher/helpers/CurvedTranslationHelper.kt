@@ -5,7 +5,7 @@ import java.lang.StrictMath.pow
 import kotlin.math.round
 
 
-class CurvedTranslator(
+class CurvedTranslationHelper(
     fromX: Float = 0f,
     toX: Float = 0f,
     fromY: Float = 0f,
