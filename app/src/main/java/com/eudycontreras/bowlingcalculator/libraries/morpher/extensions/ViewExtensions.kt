@@ -2,7 +2,7 @@ package com.eudycontreras.bowlingcalculator.libraries.morpher.extensions
 
 import android.graphics.drawable.ColorDrawable
 import android.view.View
-import com.eudycontreras.bowlingcalculator.libraries.morpher.MorphTransitioner
+import com.eudycontreras.bowlingcalculator.libraries.morpher.Morpher
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
 
 /**
@@ -36,7 +36,7 @@ fun View.getColor(default: Int = 0x000000): Int {
     return default
 }
 
-fun MorphLayout.getProperties(): MorphTransitioner.Properties {
+fun MorphLayout.getProperties(): Morpher.Properties {
     val x = this.morphX
     val y = this.morphY
     val width = this.morphWidth
@@ -59,7 +59,7 @@ fun MorphLayout.getProperties(): MorphTransitioner.Properties {
     val stateList = this.morphStateList
     val cornerRadii = this.morphCornerRadii.getCopy()
     val tag = this.morphTag.toString()
-    return MorphTransitioner.Properties(
+    return Morpher.Properties(
         x,
         y,
         width,

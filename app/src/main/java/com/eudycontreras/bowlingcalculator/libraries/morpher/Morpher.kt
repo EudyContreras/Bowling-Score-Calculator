@@ -1,4 +1,3 @@
-/*
 package com.eudycontreras.bowlingcalculator.libraries.morpher
 
 import android.animation.ValueAnimator
@@ -23,7 +22,7 @@ import kotlin.math.abs
 import kotlin.math.roundToLong
 
 
-class MorphTransitioner {
+class Morpher {
 
     private var remainingDuration: Long = 0L
 
@@ -94,14 +93,6 @@ class MorphTransitioner {
                 field = value
             }
         }
-
-    fun setDestinationView(view: MorphLayout) {
-
-    }
-
-    fun setReferenceView(view: MorphLayout) {
-
-    }
 
     private fun createMappings() {
         startingState = startingView.getProperties()
@@ -748,4 +739,4 @@ class MorphTransitioner {
 
     enum class AnimationType { REVEAL, CONCEAL }
 
-}*/
+}

@@ -9,7 +9,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewPropertyAnimator
 import android.widget.FrameLayout
-import androidx.core.view.*
+import androidx.core.view.children
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphShape
@@ -37,12 +37,12 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.toStateList
 class FrameLayout : FrameLayout, MorphLayout {
 
     override var morphX: Float
-        get() = this.x + (this.marginEnd - this.marginStart)
+        get() = this.x
         set(value) {
             this.x = value
         }
     override var morphY: Float
-        get() = this.y + (this.marginBottom - this.marginTop)
+        get() = this.y
         set(value) {
             this.y = value
         }

@@ -38,8 +38,8 @@ abstract class MorphTransitionerAl51 {
     protected var offsetListener: OffsetListener = null
     protected var onTransitionEnd: Action = null
 
-    protected lateinit var startingView: MorphLayout
-    protected lateinit var endingView: MorphLayout
+    protected lateinit var startView: MorphLayout
+    protected lateinit var endView: MorphLayout
 
     var childTransitionProperties: ChildTransitionProperties = ChildTransitionProperties()
         private set
@@ -73,24 +73,24 @@ abstract class MorphTransitionerAl51 {
         var animateRevealChildren: Boolean = true
 
         var startView: MorphLayout
-            get() = startingView
+            get() = startView
             set(value) {
-                startingView = value
+                startView = value
             }
 
         var endView: MorphLayout
-            get() = endingView
+            get() = endView
             set(value) {
-                endingView = value
+                endView = value
             }
 
         private fun performSetup(hideUntagged: Boolean): ViewMappingData {
 
-            val startingChildViews = getAllChildren(startingView, true)
-            val endingChildViews =  getAllChildren(endingView, true)
+            val startingChildViews = getAllChildren(startView, true)
+            val endingChildViews =  getAllChildren(endView, true)
 
-            startingChildViews.add(0, startingView as View)
-            endingChildViews.add(0, endingView as View)
+            startingChildViews.add(0, startView as View)
+            endingChildViews.add(0, endView as View)
 
             if (hideUntagged) {
                 endingChildViews.forEach {
@@ -123,11 +123,11 @@ abstract class MorphTransitionerAl51 {
                     }
             }
 
-            endingView.morphAlpha = 0f
-            endingView.morphVisibility = View.VISIBLE
+            endView.morphAlpha = 0f
+            endView.morphVisibility = View.VISIBLE
 
-            val startView = startingView as View
-            val endView = endingView as View
+            val startView = startView as View
+            val endView = endView as View
 
             sharedLayoutParent = (startView.parent == endView.parent)
 
@@ -152,8 +152,8 @@ abstract class MorphTransitionerAl51 {
             startingState.translationX =  if (startX < endX) -translationX else translationX
             startingState.translationY =  if (startY < endY) -translationY else translationY
 
-            endingView.morphTranslationX = startingState.translationX
-            endingView.morphTranslationY = startingState.translationY
+            endView.morphTranslationX = startingState.translationX
+            endView.morphTranslationY = startingState.translationY
 
             initialValuesApplied = true
         }
@@ -166,7 +166,7 @@ abstract class MorphTransitionerAl51 {
 
             if (!mappingDataCreated) {
                 performSetup(true)
-                applyInitialValues(endingView)
+                applyInitialValues(endView)
                 mappingDataCreated = true
             }
 
@@ -210,7 +210,7 @@ abstract class MorphTransitionerAl51 {
 
             val animator: ValueAnimator = ValueAnimator.ofFloat(percentage, percent)
 
-            val listener = MorphAnimationListener({ applyInitialValues(endingView) },onTransitionEnd)
+            val listener = MorphAnimationListener({ applyInitialValues(endView) },onTransitionEnd)
 
             animator.addListener(listener)
             animator.addUpdateListener {
@@ -280,26 +280,26 @@ abstract class MorphTransitionerAl51 {
             private set
 
         var startView: MorphLayout
-            get() = startingView
+            get() = startView
             set(value) {
-                startingView = value
+                startView = value
                 mappingsCreated = false
             }
 
         var endView: MorphLayout
-            get() = endingView
+            get() = endView
             set(value) {
-                endingView = value
+                endView = value
                 mappingsCreated = false
             }
 
 
         private fun createMappings() {
-            startingState = startingView.getProperties()
-            endingState = endingView.getProperties()
+            startingState = startView.getProperties()
+            endingState = endView.getProperties()
 
             mappings = if (morphChildren) {
-                getChildMappings(startingView, endingView)
+                getChildMappings(startView, endView)
             } else emptyList()
         }
 
@@ -312,7 +312,7 @@ abstract class MorphTransitionerAl51 {
 
             isMorphing = true
 
-            for (child in endingView.getChildren()) {
+            for (child in endView.getChildren()) {
                 if (child.visibility == View.GONE)
                     continue
 
@@ -322,10 +322,10 @@ abstract class MorphTransitionerAl51 {
                 child.alpha = 0f
             }
 
-            applyProps(endingView, startingState)
+            applyProps(endView, startingState)
 
-            endingView.morphVisibility = View.VISIBLE
-            startingView.morphVisibility = View.INVISIBLE
+            endView.morphVisibility = View.VISIBLE
+            startView.morphVisibility = View.INVISIBLE
 
             val startX: Float = startingState.windowLocationX - (endingState.width / 2f - startingState.width / 2f)
             val startY: Float = startingState.windowLocationY - (endingState.height / 2f - startingState.height / 2f)
@@ -339,8 +339,8 @@ abstract class MorphTransitionerAl51 {
             startingState.translationX =  if (startX < endX) -translationX else translationX
             startingState.translationY =  if (startY < endY) -translationY else translationY
 
-            endingView.morphTranslationX = startingState.translationX
-            endingView.morphTranslationY = startingState.translationY
+            endView.morphTranslationX = startingState.translationX
+            endView.morphTranslationY = startingState.translationY
 
             curveTranslator.setStartPoint(startingState.getDeltaCoordinates())
             curveTranslator.setEndPoint(endingState.getDeltaCoordinates())
@@ -348,7 +348,7 @@ abstract class MorphTransitionerAl51 {
             curveTranslator.setControlPoint(Coordintates(endingState.translationX, startingState.translationY))
 
             morph(
-                endingView,
+                endView,
                 startingState,
                 endingState,
                 mappings,
@@ -375,10 +375,10 @@ abstract class MorphTransitionerAl51 {
             val doOnEnd = {
                 onEnd?.invoke()
 
-                startingView.morphVisibility = View.VISIBLE
-                endingView.morphVisibility = View.INVISIBLE
+                startView.morphVisibility = View.VISIBLE
+                endView.morphVisibility = View.INVISIBLE
 
-                applyProps(endingView, endingState)
+                applyProps(endView, endingState)
 
                 mappings.forEach {
                     applyProps(it.endView, it.endProps)
@@ -391,7 +391,7 @@ abstract class MorphTransitionerAl51 {
             curveTranslator.setControlPoint(Coordintates(endingState.translationX, startingState.translationY))
 
             morph(
-                endingView,
+                endView,
                 endingState,
                 startingState,
                 mappings,
@@ -526,12 +526,12 @@ abstract class MorphTransitionerAl51 {
         }
 
         private fun revealChildren(skipTagged: Boolean, duration: Long) {
-            val children = getAllChildren(endingView, !skipTagged) { it.tag == null}.asSequence()
+            val children = getAllChildren(endView, !skipTagged) { it.tag == null}.asSequence()
             animateRevealChildren(children, childTransitionProperties, duration, childRevealOffsetMultiplier) { childrenRevealed = true }
         }
 
         private fun concealChildren(skipTagged: Boolean, duration: Long) {
-            val children = getAllChildren(endingView, !skipTagged) { it.tag == null}.asSequence()
+            val children = getAllChildren(endView, !skipTagged) { it.tag == null}.asSequence()
             animateConcealChildren(children, childTransitionProperties, duration, childConcealOffsetMultiplier) { childrenRevealed = false }
         }
     }

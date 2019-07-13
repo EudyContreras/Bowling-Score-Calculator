@@ -16,7 +16,7 @@ import androidx.lifecycle.Observer
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.components.controllers.*
-import com.eudycontreras.bowlingcalculator.libraries.morpher.MorphTransitioner
+import com.eudycontreras.bowlingcalculator.libraries.morpher.Morpher
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.FrameLayout
 import com.eudycontreras.bowlingcalculator.listeners.BackPressedListener
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var indicator: IndicatorView
 
-    val morphTransitioner = MorphTransitioner()
+    val morphTransitioner = Morpher()
 
     private var created = false
 
@@ -146,7 +146,7 @@ class MainActivity : AppCompatActivity() {
 
         transitionSeekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(view: SeekBar?, progress: Int, fromUser: Boolean) {
-                morphTransitioner.setMorphTransitionOffset(progress)
+                morphTransitioner.transitionToAmount(progress)
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) {}
