@@ -129,7 +129,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         toolbar.toolbarMenu.setOnClickListener {
-            morphTransitioner.morphInto(3350)
+            morphTransitioner.morphInto(1350)
         }
 
         dialog.findViewById<FrameLayout>(R.id.createDialogAddInput).addTouchAnimation(
@@ -141,12 +141,12 @@ class MainActivity : AppCompatActivity() {
         )
 
         dialog.findViewById<FrameLayout>(R.id.createDialogAddInput).setOnClickListener {
-            morphTransitioner.morphFrom(3350)
+            morphTransitioner.morphFrom(1350)
         }
 
         transitionSeekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(view: SeekBar?, progress: Int, fromUser: Boolean) {
-                morphTransitioner.transitionToAmount(progress)
+                morphTransitioner.transitionBy(progress)
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) {}

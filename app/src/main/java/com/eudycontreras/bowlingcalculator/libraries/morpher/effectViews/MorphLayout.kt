@@ -5,6 +5,7 @@ import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.VectorDrawable
 import android.view.View
 import android.view.ViewPropertyAnimator
+import androidx.dynamicanimation.animation.FloatPropertyCompat
 import com.eudycontreras.bowlingcalculator.libraries.morpher.properties.CornerRadii
 
 /**
@@ -50,12 +51,15 @@ interface MorphLayout {
     val morphTag: Any?
     val windowLocationX: Int
     val windowLocationY: Int
+    val floatPropertyAnimX : FloatPropertyCompat<MorphLayout>
+    val floatPropertyAnimY : FloatPropertyCompat<MorphLayout>
     fun animator(): ViewPropertyAnimator
     fun updateLayout()
     fun hasChildren(): Boolean
     fun getChildViewAt(index: Int): View
     fun getChildren(): Sequence<View>
     fun hasVectorDrawable(): Boolean
+    fun hasGradientDrawable(): Boolean
     fun applyDrawable(shape: Int, topLeft: Float, topRight: Float, bottomRight: Float, bottomLeft: Float)
     fun getGradientBackground(): GradientDrawable
     fun getVectorDrawable(): VectorDrawable

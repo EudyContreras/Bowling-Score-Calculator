@@ -2,6 +2,7 @@ package com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphL
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.VectorDrawable
 import android.os.Build
@@ -10,6 +11,7 @@ import android.view.View
 import android.view.ViewPropertyAnimator
 import android.widget.LinearLayout
 import androidx.core.view.children
+import androidx.dynamicanimation.animation.FloatPropertyCompat
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphShape
@@ -155,6 +157,26 @@ class LinearLayout : LinearLayout, MorphLayout {
             return location[1]
         }
 
+    override val floatPropertyAnimX = object : FloatPropertyCompat<MorphLayout>("x_prop") {
+        override fun setValue(view: MorphLayout, value: Float) {
+            view.morphTranslationX = value
+        }
+
+        override fun getValue(view: MorphLayout): Float {
+            return view.morphTranslationX
+        }
+    }
+
+    override val floatPropertyAnimY = object : FloatPropertyCompat<MorphLayout>("y_prop") {
+        override fun setValue(view: MorphLayout, value: Float) {
+            view.morphTranslationY = value
+        }
+
+        override fun getValue(view: MorphLayout): Float {
+            return view.morphTranslationY
+        }
+    }
+
     override val morphShape: Int
         get() = shape
 
@@ -199,7 +221,7 @@ class LinearLayout : LinearLayout, MorphLayout {
     override fun applyDrawable(shape: Int, topLeft: Float, topRight: Float, bottomRight: Float, bottomLeft: Float) {
         var drawable = GradientDrawable()
 
-        if (background is VectorDrawable) {
+        if (background is VectorDrawable || background is BitmapDrawable) {
             return
         }
 
@@ -263,6 +285,10 @@ class LinearLayout : LinearLayout, MorphLayout {
 
     override fun hasVectorDrawable(): Boolean {
         return background is VectorDrawable
+    }
+
+    override fun hasGradientDrawable(): Boolean {
+        return background is GradientDrawable
     }
 
     override fun getVectorDrawable(): VectorDrawable {

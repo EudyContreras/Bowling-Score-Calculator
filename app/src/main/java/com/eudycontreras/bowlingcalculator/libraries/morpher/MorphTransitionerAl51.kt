@@ -35,7 +35,7 @@ abstract class MorphTransitionerAl51 {
     protected var morphMaps: ArrayList<MorphMap> = ArrayList()
     protected var untagged: ArrayList<View> = ArrayList()
 
-    protected var offsetListener: OffsetListener = null
+    protected var offsetListener: TransitionOffsetListener = null
     protected var onTransitionEnd: Action = null
 
     protected lateinit var startView: MorphLayout

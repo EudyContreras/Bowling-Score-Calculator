@@ -34,14 +34,15 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
-            <View
+            <com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.ViewLayout
                     android:id="@+id/emptyStateIcon"
                     android:translationX="5dp"
+                    android:tag="emptyStateImage"
                     android:layout_gravity="center"
                     android:layout_margin="@dimen/margin_extra_large"
                     android:layout_width="@dimen/state_icon_size_default"
                     android:layout_height="@dimen/state_icon_size_default"
-                    android:background="@drawable/img_logo"
+                    android:background="@drawable/img_bowling_logo_alt"
                     android:elevation="4dp"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"

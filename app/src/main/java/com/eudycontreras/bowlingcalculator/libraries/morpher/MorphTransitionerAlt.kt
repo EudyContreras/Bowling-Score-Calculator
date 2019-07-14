@@ -34,7 +34,7 @@ class MorphTransitionerAlt {
 
     private var morphMaps: ArrayList<MorphMap> = ArrayList()
 
-    private var offsetListener: OffsetListener = null
+    private var offsetListener: TransitionOffsetListener = null
     private var onTransitionEnd: Action = null
 
     private var initialValuesApplied: Boolean = false
@@ -187,7 +187,7 @@ class MorphTransitionerAlt {
 
         private lateinit var mappings: List<MorphMap>
 
-        private var offsetListener: OffsetListener = null
+        private var offsetListener: TransitionOffsetListener = null
 
         private var remainingDuration: Long = 0L
         private var mappingsCreated = false

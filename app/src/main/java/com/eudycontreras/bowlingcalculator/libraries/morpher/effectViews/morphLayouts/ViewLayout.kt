@@ -2,12 +2,14 @@ package com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphL
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.VectorDrawable
 import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewPropertyAnimator
+import androidx.dynamicanimation.animation.FloatPropertyCompat
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphShape
@@ -153,6 +155,26 @@ class ViewLayout : View, MorphLayout {
             return location[1]
         }
 
+    override val floatPropertyAnimX = object : FloatPropertyCompat<MorphLayout>("x_prop") {
+        override fun setValue(view: MorphLayout, value: Float) {
+            view.morphTranslationX = value
+        }
+
+        override fun getValue(view: MorphLayout): Float {
+            return view.morphTranslationX
+        }
+    }
+
+    override val floatPropertyAnimY = object : FloatPropertyCompat<MorphLayout>("y_prop") {
+        override fun setValue(view: MorphLayout, value: Float) {
+            view.morphTranslationY = value
+        }
+
+        override fun getValue(view: MorphLayout): Float {
+            return view.morphTranslationY
+        }
+    }
+
     override val morphShape: Int
         get() = shape
 
@@ -197,7 +219,7 @@ class ViewLayout : View, MorphLayout {
     override fun applyDrawable(shape: Int, topLeft: Float, topRight: Float, bottomRight: Float, bottomLeft: Float) {
         var drawable = GradientDrawable()
 
-        if (background is VectorDrawable) {
+        if (background is VectorDrawable || background is BitmapDrawable) {
             return
         }
 
@@ -265,6 +287,10 @@ class ViewLayout : View, MorphLayout {
 
     override fun getVectorDrawable(): VectorDrawable {
         return (background as VectorDrawable).mutate() as VectorDrawable
+    }
+
+    override fun hasGradientDrawable(): Boolean {
+        return background is GradientDrawable
     }
 
     override fun getGradientBackground(): GradientDrawable {

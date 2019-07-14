@@ -32,7 +32,7 @@ class MorpherOriginal {
     private lateinit var fromState: Properties
     private lateinit var toState: Properties
 
-    private var offsetListener: OffsetListener = null
+    private var offsetListener: TransitionOffsetListener = null
 
     private var remainingDuration: Long = 0L
 

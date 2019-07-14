@@ -31,7 +31,7 @@
 //
 //    private val curveTranslator = CurvedTranslationHelper()
 //
-//    private var offsetListener: OffsetListener = null
+//    private var offsetListener: TransitionOffsetListener = null
 //
 //    private lateinit var startView: MorphLayout
 //    private lateinit var endView: MorphLayout
@@ -255,13 +255,13 @@
 //
 //    private var lastOffset = MIN_OFFSET
 //
-//    fun transitionToAmount(percent: Int) {
+//    fun transitionBy(percent: Int) {
 //        if (percent in 0..100) {
-//            transitionToAmount(percent.toFloat() / 100.0f)
+//            transitionBy(percent.toFloat() / 100.0f)
 //        }
 //    }
 //
-//    private fun transitionToAmount(fraction: Float) {
+//    private fun transitionBy(fraction: Float) {
 //
 //        if (!initialValuesApplied) {
 //            performSetup()

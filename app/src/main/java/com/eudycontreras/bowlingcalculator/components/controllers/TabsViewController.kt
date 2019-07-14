@@ -47,7 +47,7 @@ class TabsViewController(
             context.morphTransitioner.startView = view as MorphLayout
             context.morphTransitioner.endView = context.dialog as MorphLayout
 
-            context.morphTransitioner.morphInto(3350)
+            context.morphTransitioner.morphInto(1350)
         } else {
             context.openDialog(FragmentCreateBowler.instance(this, manual, listener, onDismiss))
         }
