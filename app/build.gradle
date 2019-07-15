@@ -25,6 +25,7 @@ android {
 
         renderscriptTargetApi 21
         renderscriptSupportModeEnabled true
+        vectorDrawables.useSupportLibrary = true
     }
 
     compileOptions {

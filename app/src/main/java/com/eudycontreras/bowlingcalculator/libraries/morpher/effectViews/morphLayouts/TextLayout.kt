@@ -3,6 +3,7 @@ package com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphL
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.VectorDrawable
 import android.os.Build
@@ -10,8 +11,8 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewPropertyAnimator
 import android.widget.TextView
-import androidx.dynamicanimation.animation.FloatPropertyCompat
 import com.eudycontreras.bowlingcalculator.R
+import com.eudycontreras.bowlingcalculator.libraries.morpher.drawables.MorphTransitionDrawable
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphShape
 import com.eudycontreras.bowlingcalculator.libraries.morpher.extensions.getColor
@@ -156,25 +157,11 @@ class TextLayout : TextView, MorphLayout {
             return location[1]
         }
 
-    override val floatPropertyAnimX = object : FloatPropertyCompat<MorphLayout>("x_prop") {
-        override fun setValue(view: MorphLayout, value: Float) {
-            view.morphTranslationX = value
+    override var morphBackground: Drawable
+        get() = background
+        set(value) {
+            this.background = value
         }
-
-        override fun getValue(view: MorphLayout): Float {
-            return view.morphTranslationX
-        }
-    }
-
-    override val floatPropertyAnimY = object : FloatPropertyCompat<MorphLayout>("y_prop") {
-        override fun setValue(view: MorphLayout, value: Float) {
-            view.morphTranslationY = value
-        }
-
-        override fun getValue(view: MorphLayout): Float {
-            return view.morphTranslationY
-        }
-    }
 
     override val morphShape: Int
         get() = shape
@@ -286,8 +273,16 @@ class TextLayout : TextView, MorphLayout {
         return background is VectorDrawable
     }
 
+    override fun hasBitmapDrawable(): Boolean {
+        return background is BitmapDrawable
+    }
+
     override fun hasGradientDrawable(): Boolean {
         return background is GradientDrawable
+    }
+
+    override fun hasMorphTransitionDrawable(): Boolean {
+        return background is MorphTransitionDrawable
     }
 
     override fun getVectorDrawable(): VectorDrawable {
@@ -296,6 +291,18 @@ class TextLayout : TextView, MorphLayout {
 
     override fun getGradientBackground(): GradientDrawable {
         return mutableDrawable
+    }
+
+    override fun getBitmapDrawable(): BitmapDrawable {
+        return background as BitmapDrawable
+    }
+
+    override fun getMorphTransitionDrawable(): MorphTransitionDrawable {
+        return background as MorphTransitionDrawable
+    }
+
+    override fun applyTransitionDrawable(transitionDrawable: MorphTransitionDrawable) {
+        this.background = transitionDrawable
     }
 
     override fun updateCorners(cornerRadii: CornerRadii): Boolean {

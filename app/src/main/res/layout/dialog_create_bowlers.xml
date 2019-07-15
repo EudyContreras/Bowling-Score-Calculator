@@ -44,7 +44,7 @@
             android:layout_margin="@dimen/margin_small"
             android:layout_width="@dimen/actionIcon"
             android:layout_height="@dimen/actionIcon"
-            android:background="@drawable/img_bowling_logo_alt"
+            android:background="@drawable/img_ball"
             android:elevation="4dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>

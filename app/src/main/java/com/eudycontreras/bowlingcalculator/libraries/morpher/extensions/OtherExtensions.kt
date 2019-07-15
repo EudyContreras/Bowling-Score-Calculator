@@ -1,6 +1,9 @@
 package com.eudycontreras.bowlingcalculator.libraries.morpher.extensions
 
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import com.eudycontreras.bowlingcalculator.libraries.morpher.properties.CornerRadii
+import com.eudycontreras.bowlingcalculator.libraries.morpher.utilities.MorphingUtility
 
 /**
  * <h1>Class description!</h1>
@@ -47,4 +50,8 @@ fun <T> Sequence<T>.toArrayList(): ArrayList<T> {
     val arrayList = ArrayList<T>()
     arrayList.addAll(this)
     return arrayList
+}
+
+fun Drawable.toBitmap(): Bitmap {
+    return MorphingUtility.getBitmapFromDrawable(this)
 }

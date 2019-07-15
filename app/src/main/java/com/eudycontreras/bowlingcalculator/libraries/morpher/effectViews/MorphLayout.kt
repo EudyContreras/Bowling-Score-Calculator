@@ -1,11 +1,13 @@
 package com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews
 
 import android.content.res.ColorStateList
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.VectorDrawable
 import android.view.View
 import android.view.ViewPropertyAnimator
-import androidx.dynamicanimation.animation.FloatPropertyCompat
+import com.eudycontreras.bowlingcalculator.libraries.morpher.drawables.MorphTransitionDrawable
 import com.eudycontreras.bowlingcalculator.libraries.morpher.properties.CornerRadii
 
 /**
@@ -51,8 +53,7 @@ interface MorphLayout {
     val morphTag: Any?
     val windowLocationX: Int
     val windowLocationY: Int
-    val floatPropertyAnimX : FloatPropertyCompat<MorphLayout>
-    val floatPropertyAnimY : FloatPropertyCompat<MorphLayout>
+    var morphBackground: Drawable
     fun animator(): ViewPropertyAnimator
     fun updateLayout()
     fun hasChildren(): Boolean
@@ -60,9 +61,14 @@ interface MorphLayout {
     fun getChildren(): Sequence<View>
     fun hasVectorDrawable(): Boolean
     fun hasGradientDrawable(): Boolean
-    fun applyDrawable(shape: Int, topLeft: Float, topRight: Float, bottomRight: Float, bottomLeft: Float)
+    fun hasBitmapDrawable(): Boolean
+    fun hasMorphTransitionDrawable(): Boolean
     fun getGradientBackground(): GradientDrawable
     fun getVectorDrawable(): VectorDrawable
+    fun getBitmapDrawable(): BitmapDrawable
+    fun getMorphTransitionDrawable(): MorphTransitionDrawable
+    fun applyTransitionDrawable(transitionDrawable: MorphTransitionDrawable)
+    fun applyDrawable(shape: Int, topLeft: Float, topRight: Float, bottomRight: Float, bottomLeft: Float)
     fun updateCorners(cornerRadii: CornerRadii): Boolean
     fun updateCorners(index: Int, corner: Float): Boolean
     fun getMorphShape(): MorphShape

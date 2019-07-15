@@ -3,6 +3,7 @@ package com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphL
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.VectorDrawable
 import android.os.Build
@@ -11,8 +12,8 @@ import android.view.View
 import android.view.ViewPropertyAnimator
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.children
-import androidx.dynamicanimation.animation.FloatPropertyCompat
 import com.eudycontreras.bowlingcalculator.R
+import com.eudycontreras.bowlingcalculator.libraries.morpher.drawables.MorphTransitionDrawable
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphShape
 import com.eudycontreras.bowlingcalculator.libraries.morpher.extensions.getColor
@@ -36,7 +37,8 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.toStateList
  * @version 1.0
  * @since   2018-03-31
  */
-class ConstraintLayout : ConstraintLayout, MorphLayout {
+class ConstraintLayout : ConstraintLayout,
+    MorphLayout {
 
     override var morphX: Float
         get() = this.x
@@ -161,25 +163,11 @@ class ConstraintLayout : ConstraintLayout, MorphLayout {
         get() = shape
 
 
-    override val floatPropertyAnimX = object : FloatPropertyCompat<MorphLayout>("x_prop") {
-        override fun setValue(view: MorphLayout, value: Float) {
-            view.morphTranslationX = value
+    override var morphBackground: Drawable
+        get() = background
+        set(value) {
+            this.background = value
         }
-
-        override fun getValue(view: MorphLayout): Float {
-            return view.morphTranslationX
-        }
-    }
-
-    override val floatPropertyAnimY = object : FloatPropertyCompat<MorphLayout>("y_prop") {
-        override fun setValue(view: MorphLayout, value: Float) {
-            view.morphTranslationY = value
-        }
-
-        override fun getValue(view: MorphLayout): Float {
-            return view.morphTranslationY
-        }
-    }
 
     private var shape: Int = RECTANGULAR
 
@@ -288,8 +276,16 @@ class ConstraintLayout : ConstraintLayout, MorphLayout {
         return background is VectorDrawable
     }
 
+    override fun hasBitmapDrawable(): Boolean {
+        return background is BitmapDrawable
+    }
+
     override fun hasGradientDrawable(): Boolean {
         return background is GradientDrawable
+    }
+
+    override fun hasMorphTransitionDrawable(): Boolean {
+        return background is MorphTransitionDrawable
     }
 
     override fun getVectorDrawable(): VectorDrawable {
@@ -298,6 +294,18 @@ class ConstraintLayout : ConstraintLayout, MorphLayout {
 
     override fun getGradientBackground(): GradientDrawable {
         return mutableDrawable
+    }
+
+    override fun getBitmapDrawable(): BitmapDrawable {
+        return background as BitmapDrawable
+    }
+
+    override fun getMorphTransitionDrawable(): MorphTransitionDrawable {
+        return background as MorphTransitionDrawable
+    }
+
+    override fun applyTransitionDrawable(transitionDrawable: MorphTransitionDrawable) {
+        this.background = transitionDrawable
     }
 
     override fun updateCorners(cornerRadii: CornerRadii): Boolean {

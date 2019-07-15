@@ -2,16 +2,23 @@ package com.eudycontreras.bowlingcalculator.libraries.morpher
 
 import android.animation.TimeInterpolator
 import android.animation.ValueAnimator
+import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.Interpolator
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
+import com.eudycontreras.bowlingcalculator.libraries.morpher.drawables.MorphTransitionDrawable
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
+import com.eudycontreras.bowlingcalculator.libraries.morpher.extensions.clamp
 import com.eudycontreras.bowlingcalculator.libraries.morpher.extensions.getProperties
 import com.eudycontreras.bowlingcalculator.libraries.morpher.extensions.toArrayList
+import com.eudycontreras.bowlingcalculator.libraries.morpher.extensions.toBitmap
 import com.eudycontreras.bowlingcalculator.libraries.morpher.helpers.CurvedTranslationHelper
 import com.eudycontreras.bowlingcalculator.libraries.morpher.listeners.MorphAnimationListener
 import com.eudycontreras.bowlingcalculator.libraries.morpher.properties.Coordintates
@@ -23,7 +30,7 @@ import kotlin.math.abs
 import kotlin.math.roundToLong
 
 
-class Morpher {
+class Morpher(private val context: Context) {
 
     private var remainingDuration: Long = 0L
 
@@ -79,7 +86,8 @@ class Morpher {
         durationMultiplier = DEFAULT_REVEAL_DURATION_MULTIPLIER,
         startStateProps = AnimationProperties.defaultInPropsStart(),
         endStateProps = AnimationProperties.defaultInPropsEnd(),
-        interpolator = LinearOutSlowInInterpolator()
+        interpolator = FastOutSlowInInterpolator(),
+        stagger = AnimationStagger()
     )
 
     var endStateMorphFromDescriptor: AnimationDescriptor = AnimationDescriptor(
@@ -117,7 +125,6 @@ class Morpher {
             getChildMappings(startingView, endingView)
         } else emptyList()
     }
-
 
     private fun performSetup() {
         for (child in endingView.getChildren()) {
@@ -157,12 +164,15 @@ class Morpher {
         endingView.morphTranslationX = startingState.translationX
         endingView.morphTranslationY = startingState.translationY
 
-        curveTranslator.setStartPoint(startingState.getDeltaCoordinates())
-        curveTranslator.setEndPoint(endingState.getDeltaCoordinates())
-
-        curveTranslator.setControlPoint(Coordintates(endingState.translationX, startingState.translationY))
-
         initialValuesApplied = true
+    }
+
+    fun transitionInto() {
+
+    }
+
+    fun transitionFrom() {
+
     }
 
     fun morphInto(
@@ -192,6 +202,34 @@ class Morpher {
         }
 
         performSetup()
+
+        curveTranslator.setStartPoint(startingState.getDeltaCoordinates())
+        curveTranslator.setEndPoint(endingState.getDeltaCoordinates())
+
+        curveTranslator.setControlPoint(Coordintates(endingState.translationX, startingState.translationY))
+
+        mappings.forEach {
+            if (it.endView.hasBitmapDrawable() && it.endView.hasBitmapDrawable()) {
+
+                val transitionDrawable = MorphTransitionDrawable(it.startProps.background, it.endProps.background)
+
+                it.endView.morphBackground = transitionDrawable
+                transitionDrawable.isCrossFadeEnabled = true
+
+            } else if (it.startView.hasVectorDrawable() &&  it.endView.hasVectorDrawable()) {
+
+                val fromBitmap = BitmapDrawable(context.resources, it.startProps.background?.toBitmap())
+                val toBitmap = BitmapDrawable(context.resources, it.endProps.background?.toBitmap())
+
+                val transitionDrawable = MorphTransitionDrawable(fromBitmap, toBitmap)
+
+                it.endView.morphBackground = transitionDrawable
+                transitionDrawable.isSequentialFadeEnabled = true
+
+            } else if (it.endView.hasMorphTransitionDrawable()) {
+                it.endView.getMorphTransitionDrawable().setUpTransition(false)
+            }
+        }
 
         morph(
             endingView,
@@ -248,6 +286,28 @@ class Morpher {
         curveTranslator.setEndPoint(startingState.getDeltaCoordinates())
 
         curveTranslator.setControlPoint(Coordintates(endingState.translationX, startingState.translationY))
+
+        mappings.forEach {
+            if (it.endView.hasBitmapDrawable() && it.endView.hasBitmapDrawable()) {
+
+                val transitionDrawable = MorphTransitionDrawable(it.endProps.background, it.startProps.background)
+
+                it.endView.morphBackground = transitionDrawable
+                transitionDrawable.isCrossFadeEnabled = true
+            } else if (it.startView.hasVectorDrawable() &&  it.endView.hasVectorDrawable()) {
+
+                val fromBitmap = BitmapDrawable(context.resources, it.startProps.background?.toBitmap())
+                val toBitmap = BitmapDrawable(context.resources, it.endProps.background?.toBitmap())
+
+                val transitionDrawable = MorphTransitionDrawable(toBitmap, fromBitmap)
+
+                it.endView.morphBackground = transitionDrawable
+                transitionDrawable.isSequentialFadeEnabled = true
+
+            } else if (it.endView.hasMorphTransitionDrawable()) {
+                it.endView.getMorphTransitionDrawable().setUpTransition(true)
+            }
+        }
 
         morph(
             startingView,
@@ -335,7 +395,8 @@ class Morpher {
 
         animator.addListener(MorphAnimationListener(onStart, onEnd))
         animator.addUpdateListener {
-            val fraction = it.animatedValue as Float
+
+            val fraction = (it.animatedValue as Float).clamp(0f, 1f)
 
             remainingDuration = duration - (duration * fraction).toLong()
 
@@ -443,9 +504,9 @@ class Morpher {
         if (!parentView.hasChildren())
             return
 
-        val children = getAllChildren(parentView, !skipTagged) { it.tag == null}.asSequence()
+        val children = getAllChildren(parentView, !skipTagged) { it.tag == null}
 
-        val duration = animDescriptor.duration?: inDuration
+        val duration = animDescriptor.duration ?: inDuration
 
         when (animDescriptor.type) {
             AnimationType.REVEAL -> {
@@ -496,36 +557,22 @@ class Morpher {
         endingProps: Properties,
         fraction: Float
     ) {
-        if (endingProps.alpha != startingProps.alpha) {
-            morphView.morphAlpha = startingProps.alpha + (endingProps.alpha - startingProps.alpha) * fraction
-        }
+        morphView.morphAlpha = startingProps.alpha + (endingProps.alpha - startingProps.alpha) * fraction
 
-        if (endingProps.scaleX != startingProps.scaleX || endingProps.scaleY != startingProps.scaleY) {
-            morphView.morphScaleX = startingProps.scaleX + (endingProps.scaleX - startingProps.scaleX) * fraction
-            morphView.morphScaleY = startingProps.scaleY + (endingProps.scaleY - startingProps.scaleY) * fraction
-        }
+        morphView.morphScaleX = startingProps.scaleX + (endingProps.scaleX - startingProps.scaleX) * fraction
+        morphView.morphScaleY = startingProps.scaleY + (endingProps.scaleY - startingProps.scaleY) * fraction
 
-        if (endingProps.pivotX != startingProps.pivotX || endingProps.pivotY != startingProps.pivotY) {
-            morphView.morphPivotX = startingProps.pivotX + (endingProps.pivotX - startingProps.pivotX) * fraction
-            morphView.morphPivotY = startingProps.pivotY + (endingProps.pivotY - startingProps.pivotY) * fraction
-        }
+        morphView.morphPivotX = startingProps.pivotX + (endingProps.pivotX - startingProps.pivotX) * fraction
+        morphView.morphPivotY = startingProps.pivotY + (endingProps.pivotY - startingProps.pivotY) * fraction
 
-        if (endingProps.rotation != startingProps.rotation) {
-            morphView.morphRotation = startingProps.rotation + (endingProps.rotation - startingProps.rotation) * fraction
-        }
+        morphView.morphRotation = startingProps.rotation + (endingProps.rotation - startingProps.rotation) * fraction
 
-        if (endingProps.rotationX != startingProps.rotationX || endingProps.rotationY != startingProps.rotationY) {
-            morphView.morphRotationX = startingProps.rotationX + (endingProps.rotationX - startingProps.rotationX) * fraction
-            morphView.morphRotationY = startingProps.rotationY + (endingProps.rotationY - startingProps.rotationY) * fraction
-        }
+        morphView.morphRotationX = startingProps.rotationX + (endingProps.rotationX - startingProps.rotationX) * fraction
+        morphView.morphRotationY = startingProps.rotationY + (endingProps.rotationY - startingProps.rotationY) * fraction
 
-        if (endingProps.translationZ != startingProps.translationZ) {
-            morphView.morphTranslationZ = startingProps.translationZ + (endingProps.translationZ - startingProps.translationZ) * fraction
-        }
+        morphView.morphTranslationZ = startingProps.translationZ + (endingProps.translationZ - startingProps.translationZ) * fraction
 
-        if (endingProps.elevation != startingProps.elevation) {
-            morphView.morphElevation = startingProps.elevation + (endingProps.elevation - startingProps.elevation) * fraction
-        }
+        morphView.morphElevation = startingProps.elevation + (endingProps.elevation - startingProps.elevation) * fraction
 
         if (morphView.mutateCorners && morphView.hasGradientDrawable() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             morphView.updateCorners(0, startingProps.cornerRadii[0] + (endingProps.cornerRadii[0] - startingProps.cornerRadii[0]) * fraction)
@@ -536,6 +583,10 @@ class Morpher {
             morphView.updateCorners(5, startingProps.cornerRadii[5] + (endingProps.cornerRadii[5] - startingProps.cornerRadii[5]) * fraction)
             morphView.updateCorners(6, startingProps.cornerRadii[6] + (endingProps.cornerRadii[6] - startingProps.cornerRadii[6]) * fraction)
             morphView.updateCorners(7, startingProps.cornerRadii[7] + (endingProps.cornerRadii[7] - startingProps.cornerRadii[7]) * fraction)
+        }
+
+        if (morphView.hasMorphTransitionDrawable()) {
+            morphView.getMorphTransitionDrawable().updateTransition(fraction)
         }
 
         if (startingProps.color != endingProps.color) {
@@ -597,11 +648,11 @@ class Morpher {
     }
 
     private fun <T: View> animateChildren(
-        children: Sequence<T>,
+        inChildren: List<T>,
         descriptor: AnimationDescriptor,
         totalDuration: Long
     ) {
-        if (!children.any())
+        if (!inChildren.any())
             return
 
         val offsetMultiplier = descriptor.durationMultiplier
@@ -610,10 +661,17 @@ class Morpher {
         val startStateProps = descriptor.startStateProps
         val endStateProps = descriptor.endStateProps
 
+        val durationDelta = when (descriptor.type) {
+            AnimationType.REVEAL -> (totalDuration + (totalDuration * offsetMultiplier)).roundToLong()
+            AnimationType.CONCEAL -> (totalDuration * offsetMultiplier).roundToLong()
+        }
+
+        val children = if (descriptor.reversed) inChildren.reversed() else inChildren
+
         if (descriptor.stagger != null) {
             descriptor.stagger?.let { stagger ->
-                val duration = totalDuration - (totalDuration * stagger.multiplier)
-                val delayAdd = (totalDuration * stagger.multiplier).toLong()
+                val delayAdd = (durationDelta * stagger.multiplier).toLong()
+                val duration = durationDelta - (delayAdd / children.count())
                 var delay = startDelay
                 children.forEach {
                     it.visibility = startStateProps.visibility
@@ -635,10 +693,6 @@ class Morpher {
                 }
             }
         } else {
-            val duration = when (descriptor.type) {
-                AnimationType.REVEAL -> (totalDuration + (totalDuration * offsetMultiplier)).roundToLong()
-                AnimationType.CONCEAL -> (totalDuration * offsetMultiplier).roundToLong()
-            }
             children.forEach {
                 it.visibility = startStateProps.visibility
                 it.translationY = startStateProps.translationY
@@ -647,7 +701,7 @@ class Morpher {
                 it.alpha = startStateProps.alpha
                 it.animate()
                     .setListener(null)
-                    .setDuration(duration)
+                    .setDuration(durationDelta)
                     .setStartDelay(startDelay)
                     .alpha(endStateProps.alpha)
                     .scaleX(endStateProps.scaleX)
@@ -708,6 +762,10 @@ class Morpher {
         val cornerRadii: CornerRadii,
         val windowLocationX: Int,
         val windowLocationY: Int,
+        val background: Drawable?,
+        val hasVectorBackground: Boolean,
+        val hasBitmapBackground: Boolean,
+        val hasGradientBackground: Boolean,
         val tag: String
     ) {
         fun getDeltaCoordinates() = Coordintates(translationX, translationY)
@@ -727,6 +785,7 @@ class Morpher {
         var endStateProps: AnimationProperties,
         var interpolator: TimeInterpolator,
         var stagger: AnimationStagger? = null,
+        var reversed: Boolean = false,
         var duration: Long? = null,
         var delay: Long? = null
     )

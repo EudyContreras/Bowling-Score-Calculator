@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var indicator: IndicatorView
 
-    val morphTransitioner = Morpher()
+    lateinit var morphTransitioner: Morpher
 
     private var created = false
 
@@ -70,6 +70,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setDefaults() {
+        morphTransitioner = Morpher(this)
+
         morphTransitioner.startView = toolbar.toolbarMenuBorder
         morphTransitioner.endView = dialog as MorphLayout
 
@@ -129,7 +131,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         toolbar.toolbarMenu.setOnClickListener {
-            morphTransitioner.morphInto(1350)
+            morphTransitioner.morphInto(8350)
         }
 
         dialog.findViewById<FrameLayout>(R.id.createDialogAddInput).addTouchAnimation(
@@ -141,7 +143,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         dialog.findViewById<FrameLayout>(R.id.createDialogAddInput).setOnClickListener {
-            morphTransitioner.morphFrom(1350)
+            morphTransitioner.morphFrom(8350)
         }
 
         transitionSeekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {

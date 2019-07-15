@@ -2,21 +2,22 @@ package com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphL
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.VectorDrawable
+import android.graphics.drawable.*
 import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewPropertyAnimator
-import androidx.dynamicanimation.animation.FloatPropertyCompat
-import com.eudycontreras.bowlingcalculator.R
+import com.eudycontreras.bowlingcalculator.libraries.morpher.drawables.MorphTransitionDrawable
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphShape
 import com.eudycontreras.bowlingcalculator.libraries.morpher.extensions.getColor
 import com.eudycontreras.bowlingcalculator.libraries.morpher.listeners.DrawDispatchListener
 import com.eudycontreras.bowlingcalculator.libraries.morpher.properties.CornerRadii
 import com.eudycontreras.bowlingcalculator.utilities.extensions.toStateList
+
+
+
+
 
 /**
  * <h1>Class description!</h1>
@@ -155,25 +156,11 @@ class ViewLayout : View, MorphLayout {
             return location[1]
         }
 
-    override val floatPropertyAnimX = object : FloatPropertyCompat<MorphLayout>("x_prop") {
-        override fun setValue(view: MorphLayout, value: Float) {
-            view.morphTranslationX = value
+    override var morphBackground: Drawable
+        get() = background
+        set(value) {
+            this.background = value
         }
-
-        override fun getValue(view: MorphLayout): Float {
-            return view.morphTranslationX
-        }
-    }
-
-    override val floatPropertyAnimY = object : FloatPropertyCompat<MorphLayout>("y_prop") {
-        override fun setValue(view: MorphLayout, value: Float) {
-            view.morphTranslationY = value
-        }
-
-        override fun getValue(view: MorphLayout): Float {
-            return view.morphTranslationY
-        }
-    }
 
     override val morphShape: Int
         get() = shape
@@ -199,16 +186,17 @@ class ViewLayout : View, MorphLayout {
     }
 
     private fun setUpAttributes(attrs: AttributeSet) {
-        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ViewLayout)
+        val typedArray = context.obtainStyledAttributes(attrs, com.eudycontreras.bowlingcalculator.R.styleable.ViewLayout)
         try {
-            shape = typedArray.getInt(R.styleable.LinearLayout_ll_shapeType,
+            shape = typedArray.getInt(
+                com.eudycontreras.bowlingcalculator.R.styleable.LinearLayout_ll_shapeType,
                 RECTANGULAR
             )
-            val radius = typedArray.getDimension(R.styleable.ViewLayout_vl_radius, 0f)
-            val topLeft = typedArray.getDimension(R.styleable.ViewLayout_vl_topLeftCornerRadius, radius)
-            val topRight = typedArray.getDimension(R.styleable.ViewLayout_vl_topRightCornerRadius, radius)
-            val bottomRight = typedArray.getDimension(R.styleable.ViewLayout_vl_bottomRightCornerRadius, radius)
-            val bottomLeft = typedArray.getDimension(R.styleable.ViewLayout_vl_bottomLeftCornerRadius, radius)
+            val radius = typedArray.getDimension(com.eudycontreras.bowlingcalculator.R.styleable.ViewLayout_vl_radius, 0f)
+            val topLeft = typedArray.getDimension(com.eudycontreras.bowlingcalculator.R.styleable.ViewLayout_vl_topLeftCornerRadius, radius)
+            val topRight = typedArray.getDimension(com.eudycontreras.bowlingcalculator.R.styleable.ViewLayout_vl_topRightCornerRadius, radius)
+            val bottomRight = typedArray.getDimension(com.eudycontreras.bowlingcalculator.R.styleable.ViewLayout_vl_bottomRightCornerRadius, radius)
+            val bottomLeft = typedArray.getDimension(com.eudycontreras.bowlingcalculator.R.styleable.ViewLayout_vl_bottomLeftCornerRadius, radius)
 
             applyDrawable(shape, topLeft, topRight, bottomRight, bottomLeft)
         } finally {
@@ -259,6 +247,17 @@ class ViewLayout : View, MorphLayout {
         background = drawable
     }
 
+    private fun crossfadeImages(from: BitmapDrawable, to: BitmapDrawable) {
+        val crossfader = TransitionDrawable(arrayOf(from, to))
+
+        background = crossfader
+
+    }
+
+    private fun crossfadeVectors() {
+
+    }
+
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         if (shape == CIRCULAR && background !is VectorDrawable) {
@@ -285,16 +284,36 @@ class ViewLayout : View, MorphLayout {
         return background is VectorDrawable
     }
 
-    override fun getVectorDrawable(): VectorDrawable {
-        return (background as VectorDrawable).mutate() as VectorDrawable
+    override fun hasBitmapDrawable(): Boolean {
+        return background is BitmapDrawable
     }
 
     override fun hasGradientDrawable(): Boolean {
         return background is GradientDrawable
     }
 
+    override fun hasMorphTransitionDrawable(): Boolean {
+        return background is MorphTransitionDrawable
+    }
+
+    override fun getVectorDrawable(): VectorDrawable {
+        return (background as VectorDrawable).mutate() as VectorDrawable
+    }
+
     override fun getGradientBackground(): GradientDrawable {
         return mutableDrawable
+    }
+
+    override fun getBitmapDrawable(): BitmapDrawable {
+        return background as BitmapDrawable
+    }
+
+    override fun getMorphTransitionDrawable(): MorphTransitionDrawable {
+        return background as MorphTransitionDrawable
+    }
+
+    override fun applyTransitionDrawable(transitionDrawable: MorphTransitionDrawable) {
+        this.background = transitionDrawable
     }
 
     override fun updateCorners(cornerRadii: CornerRadii): Boolean {
