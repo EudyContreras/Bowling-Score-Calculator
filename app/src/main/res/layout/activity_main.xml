@@ -38,21 +38,12 @@
                     android:id="@+id/framesArea"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
-            <include
-                    layout="@layout/empty_state_main"
-                    android:id="@+id/emptyStateArea"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
 
-            <SeekBar
-                    android:layout_marginStart="@dimen/margin_extra_large"
-                    android:layout_marginEnd="@dimen/margin_extra_large"
-                    android:layout_marginBottom="@dimen/margin_extra_large"
-                    android:id="@+id/transitionSeekBar"
+            <include
+                    android:id="@+id/emptyStateArea"
+                    layout="@layout/empty_state_main"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-            />
+                    android:layout_height="match_parent" />
         </FrameLayout>
 
         <include
@@ -113,6 +104,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
+    <FrameLayout
+            android:id="@+id/dimOverlay"
+            android:alpha="0"
+            android:background="@drawable/bg_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
     <include
             android:id="@+id/dialog"
             android:visibility="invisible"
@@ -122,4 +119,14 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             layout="@layout/dialog_create_bowlers"/>
+
+    <include
+            android:id="@+id/settings"
+            android:visibility="invisible"
+            android:layout_marginStart="@dimen/spacing_extra_large"
+            android:layout_marginEnd="@dimen/spacing_extra_large"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            layout="@layout/dialog_app_settings"/>
 </FrameLayout>

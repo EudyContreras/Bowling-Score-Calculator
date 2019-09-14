@@ -2,6 +2,8 @@ package com.eudycontreras.bowlingcalculator.libraries.morpher.extensions
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import com.eudycontreras.bowlingcalculator.libraries.morpher.drawables.MorphTransitionDrawable
+import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
 import com.eudycontreras.bowlingcalculator.libraries.morpher.properties.CornerRadii
 import com.eudycontreras.bowlingcalculator.libraries.morpher.utilities.MorphingUtility
 
@@ -54,4 +56,12 @@ fun <T> Sequence<T>.toArrayList(): ArrayList<T> {
 
 fun Drawable.toBitmap(): Bitmap {
     return MorphingUtility.getBitmapFromDrawable(this)
+}
+
+fun MorphLayout.getBackgroundType(): MorphTransitionDrawable.DrawableType {
+    return when {
+        this.hasVectorDrawable() -> MorphTransitionDrawable.DrawableType.VECTOR
+        this.hasBitmapDrawable() -> MorphTransitionDrawable.DrawableType.BITMAP
+        else -> MorphTransitionDrawable.DrawableType.OTHER
+    }
 }

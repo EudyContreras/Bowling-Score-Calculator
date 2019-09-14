@@ -171,6 +171,14 @@ data class MutableColor(
         return this
     }
 
+    fun brigher(amount: Int): Color {
+        return MutableColor(alpha, clamp(red + amount), clamp(green + amount), clamp(blue + amount))
+    }
+
+    fun darker(amount: Int): Color {
+        return MutableColor(alpha, clamp(red - amount), clamp(green - amount), clamp(blue - amount))
+    }
+
     override fun toColor(): Int {
         return if (mTempColor == -1) {
             mTempColor = AndroidColor.argb(alpha, red, green, blue)

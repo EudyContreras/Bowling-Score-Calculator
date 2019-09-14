@@ -8,14 +8,14 @@ import android.view.animation.DecelerateInterpolator
 import android.view.animation.Interpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.TextView
+import androidx.interpolator.view.animation.FastOutLinearInInterpolator
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.components.controllers.EmptyStateViewController
 import com.eudycontreras.bowlingcalculator.listeners.AnimationListener
-import com.eudycontreras.bowlingcalculator.utilities.extensions.addTouchAnimation
-import com.eudycontreras.bowlingcalculator.utilities.extensions.color
-import com.eudycontreras.bowlingcalculator.utilities.extensions.dp
-import com.eudycontreras.bowlingcalculator.utilities.extensions.drawable
+import com.eudycontreras.bowlingcalculator.listeners.PaletteListener
+import com.eudycontreras.bowlingcalculator.utilities.extensions.*
+import com.eudycontreras.bowlingcalculator.utilities.properties.Palette
 
 /**
  * Created by eudycontreras.
@@ -25,7 +25,7 @@ class EmptyStateViewComponent(
     private val context: MainActivity,
     val parent: View,
     val controller: EmptyStateViewController
-) : ViewComponent {
+) : ViewComponent, PaletteListener{
 
     private val iconContainer: View = parent.findViewById(R.id.emptyStateIconContainer)
     private val shape: View = parent.findViewById(R.id.emptyStateShape)
@@ -128,12 +128,6 @@ class EmptyStateViewComponent(
             .alpha(1f)
             .scaleY(1f)
             .scaleX(1f)
-            .setListener(AnimationListener(onEnd = {
-                if (!context.indicator.isAnimationRunning) {
-                    context.indicator.setTarget(action, 2.1f, 0.5f)
-                    context.indicator.startIndicatorAnimation(0)
-                }
-            }))
             .translationZ(12.dp)
             .setStartDelay(duration - 50)
             .setDuration(duration)
@@ -156,16 +150,12 @@ class EmptyStateViewComponent(
         if (!showing)
             return
 
-        val duration = 400L
+        val duration = 250L
 
         val endAction = {
             onEnd?.invoke()
             showing = false
             parent.visibility = View.INVISIBLE
-        }
-
-        if (context.indicator.isAnimationRunning) {
-            context.indicator.stopIndicatorAnimation(200)
         }
 
         iconContainer.animate()
@@ -174,7 +164,7 @@ class EmptyStateViewComponent(
             .alpha(0f)
             .translationZ(0f)
             .setDuration(duration)
-            .setInterpolator(DecelerateInterpolator())
+            .setInterpolator(FastOutLinearInInterpolator())
             .setListener(AnimationListener(onEnd = endAction))
             .start()
 
@@ -249,5 +239,9 @@ class EmptyStateViewComponent(
             result = 31 * result + body.hashCode()
             return result
         }
+    }
+
+    override fun onNewPalette(palette: Palette) {
+        action.backgroundTintList = palette.colorPrimary.toStateList()
     }
 }

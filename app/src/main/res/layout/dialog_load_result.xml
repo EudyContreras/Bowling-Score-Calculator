@@ -47,14 +47,6 @@
             app:layout_constraintStart_toStartOf="parent"
             tools:listitem="@layout/dialog_load_result_item"/>
 
-    <include
-        layout="@layout/empty_state_results"
-        android:id="@+id/emptyStateResults"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/loadDialogResult"
-        app:layout_constraintTop_toTopOf="@id/loadDialogResult"/>
-
     <LinearLayout
             android:id="@+id/dialogLoadClear"
             android:layout_width="115dp"

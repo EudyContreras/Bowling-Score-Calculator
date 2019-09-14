@@ -39,6 +39,8 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.toStateList
  */
 class LinearLayout : LinearLayout, MorphLayout {
 
+    override var view: View = this
+
     override var morphX: Float
         get() = this.x
         set(value) {

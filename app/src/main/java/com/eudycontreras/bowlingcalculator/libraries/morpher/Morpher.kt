@@ -15,10 +15,7 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import com.eudycontreras.bowlingcalculator.libraries.morpher.drawables.MorphTransitionDrawable
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
-import com.eudycontreras.bowlingcalculator.libraries.morpher.extensions.clamp
-import com.eudycontreras.bowlingcalculator.libraries.morpher.extensions.getProperties
-import com.eudycontreras.bowlingcalculator.libraries.morpher.extensions.toArrayList
-import com.eudycontreras.bowlingcalculator.libraries.morpher.extensions.toBitmap
+import com.eudycontreras.bowlingcalculator.libraries.morpher.extensions.*
 import com.eudycontreras.bowlingcalculator.libraries.morpher.helpers.CurvedTranslationHelper
 import com.eudycontreras.bowlingcalculator.libraries.morpher.listeners.MorphAnimationListener
 import com.eudycontreras.bowlingcalculator.libraries.morpher.properties.Coordintates
@@ -44,8 +41,8 @@ class Morpher(private val context: Context) {
     private lateinit var startingView: MorphLayout
     private lateinit var endingView: MorphLayout
 
-    private lateinit var startingState: Properties
-    private lateinit var endingState: Properties
+    lateinit var startingState: Properties
+    lateinit var endingState: Properties
 
     private lateinit var mappings: List<MorphMap>
 
@@ -87,6 +84,7 @@ class Morpher(private val context: Context) {
         startStateProps = AnimationProperties.defaultInPropsStart(),
         endStateProps = AnimationProperties.defaultInPropsEnd(),
         interpolator = FastOutSlowInInterpolator(),
+        duration = 400,
         stagger = AnimationStagger()
     )
 
@@ -127,6 +125,21 @@ class Morpher(private val context: Context) {
     }
 
     private fun performSetup() {
+        if (!mappingsCreated) {
+            createMappings()
+            mappingsCreated = true
+        }
+
+        val endChildren = getAllChildren(endingView, useDeepChildSearch) { it.tag != null }
+
+        endChildren.forEach {
+            val endView = it as MorphLayout
+            if (endView.hasMorphTransitionDrawable()) {
+                val transition = endView.getMorphTransitionDrawable()
+                transition.resetTransition()
+            }
+        }
+
         for (child in endingView.getChildren()) {
             if (child.visibility == View.GONE)
                 continue
@@ -139,15 +152,7 @@ class Morpher(private val context: Context) {
             child.layoutParams.height = child.height
         }
 
-        if (!mappingsCreated) {
-            createMappings()
-            mappingsCreated = true
-        }
-
         applyProps(endingView, startingState)
-
-        endingView.morphVisibility = View.VISIBLE
-        startingView.morphVisibility = View.INVISIBLE
 
         val startX: Float = startingState.windowLocationX - (endingState.width / 2f - startingState.width / 2f)
         val startY: Float = startingState.windowLocationY - (endingState.height / 2f - startingState.height / 2f)
@@ -165,14 +170,6 @@ class Morpher(private val context: Context) {
         endingView.morphTranslationY = startingState.translationY
 
         initialValuesApplied = true
-    }
-
-    fun transitionInto() {
-
-    }
-
-    fun transitionFrom() {
-
     }
 
     fun morphInto(
@@ -199,6 +196,8 @@ class Morpher(private val context: Context) {
 
             isMorphing = false
             isMorphed = true
+
+            endingView.view.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
         }
 
         performSetup()
@@ -209,30 +208,52 @@ class Morpher(private val context: Context) {
         curveTranslator.setControlPoint(Coordintates(endingState.translationX, startingState.translationY))
 
         mappings.forEach {
-            if (it.endView.hasBitmapDrawable() && it.endView.hasBitmapDrawable()) {
 
-                val transitionDrawable = MorphTransitionDrawable(it.startProps.background, it.endProps.background)
+            when {
+                all(it.endView, it.startView) { all -> all.hasBitmapDrawable() } -> {
 
-                it.endView.morphBackground = transitionDrawable
-                transitionDrawable.isCrossFadeEnabled = true
+                    val transitionDrawable = MorphTransitionDrawable(it.startProps.background, it.endProps.background)
 
-            } else if (it.startView.hasVectorDrawable() &&  it.endView.hasVectorDrawable()) {
+                    it.endView.morphBackground = transitionDrawable
 
-                val fromBitmap = BitmapDrawable(context.resources, it.startProps.background?.toBitmap())
-                val toBitmap = BitmapDrawable(context.resources, it.endProps.background?.toBitmap())
+                    transitionDrawable.startDrawableType = it.startView.getBackgroundType()
+                    transitionDrawable.endDrawableType = it.endView.getBackgroundType()
 
-                val transitionDrawable = MorphTransitionDrawable(fromBitmap, toBitmap)
+                    transitionDrawable.isCrossFadeEnabled = true
+                }
+                all(it.startView, it.endView) { all -> all.hasVectorDrawable() } -> {
 
-                it.endView.morphBackground = transitionDrawable
-                transitionDrawable.isSequentialFadeEnabled = true
+                    val fromBitmap = BitmapDrawable(context.resources, it.startProps.background?.toBitmap())
+                    val toBitmap = BitmapDrawable(context.resources, it.endProps.background?.toBitmap())
 
-            } else if (it.endView.hasMorphTransitionDrawable()) {
-                it.endView.getMorphTransitionDrawable().setUpTransition(false)
+                    val transitionDrawable = MorphTransitionDrawable(fromBitmap, toBitmap)
+
+                    it.endView.morphBackground = transitionDrawable
+
+                    transitionDrawable.startDrawableType = it.startView.getBackgroundType()
+                    transitionDrawable.endDrawableType = it.endView.getBackgroundType()
+
+                    transitionDrawable.isSequentialFadeEnabled = true
+                }
+                it.endView.hasMorphTransitionDrawable() -> {
+
+                    val fromBitmap = BitmapDrawable(context.resources, it.startProps.background?.toBitmap())
+
+                    val transitionDrawable = it.endView.getMorphTransitionDrawable()
+
+                    if (transitionDrawable.startDrawableType == MorphTransitionDrawable.DrawableType.VECTOR ) {
+                        transitionDrawable.setStartDrawable(fromBitmap)
+                    }
+
+                    transitionDrawable.setUpTransition(false)
+                }
             }
         }
 
+        endingView.morphVisibility = View.VISIBLE
+        startingView.morphVisibility = View.INVISIBLE
+
         morph(
-            endingView,
             endingView,
             startingState,
             endingState,
@@ -263,7 +284,7 @@ class Morpher(private val context: Context) {
             mappingsCreated = true
         }
 
-        isMorphed = false
+        isMorphed = true
         isMorphing = true
 
         val doOnEnd = {
@@ -279,7 +300,7 @@ class Morpher(private val context: Context) {
             }
 
             isMorphing = false
-            isMorphed = true
+            isMorphed = false
         }
 
         curveTranslator.setStartPoint(endingState.getDeltaCoordinates())
@@ -288,29 +309,47 @@ class Morpher(private val context: Context) {
         curveTranslator.setControlPoint(Coordintates(endingState.translationX, startingState.translationY))
 
         mappings.forEach {
-            if (it.endView.hasBitmapDrawable() && it.endView.hasBitmapDrawable()) {
+            when {
+                all(it.endView, it.startView) { all -> all.hasBitmapDrawable() } -> {
 
-                val transitionDrawable = MorphTransitionDrawable(it.endProps.background, it.startProps.background)
+                    val transitionDrawable = MorphTransitionDrawable(it.endProps.background, it.startProps.background)
 
-                it.endView.morphBackground = transitionDrawable
-                transitionDrawable.isCrossFadeEnabled = true
-            } else if (it.startView.hasVectorDrawable() &&  it.endView.hasVectorDrawable()) {
+                    it.endView.morphBackground = transitionDrawable
 
-                val fromBitmap = BitmapDrawable(context.resources, it.startProps.background?.toBitmap())
-                val toBitmap = BitmapDrawable(context.resources, it.endProps.background?.toBitmap())
+                    transitionDrawable.startDrawableType = it.startView.getBackgroundType()
+                    transitionDrawable.endDrawableType = it.endView.getBackgroundType()
 
-                val transitionDrawable = MorphTransitionDrawable(toBitmap, fromBitmap)
+                    transitionDrawable.isCrossFadeEnabled = true
+                }
+                all(it.startView, it.endView) { all -> all.hasVectorDrawable() } -> {
 
-                it.endView.morphBackground = transitionDrawable
-                transitionDrawable.isSequentialFadeEnabled = true
+                    val fromBitmap = BitmapDrawable(context.resources, it.startProps.background?.toBitmap())
+                    val toBitmap = BitmapDrawable(context.resources, it.endProps.background?.toBitmap())
 
-            } else if (it.endView.hasMorphTransitionDrawable()) {
-                it.endView.getMorphTransitionDrawable().setUpTransition(true)
+                    val transitionDrawable = MorphTransitionDrawable(toBitmap, fromBitmap)
+
+                    it.endView.morphBackground = transitionDrawable
+
+                    transitionDrawable.startDrawableType = it.startView.getBackgroundType()
+                    transitionDrawable.endDrawableType = it.endView.getBackgroundType()
+
+                    transitionDrawable.isSequentialFadeEnabled = true
+                }
+                it.endView.hasMorphTransitionDrawable() -> {
+                    val fromBitmap = BitmapDrawable(context.resources, it.startProps.background?.toBitmap())
+
+                    val transitionDrawable = it.endView.getMorphTransitionDrawable()
+
+                    if (transitionDrawable.startDrawableType == MorphTransitionDrawable.DrawableType.VECTOR ) {
+                        transitionDrawable.setStartDrawable(fromBitmap)
+                    }
+
+                    transitionDrawable.setUpTransition(true)
+                }
             }
         }
 
         morph(
-            startingView,
             endingView,
             endingState,
             startingState,
@@ -327,12 +366,6 @@ class Morpher(private val context: Context) {
     }
 
     private var lastOffset = MIN_OFFSET
-
-    fun transitionBy(percent: Int) {
-        if (percent in 0..100) {
-            transitionBy(percent.toFloat() / 100.0f)
-        }
-    }
 
     private fun transitionBy(fraction: Float) {
 
@@ -374,7 +407,6 @@ class Morpher(private val context: Context) {
     }
 
     private fun morph(
-        startView: MorphLayout,
         endView: MorphLayout,
         startingProps: Properties,
         endingProps: Properties,
@@ -396,7 +428,7 @@ class Morpher(private val context: Context) {
         animator.addListener(MorphAnimationListener(onStart, onEnd))
         animator.addUpdateListener {
 
-            val fraction = (it.animatedValue as Float).clamp(0f, 1f)
+            val fraction = (it.animatedValue as Float).clamp(MIN_OFFSET, MAX_OFFSET)
 
             remainingDuration = duration - (duration * fraction).toLong()
 
@@ -452,6 +484,10 @@ class Morpher(private val context: Context) {
         animator.start()
     }
 
+    private fun tooDifferent(arg1: Float, arg2: Float, limit: Float): Boolean {
+        return abs(arg2 - arg1) > limit
+    }
+
     private fun moveWithOffset(
         endView: MorphLayout,
         startingProps: Properties,
@@ -504,7 +540,7 @@ class Morpher(private val context: Context) {
         if (!parentView.hasChildren())
             return
 
-        val children = getAllChildren(parentView, !skipTagged) { it.tag == null}
+        val children = getAllChildren(parentView, !skipTagged) { it.tag == null }
 
         val duration = animDescriptor.duration ?: inDuration
 
@@ -736,9 +772,10 @@ class Morpher(private val context: Context) {
 
     data class OffsetTrigger(
         val percentage: Float,
-        val triggerAction: Action,
+        val triggerAction: Action
+    ) {
         var hasTriggered: Boolean = false
-    )
+    }
 
     data class Properties(
         val x: Float,
@@ -757,7 +794,7 @@ class Morpher(private val context: Context) {
         val rotationY: Float,
         val scaleX: Float,
         val scaleY: Float,
-        val color: Int,
+        var color: Int,
         val stateList: ColorStateList?,
         val cornerRadii: CornerRadii,
         val windowLocationX: Int,

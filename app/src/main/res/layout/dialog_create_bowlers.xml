@@ -7,7 +7,7 @@
         android:tag="createBowler"
         android:layout_gravity="center"
         android:elevation="2dp"
-        android:translationZ="18dp"
+        android:translationZ="10dp"
         android:clipChildren="false"
         android:clipToPadding="false"
         android:minWidth="260dp"
@@ -18,6 +18,8 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clickable="true"
+        android:id="@+id/createBowlerDialog"
         tools:context=".activities.MainActivity"
         app:cl_radius="16dp">
 
@@ -40,6 +42,7 @@
     <com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.ViewLayout
             android:translationX="5dp"
             android:tag="emptyStateImage"
+            android:id="@+id/windowIcon"
             android:layout_gravity="center"
             android:layout_margin="@dimen/margin_small"
             android:layout_width="@dimen/actionIcon"

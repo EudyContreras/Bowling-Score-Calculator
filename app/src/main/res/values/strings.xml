@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Bowling Score Calculator</string>
+    <string name="app_name">Score Calculator</string>
 
     <string name="action_clear">RESET</string>
     <string name="action_play">THROW</string>
@@ -26,4 +26,7 @@
     <string name="action_rename">Rename</string>
     <string name="empty_state_results_title">No results found!</string>
     <string name="empty_state_results_body">There are no save results. Your saved results will show here.</string>
+    <string name="settings">Settings</string>
+    <string name="settingsName">App name</string>
+    <string name="settingsThemes">Choose a palette</string>
 </resources>

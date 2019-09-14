@@ -3,28 +3,39 @@ package com.eudycontreras.bowlingcalculator.libraries.morpher.drawables
 import android.animation.TimeInterpolator
 import android.animation.ValueAnimator
 import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
 import android.os.Build
 import androidx.core.animation.doOnEnd
 import com.eudycontreras.bowlingcalculator.libraries.morpher.Action
-import com.eudycontreras.bowlingcalculator.libraries.morpher.extensions.dp
 import com.eudycontreras.bowlingcalculator.utilities.mapRange
 
 
-class MorphTransitionDrawable(vararg drawables: Drawable?) : TransitionDrawable(drawables) {
+class MorphTransitionDrawableBackup4(vararg drawables: Drawable?) : TransitionDrawable(drawables) {
 
+    private var reverseTransition: Boolean = false
+
+    /**
+     * Alpha properties
+     */
     private var mFromAlpha: Int = 0
     private var mToAlpha: Int = 255
 
+    /**
+     * Angle properties
+     */
     private var mFromAngle: Int = 0
     private var mToAngle: Int = 180
 
+    /**
+     * Scale properties X
+     */
     private var mFromScaleX: Float = 1f
     private var mToScaleX: Float = 0f
 
+    /**
+     * Scale properties Y
+     */
     private var mFromScaleY: Float = 1f
     private var mToScaleY: Float = 0f
 
@@ -45,16 +56,13 @@ class MorphTransitionDrawable(vararg drawables: Drawable?) : TransitionDrawable(
 
     private var mTransitionType: TransitionType = TransitionType.SEQUENTIAL
 
-    private var mDecorators: ArrayList<Decorator> = ArrayList()
-
-    private lateinit var mCurrentDrawable: Drawable
-
-    private var reverseTransition: Boolean = false
-
-    private var resetValues: Boolean = false
-
     private val onDoneInternal: Action = {
         resetTransition()
+    }
+
+    init {
+        setId(0, 0)
+        setId(1, 1)
     }
 
     var isSequentialFadeEnabled: Boolean
@@ -153,11 +161,6 @@ class MorphTransitionDrawable(vararg drawables: Drawable?) : TransitionDrawable(
             mEndDrawableType = value
         }
 
-    init {
-        setId(0, 0)
-        setId(1, 1)
-    }
-
     fun setStartDrawable(drawable: Drawable?) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             setDrawable(0, drawable)
@@ -223,6 +226,8 @@ class MorphTransitionDrawable(vararg drawables: Drawable?) : TransitionDrawable(
         invalidateSelf()
     }
 
+    private var reset: Boolean = false
+
     override fun resetTransition() {
         lastFraction = 0f
         fraction = 0f
@@ -234,57 +239,57 @@ class MorphTransitionDrawable(vararg drawables: Drawable?) : TransitionDrawable(
 
         reverseTransition = false
 
-        resetValues = true
+        reset = true
         invalidateSelf()
     }
 
     fun setUpTransition(useReverse: Boolean = false) {
         if (useReverse) {
-            if (transitionType == TransitionType.CROSSFADE) {
-                lastFraction = 1f
-                fraction = 1f
+           if (transitionType == TransitionType.CROSSFADE) {
+               lastFraction = 1f
+               fraction = 1f
 
-                mFromAlpha = MAX_ALPHA
-                mToAlpha = 0
+               mFromAlpha = MAX_ALPHA
+               mToAlpha = 0
 
-                mFromAngle = 180
-                mToAngle = 0
+               mFromAngle = 180
+               mToAngle = 0
 
-                mFromScaleX = 0f
-                mFromScaleY = 0f
+               mFromScaleX = 0f
+               mFromScaleY = 0f
 
-                mToScaleX = 1f
-                mToScaleY = 1f
+               mToScaleX = 1f
+               mToScaleY = 1f
 
-                rotationValue = 180f
-                scaleValueX = 0f
-                scaleValueY = 0f
-                alphaValue = 255
+               rotationValue = 180f
+               scaleValueX = 0f
+               scaleValueY = 0f
+               alphaValue = 255
 
-                reverseTransition = true
-            } else {
-                lastFraction = 0f
-                fraction = 0f
+               reverseTransition = true
+           } else {
+               lastFraction = 0f
+               fraction = 0f
 
-                mFromAlpha = 0
-                mToAlpha = 255
+               mFromAlpha = 0
+               mToAlpha = 255
 
-                mFromAngle = 180
-                mToAngle = 0
+               mFromAngle = 180
+               mToAngle = 0
 
-                mFromScaleX = 1f
-                mFromScaleY = 1f
+               mFromScaleX = 1f
+               mFromScaleY = 1f
 
-                mToScaleX = 0f
-                mToScaleY = 0f
+               mToScaleX = 0f
+               mToScaleY = 0f
 
-                rotationValue = 180f
-                scaleValueX = 1f
-                scaleValueY = 1f
-                alphaValue = 0
+               rotationValue = 180f
+               scaleValueX = 1f
+               scaleValueY = 1f
+               alphaValue = 0
 
-                reverseTransition = true
-            }
+               reverseTransition = true
+           }
         } else {
             lastFraction = 0f
             fraction = 0f
@@ -354,26 +359,26 @@ class MorphTransitionDrawable(vararg drawables: Drawable?) : TransitionDrawable(
             scaleValueX = (mFromScaleX + (mToScaleX - mFromScaleX) * value)
             scaleValueY = (mFromScaleY + (mToScaleY - mFromScaleY) * value)
 
-            mCurrentDrawable = getDrawable(if (reverseTransition) 1 else 0)
+            val drawable: Drawable = getDrawable(if (reverseTransition) 1 else 0)
 
-            canvas.scale(scaleValueX, scaleValueY,mCurrentDrawable.intrinsicWidth / 2f, mCurrentDrawable.intrinsicHeight / 2f)
+            canvas.scale(scaleValueX, scaleValueY,drawable.intrinsicWidth / 2f, drawable.intrinsicHeight / 2f)
         }
 
         fun animateEndScale(value: Float) {
             scaleValueX = (mFromScaleX + (mToScaleX - mFromScaleX) * value)
             scaleValueY = (mFromScaleY + (mToScaleY - mFromScaleY) * value)
 
-            mCurrentDrawable = getDrawable(if (reverseTransition) 0 else 1)
+            val drawable: Drawable = getDrawable(if (reverseTransition) 0 else 1)
 
-            canvas.scale(scaleValueX, scaleValueY,mCurrentDrawable.intrinsicWidth / 2f, mCurrentDrawable.intrinsicHeight / 2f)
+            canvas.scale(scaleValueX, scaleValueY,drawable.intrinsicWidth / 2f, drawable.intrinsicHeight / 2f)
         }
 
         fun animateRotate(value: Float) {
             rotationValue = (mFromAngle + (mToAngle - mFromAngle) * value)
 
-            mCurrentDrawable = getDrawable(if (reverseTransition) 1 else 0)
+            val drawable: Drawable = getDrawable(if (reverseTransition) 1 else 0)
 
-            canvas.rotate(rotationValue, mCurrentDrawable.intrinsicWidth / 2f, mCurrentDrawable.intrinsicHeight / 2f)
+            canvas.rotate(rotationValue, drawable.intrinsicWidth / 2f, drawable.intrinsicHeight / 2f)
         }
 
         fun animateStartFade(value: Float) {
@@ -382,13 +387,13 @@ class MorphTransitionDrawable(vararg drawables: Drawable?) : TransitionDrawable(
 
             val alpha = alphaValue
 
-            mCurrentDrawable = getDrawable(if (reverseTransition) 1 else 0)
+            val drawable: Drawable = getDrawable(if (reverseTransition) 1 else 0)
 
-            mCurrentDrawable.alpha = MAX_ALPHA - alpha
+            drawable.alpha = MAX_ALPHA - alpha
 
-            mCurrentDrawable.draw(canvas)
+            drawable.draw(canvas)
 
-            mCurrentDrawable.alpha = MAX_ALPHA
+            drawable.alpha = MAX_ALPHA
         }
 
         fun animateEndFade(value: Float) {
@@ -397,12 +402,12 @@ class MorphTransitionDrawable(vararg drawables: Drawable?) : TransitionDrawable(
 
             val alpha = alphaValue
 
-            mCurrentDrawable = getDrawable(if (reverseTransition) 0 else 1)
+            val drawable: Drawable = getDrawable(if (reverseTransition) 0 else 1)
 
             if (alpha > 0) {
-                mCurrentDrawable.alpha = alpha
-                mCurrentDrawable.draw(canvas)
-                mCurrentDrawable.alpha = MAX_ALPHA
+                drawable.alpha = alpha
+                drawable.draw(canvas)
+                drawable.alpha = MAX_ALPHA
             }
         }
 
@@ -439,32 +444,20 @@ class MorphTransitionDrawable(vararg drawables: Drawable?) : TransitionDrawable(
 
                 alphaValue = 0
             }
-        } else {
-            val value = mapRange(
-                value = fraction,
-                fromMin = 0.5f,
-                fromMax = 1f,
-                toMin = 0f,
-                toMax = 1f,
-                clampMin = 0f,
-                clampMax = 1.0f)
+            return
+        }
 
-            animateEndScale(value)
-            animateEndFade(value)
-        }
-        if (mDecorators.size > 0) {
-            mDecorators.forEach {
-                it.draw(canvas, mapRange(
-                    value = fraction,
-                    fromMin = it.fractionStart,
-                    fromMax = it.fractionEnd,
-                    toMin = 0f,
-                    toMax = 1f,
-                    clampMin = 0f,
-                    clampMax = 1.0f)
-                )
-            }
-        }
+        val value = mapRange(
+            value = fraction,
+            fromMin = 0.5f,
+            fromMax = 1f,
+            toMin = 0f,
+            toMax = 1f,
+            clampMin = 0f,
+            clampMax = 1.0f)
+
+        animateEndScale(value)
+        animateEndFade(value)
     }
 
     private fun resetDrawables(canvas: Canvas) {
@@ -483,11 +476,11 @@ class MorphTransitionDrawable(vararg drawables: Drawable?) : TransitionDrawable(
         drawableStart.alpha = MAX_ALPHA
         drawableStart.draw(canvas)
 
-        resetValues = false
+        reset = false
     }
 
     override fun draw(canvas: Canvas) {
-        if (resetValues) {
+        if (reset) {
             resetDrawables(canvas)
         }
         when (transitionType) {
@@ -517,8 +510,7 @@ class MorphTransitionDrawable(vararg drawables: Drawable?) : TransitionDrawable(
         private const val MIN_ALPHA = 0
     }
 
-    data class ValueMap<T: Number>(
-        var value: T,
+    data class ValueMap<T>(
         var fromValue: T,
         var toValue: T
     )
@@ -527,79 +519,5 @@ class MorphTransitionDrawable(vararg drawables: Drawable?) : TransitionDrawable(
         var fractionStart: Float
         var fractionEnd: Float
         fun draw(canvas: Canvas, fraction: Float)
-    }
-
-    inner class RippleDecorator: Decorator {
-
-        private val ripple: Ripple = Ripple()
-
-        private val paint: Paint = Paint().apply {
-            this.isAntiAlias = true
-            this.style = Paint.Style.FILL
-        }
-
-        private var mFractionStart: Float = 0f
-        private var mFractionEnd: Float = 0f
-
-        init {
-            ripple.alpha = 1f
-            ripple.color = Color.WHITE
-
-            ripple.startRadius = 4.dp
-
-            ripple.startAlpha = 1f
-            ripple.endAlpha = 0f
-        }
-
-        override var fractionStart: Float
-            get() = mFractionStart
-            set(value) {
-                mFractionStart = value
-            }
-
-        override var fractionEnd: Float
-            get() = mFractionEnd
-            set(value) {
-                mFractionEnd = value
-            }
-
-        override fun draw(canvas: Canvas, fraction: Float) {
-            ripple.endRadius = (mCurrentDrawable.intrinsicWidth + mCurrentDrawable.intrinsicHeight) / 2f
-
-            ripple.radius = (ripple.startRadius + (ripple.endRadius - ripple.startRadius) * fraction)
-            ripple.alpha = (ripple.startAlpha + (ripple.endAlpha - ripple.startAlpha) * fraction)
-
-            val left = (ripple.endRadius / 2f) - (ripple.radius / 2f)
-            val top = (ripple.endRadius / 2f) - (ripple.radius / 2f)
-            val right = left + ripple.radius
-            val bottom = top + ripple.radius
-
-            paint.color = ripple.color
-            paint.alpha = (ripple.alpha * MAX_ALPHA).toInt()
-
-            canvas.drawOval(left, top, right, bottom, paint)
-
-            if (ripple.radius >= ripple.endRadius) {
-                ripple.radius = ripple.startRadius
-            }
-
-            if (ripple.alpha <= ripple.endAlpha) {
-                ripple.alpha = ripple.startAlpha
-            }
-        }
-    }
-
-    private class Ripple {
-        var alpha: Float = 1f
-
-        var radius: Float = 0f
-
-        var startAlpha: Float = 1f
-        var endAlpha: Float = 0f
-
-        var startRadius: Float = 0f
-        var endRadius: Float = 0f
-
-        var color: Int = 0xFFFFFF
     }
 }

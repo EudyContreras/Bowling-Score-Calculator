@@ -39,6 +39,8 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.toStateList
  */
 class FrameLayout : FrameLayout, MorphLayout {
 
+    override var view: View = this
+
     override var morphX: Float
         get() = this.x
         set(value) {
@@ -268,6 +270,10 @@ class FrameLayout : FrameLayout, MorphLayout {
             mutableDrawable = drawable
             background = drawable
         }
+    }
+
+    override fun setBackgroundColor(color: Int) {
+        morphColor = color
     }
 
     override fun hasVectorDrawable(): Boolean {

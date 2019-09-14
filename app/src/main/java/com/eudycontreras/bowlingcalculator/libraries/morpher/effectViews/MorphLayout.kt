@@ -54,6 +54,7 @@ interface MorphLayout {
     val windowLocationX: Int
     val windowLocationY: Int
     var morphBackground: Drawable
+    var view: View
     fun animator(): ViewPropertyAnimator
     fun updateLayout()
     fun hasChildren(): Boolean

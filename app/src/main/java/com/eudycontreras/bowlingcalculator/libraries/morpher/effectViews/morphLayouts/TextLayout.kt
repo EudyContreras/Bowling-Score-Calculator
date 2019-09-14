@@ -38,6 +38,8 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.toStateList
  */
 class TextLayout : TextView, MorphLayout {
 
+    override var view: View = this
+
     override var morphX: Float
         get() = this.x
         set(value) {

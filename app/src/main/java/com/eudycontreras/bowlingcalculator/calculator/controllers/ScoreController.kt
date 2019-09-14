@@ -28,6 +28,7 @@ class ScoreController(
     lateinit var loaderController: LoaderViewController
     lateinit var inputNameController: InputViewController
     lateinit var emptyStateController: EmptyStateViewController
+    lateinit var paletteController: PaletteViewController
     lateinit var actionController: ActionViewController
     lateinit var framesController: FramesViewController
     lateinit var statsController: StatsViewController
@@ -134,7 +135,8 @@ class ScoreController(
             framesController.setSourceFrames(bowler = null) {
                 runAfterMain(delay = 250) {
                     emptyStateController.setState(EmptyStateViewComponent.EmptyState.Main(activity) {
-                       // tabsController.onTabRequested(true)
+                        tabsController.hideDialogIcon(false)
+                        tabsController.onTabRequested(manual = true, fromEmptyState = true, view = it)
                     })
                     emptyStateController.revealState()
                 }

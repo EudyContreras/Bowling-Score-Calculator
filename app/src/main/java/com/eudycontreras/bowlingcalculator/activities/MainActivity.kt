@@ -1,34 +1,37 @@
 package com.eudycontreras.bowlingcalculator.activities
 
+import android.content.res.ColorStateList
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.ViewGroup
-import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.View
+import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.OvershootInterpolator
-import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.Observer
-import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.components.controllers.*
+import com.eudycontreras.bowlingcalculator.components.views.EmptyStateViewComponent
 import com.eudycontreras.bowlingcalculator.libraries.morpher.Morpher
-import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.FrameLayout
+import com.eudycontreras.bowlingcalculator.listeners.AnimationListener
 import com.eudycontreras.bowlingcalculator.listeners.BackPressedListener
+import com.eudycontreras.bowlingcalculator.listeners.PaletteListener
 import com.eudycontreras.bowlingcalculator.utilities.BowlerListener
 import com.eudycontreras.bowlingcalculator.utilities.Bowlers
 import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_GRACE_PERIOD
 import com.eudycontreras.bowlingcalculator.utilities.extensions.addTouchAnimation
 import com.eudycontreras.bowlingcalculator.utilities.extensions.app
+import com.eudycontreras.bowlingcalculator.utilities.properties.Palette
 import com.eudycontreras.bowlingcalculator.utilities.runAfterMain
-import com.eudycontreras.indicatoreffectlib.views.IndicatorView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_toolbar.view.*
+
+
 
 /**
  * Copyright (C) 2019 Bowling Score Calculator Project
@@ -37,7 +40,7 @@ import kotlinx.android.synthetic.main.activity_toolbar.view.*
  * @author Eudy Contreras.
  */
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : PaletteListener, AppCompatActivity() {
 
     private val backNavigationListeners = ArrayList<BackPressedListener>()
 
@@ -45,13 +48,12 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var emptyStateController: EmptyStateViewController
     private lateinit var inputNameController: InputViewController
+    private lateinit var paletteController: PaletteViewController
     private lateinit var loaderController: LoaderViewController
     private lateinit var framesController: FramesViewController
     private lateinit var actionController: ActionViewController
     private lateinit var statsController: StatsViewController
     private lateinit var tabsController: TabsViewController
-
-    lateinit var indicator: IndicatorView
 
     lateinit var morphTransitioner: Morpher
 
@@ -59,11 +61,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(com.eudycontreras.bowlingcalculator.R.layout.activity_main)
 
         setSupportActionBar(toolbar as Toolbar)
 
-        initIndicator()
         registerListeners()
         initControllers()
         setDefaults()
@@ -72,15 +73,10 @@ class MainActivity : AppCompatActivity() {
     private fun setDefaults() {
         morphTransitioner = Morpher(this)
 
-        morphTransitioner.startView = toolbar.toolbarMenuBorder
-        morphTransitioner.endView = dialog as MorphLayout
-
         morphTransitioner.morphIntoInterpolator = FastOutSlowInInterpolator()
-        morphTransitioner.morphFromInterpolator = AccelerateDecelerateInterpolator()
+        morphTransitioner.morphFromInterpolator = FastOutSlowInInterpolator()
 
         morphTransitioner.useArcTranslator = true
-
-        transitionSeekBar.max = 100
     }
 
     private fun initControllers() {
@@ -88,6 +84,7 @@ class MainActivity : AppCompatActivity() {
 
         emptyStateController = EmptyStateViewController(this, this.emptyStateArea, scoreController)
         inputNameController = InputViewController(this, scoreController)
+        paletteController = PaletteViewController(this, scoreController)
         loaderController = LoaderViewController(this, scoreController)
         framesController = FramesViewController(this, scoreController)
         actionController = ActionViewController(this, scoreController)
@@ -101,26 +98,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initIndicator() {
-        indicator = IndicatorView(this, findViewById<ViewGroup>(R.id.root))
-        indicator.indicatorType = IndicatorView.INDICATOR_TYPE_AROUND
-        indicator.indicatorColor = ContextCompat.getColor(this, R.color.colorAccentLight)
-        indicator.indicatorStrokeColor = ContextCompat.getColor(this, R.color.colorAccentLight)
-        indicator.indicatorColorStart = ContextCompat.getColor(this, R.color.white)
-        indicator.indicatorColorEnd = ContextCompat.getColor(this, R.color.colorAccentLight)
-        indicator.indicatorCount = 3
-        indicator.indicatorMinOpacity = 0f
-        indicator.indicatorMaxOpacity = 1f
-        indicator.indicatorRepeatMode = IndicatorView.REPEAT_MODE_RESTART
-        indicator.indicatorRepeats = IndicatorView.INFINITE_REPEATS
-        indicator.indicatorDuration = 4000
-        indicator.indicatorStrokeWidth = 0f
-        indicator.isShowBorderStroke = false
-        indicator.revealDuration = 500
-        indicator.revealDuration = 0
-        indicator.isUseColorInterpolation = false
-    }
-
     private fun registerListeners() {
         toolbar.toolbarMenu.addTouchAnimation(
             clickTarget = null,
@@ -131,32 +108,21 @@ class MainActivity : AppCompatActivity() {
         )
 
         toolbar.toolbarMenu.setOnClickListener {
-            morphTransitioner.morphInto(8350)
+            morphTransitioner.startView = toolbar.toolbarMenu
+
+            paletteController.show(Morpher.DEFAULT_DURATION)
         }
-
-        dialog.findViewById<FrameLayout>(R.id.createDialogAddInput).addTouchAnimation(
-            clickTarget = null,
-            scale = 0.90f,
-            depth = 0f,
-            interpolatorPress = DecelerateInterpolator(),
-            interpolatorRelease = OvershootInterpolator()
-        )
-
-        dialog.findViewById<FrameLayout>(R.id.createDialogAddInput).setOnClickListener {
-            morphTransitioner.morphFrom(8350)
-        }
-
-        transitionSeekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(view: SeekBar?, progress: Int, fromUser: Boolean) {
-                morphTransitioner.transitionBy(progress)
-            }
-
-            override fun onStartTrackingTouch(p0: SeekBar?) {}
-            override fun onStopTrackingTouch(p0: SeekBar?) {}
-        })
     }
 
     override fun onBackPressed() {
+        if (morphTransitioner.isMorphing) {
+            return
+        }
+        if (morphTransitioner.isMorphed) {
+            hideOverlay()
+            morphTransitioner.morphFrom()
+            return
+        }
         backNavigationListeners.forEach {
             it.onBackPressed()
         }
@@ -191,7 +157,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onStorageEmpty() {
-        tabsController.onTabRequested(false)
+        val state = EmptyStateViewComponent.EmptyState.Main(this) {
+            tabsController.onTabRequested(manual = true, fromEmptyState = true, view = it)
+        }
+        scoreController.emptyStateController.setState(state)
+        scoreController.emptyStateController.revealState()
     }
 
     private fun onStorageFull() {
@@ -223,13 +193,13 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
 
-        if (id == R.id.action_settings) {
+        if (id == com.eudycontreras.bowlingcalculator.R.id.action_settings) {
             return true
         }
         return super.onOptionsItemSelected(item)
     }
 
-    fun openDialog(fragment: DialogFragment) {
+    fun openDialog(fragment: DialogFragment, showTransition: Boolean = false) {
         val prev = supportFragmentManager.findFragmentByTag(fragment::class.java.simpleName)
 
         val fragmentTransaction = supportFragmentManager.beginTransaction()
@@ -238,7 +208,56 @@ class MainActivity : AppCompatActivity() {
             fragmentTransaction.remove(prev!!)
         }
 
-        fragmentTransaction.addToBackStack(null)
+        if (!showTransition) {
+            fragmentTransaction.setCustomAnimations(0,0)
+        }
         fragment.show(fragmentTransaction, fragment::class.java.simpleName)
+    }
+
+    fun showOverlay(duration: Long = Morpher.DEFAULT_DURATION) {
+        dimOverlay.animate()
+            .alpha(1f)
+            .setDuration(duration)
+            .setInterpolator(FastOutSlowInInterpolator())
+            .setListener(AnimationListener(
+                onStart = {
+                    dimOverlay.visibility = View.VISIBLE
+                },
+                onEnd = {
+                    dimOverlay.setOnClickListener {
+                       hideOverlay()
+                       morphTransitioner.morphFrom()
+                }
+            }))
+            .start()
+    }
+
+    fun hideOverlay(duration: Long = Morpher.DEFAULT_DURATION) {
+        dimOverlay.setOnClickListener(null)
+        dimOverlay.animate()
+            .alpha(0f)
+            .setDuration(duration)
+            .setInterpolator(FastOutSlowInInterpolator())
+            .setListener(AnimationListener(onEnd = {
+                dimOverlay.visibility = View.GONE
+            }))
+            .start()
+    }
+
+    override fun onNewPalette(palette: Palette) {
+        emptyStateController.onNewPalette(palette)
+        tabsController.onNewPalette(palette)
+
+        throwAction.backgroundTintList = ColorStateList.valueOf(palette.colorPrimary)
+        actionArea.backgroundTintList = ColorStateList.valueOf(palette.colorPrimary)
+        toolbar.backgroundTintList = ColorStateList.valueOf(palette.colorPrimary)
+
+        (toolbar.toolbarMenu as FrameLayout).setBackgroundColor(palette.colorPrimary)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val window = window
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.statusBarColor = palette.colorPrimaryDark
+        }
     }
 }

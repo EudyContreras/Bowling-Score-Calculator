@@ -60,6 +60,9 @@ class ConstraintLayout : ConstraintLayout,
         set(value) {
             this.layoutParams.height = value.toInt()
         }
+
+    override var view: View = this
+
     override var morphAlpha: Float
         get() = this.alpha
         set(value) {

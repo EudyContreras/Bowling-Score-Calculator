@@ -5,13 +5,15 @@ import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.adapters.TabViewAdapter
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
+import com.eudycontreras.bowlingcalculator.components.views.CreateViewComponent
 import com.eudycontreras.bowlingcalculator.components.views.EmptyStateViewComponent
 import com.eudycontreras.bowlingcalculator.components.views.TabsViewComponent
-import com.eudycontreras.bowlingcalculator.fragments.FragmentCreateBowler
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
+import com.eudycontreras.bowlingcalculator.listeners.PaletteListener
 import com.eudycontreras.bowlingcalculator.utilities.BowlerListener
 import com.eudycontreras.bowlingcalculator.utilities.extensions.app
-import kotlinx.android.synthetic.main.activity_main.*
+import com.eudycontreras.bowlingcalculator.utilities.properties.Palette
+import kotlinx.android.synthetic.main.dialog_create_bowlers.view.*
 
 /**
  * @Project BowlingCalculator
@@ -19,22 +21,20 @@ import kotlinx.android.synthetic.main.activity_main.*
  */
 
 class TabsViewController(
-    private val context: MainActivity,
+    val context: MainActivity,
     private val scoreController: ScoreController
-) {
+): PaletteListener {
 
     private var viewComponent: TabsViewComponent = TabsViewComponent(context, this)
+    private var createComponent: CreateViewComponent = CreateViewComponent(context, this)
 
     init {
         scoreController.tabsController = this
-    }
-
-
-    fun onTabRequested(manual: Boolean, listener: BowlerListener = null, view: View? = null) {
         val onDismiss = {
             if (!context.app.persistenceManager.hasBowlers()) {
                 val state = EmptyStateViewComponent.EmptyState.Main(context) {
-                    onTabRequested(true, null, it)
+                    hideDialogIcon(false)
+                    onTabRequested(true, view = it)
                 }
                 scoreController.emptyStateController.setState(state)
                 scoreController.emptyStateController.revealState()
@@ -42,19 +42,21 @@ class TabsViewController(
                 scoreController.emptyStateController.concealState()
             }
         }
+        createComponent.setOptions(true, null, onDismiss)
+    }
 
-        if (view != null) {
-            context.morphTransitioner.startView = view as MorphLayout
-            context.morphTransitioner.endView = context.dialog as MorphLayout
+    fun hideDialogIcon(hide: Boolean = true) {
+        createComponent.parentView.windowIcon.alpha = if (hide) 0f else 1f
+    }
 
-            context.morphTransitioner.morphInto(8350)
-        } else {
-            context.openDialog(FragmentCreateBowler.instance(this, manual, listener, onDismiss))
+    fun onTabRequested(manual: Boolean, fromEmptyState: Boolean = false, listener: BowlerListener = null, view: View? = null) {
+        if (manual) {
+            if (view != null) {
+                context.morphTransitioner.startView = view as MorphLayout
+                context.showOverlay()
+                createComponent.show(fromEmptyState = fromEmptyState)
+            }
         }
-
-      /*  val transition = MorphTransitioner(view as MorphLayout, context.dialog as MorphLayout)
-        transition.animateTo(1f, 2350, interpolator =  FastOutSlowInInterpolator())*/
-        //
     }
 
     fun requestTabRemoval(lastIndex: Int, index: Int, onEnd: (()-> Unit)? = null) {
@@ -95,4 +97,8 @@ class TabsViewController(
     fun hasTabs(): Boolean = viewComponent.hasTabs()
 
     fun getActive(): Int = viewComponent.getCurrent()
+
+    override fun onNewPalette(palette: Palette) {
+        createComponent.onNewPalette(palette)
+    }
 }

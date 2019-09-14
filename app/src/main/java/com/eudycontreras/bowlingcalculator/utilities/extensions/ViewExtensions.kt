@@ -9,7 +9,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.animation.Interpolator
 import android.widget.EditText
-import com.eudycontreras.bowlingcalculator.listeners.AnimationListener
 
 /**
  * @Project BowlingCalculator
@@ -94,7 +93,7 @@ fun View.addTouchAnimation(
     gestureDetector: GestureDetector? = null
 ) {
 
-    val releaseListener = AnimationListener(
+    /*val releaseListener = AnimationListener(
         onEnd = {
             if (!directFeedback) {
                 if (clickTarget != null) {
@@ -105,7 +104,7 @@ fun View.addTouchAnimation(
             }
         }
     )
-
+*/
     val lastDepth = if (originalDepth == -1F) this.translationZ else originalDepth
 
     this.setOnTouchListener { _, motionEvent ->
@@ -125,7 +124,8 @@ fun View.addTouchAnimation(
                 this.animate()
                     .setStartDelay(0)
                     .setInterpolator(interpolatorRelease)
-                    .setListener(releaseListener)
+                    //.setListener(releaseListener)
+                    .setListener(null)
                     .translationZ(lastDepth)
                     .scaleY(1f)
                     .scaleX(1f)
