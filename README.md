@@ -11,7 +11,7 @@ A bowling score calculator application written in Kotlins. The score calculator 
 
 ![Bowling calculator themes][BowlingCalculatorImage]
 
-[BowlingCalculatorImage]: https://github.com/EudyContreras/Ripple-Effect-View/blob/EudyContreras-readme/indicator.png
+[BowlingCalculatorImage]: https://github.com/EudyContreras/Bowling-Score-Calculator/blob/readme-branch/images/demo_image.png
 
 
 ## How does it work?
