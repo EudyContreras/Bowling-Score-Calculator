@@ -1,7 +1,17 @@
 ## Bowling Score Calculator 
 
+
+[![platform](https://img.shields.io/badge/platform-Android-green.svg)](https://www.android.com)
+[![API](https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=21s)
+[![License: ISC](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/ISC))
+![Version](https://img.shields.io/github/release/EudyContreras/Indicator-Effect-View.svg?style=flat)
+![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)
+
 A bowling score calculator application written in Kotlins. The score calculator provides powerful functionality and it allows for a swift and dynamic calculation of score for each of the frames of a bowling game. The app allows to track the score of multiples players at once.
 
+![Bowling calculator themes][BowlingCalculatorImage]
+
+[BowlingCalculatorImage]: https://github.com/EudyContreras/Ripple-Effect-View/blob/EudyContreras-readme/indicator.png
 
 
 ## How does it work?
@@ -118,4 +128,14 @@ The algorithm used for calculating the score goes somewhat like this:
   * **Score** the amount of pins knocked down once neither a Strike nor a Spare was achieved.
   * **Miss** usually represented as a **0** is when the player does not knock down any pins upon throwing.
   
+## Authors:
 
+**Eudy Contreras**
+
+## Contact:
+
+If you wish to contact you may reach me through my [Linked](https://www.linkedin.com/in/eudycontreras/) or my [Email](EudyContrerasRosario@gmail.com)
+
+## License:
+
+This project is licensed under the MIT License - see the [Licence](https://github.com/EudyContreras/Bowling-Score-Calculator/blob/EudyContreras-readme/LICENSE) file for details
