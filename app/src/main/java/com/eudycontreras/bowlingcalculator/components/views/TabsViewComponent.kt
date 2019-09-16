@@ -65,6 +65,9 @@ class TabsViewComponent(
 
         tabRecycler?.let {
             val itemAnimator = DefaultItemAnimator()
+            itemAnimator.supportsChangeAnimations = true
+            itemAnimator.moveDuration = 200
+
             it.itemAnimator = itemAnimator
             it.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
             it.adapter = tabAdapter

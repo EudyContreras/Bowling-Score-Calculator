@@ -10,13 +10,10 @@ import com.eudycontreras.bowlingcalculator.calculator.listeners.ScoreStateListen
 import com.eudycontreras.bowlingcalculator.components.controllers.*
 import com.eudycontreras.bowlingcalculator.components.views.EmptyStateViewComponent
 import com.eudycontreras.bowlingcalculator.persistance.PersistenceManager
-import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_PIN_COUNT
-import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_START_INDEX
-import com.eudycontreras.bowlingcalculator.utilities.MAX_POSSIBLE_SCORE_GAME
+import com.eudycontreras.bowlingcalculator.utilities.*
 import com.eudycontreras.bowlingcalculator.utilities.extensions.app
 import com.eudycontreras.bowlingcalculator.utilities.extensions.getComputedScore
 import com.eudycontreras.bowlingcalculator.utilities.extensions.getPossibleScore
-import com.eudycontreras.bowlingcalculator.utilities.runAfterMain
 
 /**
  * Copyright (C) 2019 Bowling Score Calculator Project
@@ -115,7 +112,7 @@ class ScoreController(
             statsController.updateTotalScore(it.getComputedScore())
             statsController.updateMaxPossibleScore(it.getPossibleScore())
             statsController.setCurrentFrame(it.currentFrameIndex + 1)
-            actionController.updateActionInput(DEFAULT_PIN_COUNT, duration = 300)
+            actionController.updateActionInput(DEFAULT_PIN_COUNT, duration = STANDARD_DURATION)
             framesController.resetFrames()
         }
     }
@@ -124,7 +121,7 @@ class ScoreController(
         bowler.currentFrameIndex = frameIndex
         statsController.setCurrentFrame(frameIndex + 1)
         statsController.updateMaxPossibleScore(bowler.getPossibleScore())
-        actionController.updateActionInput(bowler.getCurrentFrame().pinUpCount(), duration = 300)
+        actionController.updateActionInput(bowler.getCurrentFrame().pinUpCount(), duration = STANDARD_DURATION)
 
         bowler.getCurrentFrame().state = Frame.State.FIRST_CHANCE
         bowler.getCurrentFrame().resetChances()
@@ -155,18 +152,14 @@ class ScoreController(
         if (bowler != null) {
             framesController.setSourceFrames(bowler)
             if (bowler.hasStarted() || manual) {
-                onScoreUpdated(
-                    bowler,
-                    bowler.getComputedScore(),
-                    bowler.getPossibleScore()
-                )
+                onScoreUpdated(bowler, bowler.getComputedScore(), bowler.getPossibleScore())
             }
         } else {
             framesController.setSourceFrames(bowler = null) {
                 runAfterMain(delay = 250) {
                     emptyStateController.setState(EmptyStateViewComponent.EmptyState.Main(activity) {
                         tabsController.hideDialogIcon(false)
-                        //tabsController.onTabRequested(fromEmptyState = true, view = it)
+                        tabsController.onTabRequested(fromEmptyState = true, view = it)
                     })
                     emptyStateController.revealState()
                 }
@@ -185,8 +178,8 @@ class ScoreController(
             saveActiveTab(current)
 
             bowlers.remove(it)
-            selectBowler(current, true)
             onEnd?.invoke()
+            selectBowler(current, true)
         }
 
         activity.app.persistenceManager.removeBowler(bowlers[lastIndex], onBowlerRemoved)

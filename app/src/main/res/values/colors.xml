@@ -7,7 +7,7 @@
     <color name="colorPrimaryVeryLight">#373737</color>
     <color name="colorPrimaryLightest">#3C3C3C</color>
 
-    <color name="overlay">#95000000</color>
+    <color name="overlay">#55000000</color>
 
     <color name="colorAccent">#006064</color>
     <color name="colorAccentLight">#028085</color>

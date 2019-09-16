@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.Toast
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.eudycontreras.bowlingcalculator.R
@@ -63,6 +64,7 @@ class CreateViewComponent(
 
         parentView.createDialogInputRecycler?.let {
             adapter = InputViewAdapter(context, this)
+            it.itemAnimator = DefaultItemAnimator()
             it.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
             it.recycledViewPool.setMaxRecycledViews(0, 0)
             it.setItemViewCacheSize(10)
@@ -115,9 +117,6 @@ class CreateViewComponent(
         this.fromEmptyState = fromEmptyState
         parentView.createDialogInputRecycler?.let {
             adapter = InputViewAdapter(context, this)
-            it.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
-            it.recycledViewPool.setMaxRecycledViews(0, 0)
-            it.setItemViewCacheSize(10)
             it.adapter = adapter
         }
 

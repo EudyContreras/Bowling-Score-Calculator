@@ -8,6 +8,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.components.views.TabsViewComponent
 import com.eudycontreras.bowlingcalculator.listeners.AnimationListener
@@ -117,10 +118,10 @@ class TabViewAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TabViewHolder {
         return when(viewType) {
             ViewType.ADD_TAB.value -> {
-                TabViewHolderAdd(LayoutInflater.from(context).inflate(com.eudycontreras.bowlingcalculator.R.layout.item_tab_view_add, parent, false))
+                TabViewHolderAdd(LayoutInflater.from(context).inflate(R.layout.item_tab_view_add, parent, false))
             }
             else -> {
-                TabViewHolderNormal(LayoutInflater.from(context).inflate(com.eudycontreras.bowlingcalculator.R.layout.item_tab_view, parent, false))
+                TabViewHolderNormal(LayoutInflater.from(context).inflate(R.layout.item_tab_view, parent, false))
             }
         }
     }
