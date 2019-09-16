@@ -9,7 +9,7 @@ A bowling score calculator application written in Kotlins. The score calculator 
 
 ![Bowling calculator themes][BowlingCalculatorImage]
 
-[BowlingCalculatorImage]: https://github.com/EudyContreras/Bowling-Score-Calculator/blob/readme-branch/images/demo_image.png
+[BowlingCalculatorImage]: https://github.com/EudyContreras/Bowling-Score-Calculator/blob/readme-branch/images/bowling_calculator.png
 
 
 ## How does it work?
