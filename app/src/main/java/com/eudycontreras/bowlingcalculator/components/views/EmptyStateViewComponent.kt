@@ -32,7 +32,6 @@ class EmptyStateViewComponent(
     val controller: EmptyStateViewController
 ) : ViewComponent(), PaletteListener{
 
-    private val iconContainer: View = parent.findViewById(R.id.emptyStateIconContainer)
     private val shape: View = parent.findViewById(R.id.emptyStateShape)
     private val icon: View = parent.findViewById(R.id.emptyStateIcon)
     private val action: View = parent.findViewById(R.id.emptyStateAction)
@@ -62,10 +61,6 @@ class EmptyStateViewComponent(
             icon.backgroundTintList = ColorStateList.valueOf(it)
         }
 
-        iconContainer.translationZ = 0f
-        iconContainer.scaleX = 0f
-        iconContainer.scaleY = 0f
-
         action.scaleX = 0f
         action.scaleY = 0f
         action.translationZ = 0f
@@ -78,6 +73,7 @@ class EmptyStateViewComponent(
         if (emptyState.showActionButton) {
             assignInteraction(action)
             action.setOnClickListener {
+                action.alpha = 0f
                 emptyState.action?.invoke(shape)
             }
         } else {
@@ -119,7 +115,7 @@ class EmptyStateViewComponent(
             showing = true
         }
 
-        iconContainer.animate()
+        shape.animate()
             .alpha(1f)
             .scaleY(1f)
             .scaleX(1f)
@@ -163,7 +159,7 @@ class EmptyStateViewComponent(
             parent.visibility = View.INVISIBLE
         }
 
-        iconContainer.animate()
+        shape.animate()
             .scaleY(0.6f)
             .scaleX(0.6f)
             .alpha(0f)
@@ -247,6 +243,6 @@ class EmptyStateViewComponent(
     }
 
     override fun onNewPalette(palette: Palette) {
-        action.backgroundTintList = palette.colorPrimary.toStateList()
+        action.backgroundTintList = palette.colorPrimaryLight.toStateList()
     }
 }

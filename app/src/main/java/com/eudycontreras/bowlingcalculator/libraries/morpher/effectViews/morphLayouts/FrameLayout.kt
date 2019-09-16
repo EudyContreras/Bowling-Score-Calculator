@@ -235,9 +235,9 @@ class FrameLayout : FrameLayout, MorphLayout {
                 bottomLeft, bottomLeft
             )
 
-            drawable.cornerRadii = corners
-
             cornerRadii = CornerRadii(corners)
+
+            drawable.cornerRadii = cornerRadii.corners
         } else {
             mutateCorners = false
         }
@@ -315,10 +315,10 @@ class FrameLayout : FrameLayout, MorphLayout {
 
         for (index in 0 until cornerRadii.size) {
             val corner = cornerRadii[index]
-            cornerRadii[index] = corner
+            this.cornerRadii[index] = corner
         }
 
-        mutableDrawable.cornerRadii = cornerRadii.corners
+        mutableDrawable.cornerRadii = this.cornerRadii.corners
         return true
     }
 

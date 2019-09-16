@@ -203,6 +203,10 @@ class Morpher(private val context: Context) {
 
             mappings.forEach {
                 applyProps(it.endView, it.endProps)
+                if (it.endView.morphTag?.equals("addBowler") == true) {
+                    it.endProps.alpha = MAX_OFFSET
+                    it.startProps.alpha = MAX_OFFSET
+                }
             }
 
             isMorphing = false
@@ -308,6 +312,8 @@ class Morpher(private val context: Context) {
 
             mappings.forEach {
                 applyProps(it.endView, it.endProps)
+                it.endView.morphAlpha = MAX_OFFSET
+                it.startView.morphAlpha = MAX_OFFSET
             }
 
             isMorphing = false
@@ -451,16 +457,16 @@ class Morpher(private val context: Context) {
                 for (mapping in mappings) {
                     when (morphType) {
                         MorphType.INTO -> {
-                            animateProperties(mapping.endView, mapping.startProps, mapping.endProps, fraction)
-
                             mapping.endView.morphX = mapping.startProps.x + (mapping.endProps.x - mapping.startProps.x) * fraction
                             mapping.endView.morphY = mapping.startProps.y + (mapping.endProps.y - mapping.startProps.y) * fraction
+
+                            animateProperties(mapping.endView, mapping.startProps, mapping.endProps, fraction)
                         }
                         MorphType.FROM -> {
-                            animateProperties(mapping.endView, mapping.endProps, mapping.startProps, fraction)
-
                             mapping.endView.morphX = mapping.endProps.x + (mapping.startProps.x - mapping.endProps.x) * fraction
                             mapping.endView.morphY = mapping.endProps.y + (mapping.startProps.y - mapping.endProps.y) * fraction
+
+                            animateProperties(mapping.endView, mapping.endProps, mapping.startProps, fraction)
                         }
                     }
                 }
@@ -493,10 +499,6 @@ class Morpher(private val context: Context) {
         animator.interpolator = interpolator
         animator.duration = duration
         animator.start()
-    }
-
-    private fun tooDifferent(arg1: Float, arg2: Float, limit: Float): Boolean {
-        return abs(arg2 - arg1) > limit
     }
 
     private fun moveWithOffset(
@@ -604,6 +606,7 @@ class Morpher(private val context: Context) {
         endingProps: Properties,
         fraction: Float
     ) {
+
         morphView.morphAlpha = startingProps.alpha + (endingProps.alpha - startingProps.alpha) * fraction
 
         morphView.morphScaleX = startingProps.scaleX + (endingProps.scaleX - startingProps.scaleX) * fraction
@@ -767,10 +770,10 @@ class Morpher(private val context: Context) {
 
         const val DEFAULT_DURATION: Long = 350L
 
-        const val DEFAULT_CHILDREN_REVEAL_OFFSET: Float = 0.40f
+        const val DEFAULT_CHILDREN_REVEAL_OFFSET: Float = 0.30f
         const val DEFAULT_CHILDREN_CONCEAL_OFFSET: Float = 0.0f
 
-        const val DEFAULT_REVEAL_DURATION_MULTIPLIER: Float = 0.2f
+        const val DEFAULT_REVEAL_DURATION_MULTIPLIER: Float = 0f
         const val DEFAULT_CONCEAL_DURATION_MULTIPLIER: Float = 0.4f
     }
 
@@ -793,7 +796,7 @@ class Morpher(private val context: Context) {
         val y: Float,
         val width: Float,
         val height: Float,
-        val alpha: Float,
+        var alpha: Float,
         val elevation: Float,
         var translationX: Float,
         var translationY: Float,

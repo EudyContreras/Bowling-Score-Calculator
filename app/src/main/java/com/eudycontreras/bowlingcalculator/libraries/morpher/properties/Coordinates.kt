@@ -1,36 +1,32 @@
 package com.eudycontreras.bowlingcalculator.libraries.morpher.properties
 
 /**
- * <h1>Class description!</h1>
+ * Copyright (C) 2019 Motion Morpher Project
  *
- *
- *
- * **Note:** Unlicensed private property of the author and creator
- * unauthorized use of this class outside of the Soul Vibe project
+ **Note:** Unlicensed private property of the author and creator
+ * unauthorized use of this class outside of the Motion Morpher project
+ * or other projects to which the author has explicitly added this library
  * may result on legal prosecution.
  *
- *
- * Created by <B>Eudy Contreras</B>
- *
- * @author  Eudy Contreras
- * @version 1.0
- * @since   2018-03-31
+ * @Project Motion Morpher
+ * @author Eudy Contreras.
+ * @since March 2019
  */
-data class Coordintates(
+data class Coordinates(
     var x: Float = 0f,
     var y: Float = 0f
 ) {
-    fun copy(): Coordintates {
-        return Coordintates(x, y)
+    fun copy(): Coordinates {
+        return Coordinates(x, y)
     }
 
-    fun midPoint(other: Coordintates): Coordintates {
+    fun midPoint(other: Coordinates): Coordinates {
         return Companion.midPoint(this, other)
     }
 
     companion object {
-        fun midPoint(start: Coordintates, end: Coordintates): Coordintates {
-            return Coordintates((start.x + end.x) / 2 , (start.y + end.y) / 2)
+        fun midPoint(start: Coordinates, end: Coordinates): Coordinates {
+            return Coordinates((start.x + end.x) / 2 , (start.y + end.y) / 2)
         }
     }
 }
