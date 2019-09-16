@@ -132,7 +132,7 @@ The algorithm used for calculating the score goes somewhat like this:
 
 ## Contact:
 
-If you wish to contact you may reach me through my [Linked](https://www.linkedin.com/in/eudycontreras/) or my [Email](EudyContrerasRosario@gmail.com)
+If you wish to contact you may reach me through my [LinkedIn](https://www.linkedin.com/in/eudycontreras/) or my [Email](EudyContrerasRosario@gmail.com)
 
 ## License:
 
