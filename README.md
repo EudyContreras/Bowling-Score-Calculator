@@ -136,4 +136,4 @@ If you wish to contact you may reach me through my [Linked](https://www.linkedin
 
 ## License:
 
-This project is licensed under the MIT License - see the [Licence](https://github.com/EudyContreras/Bowling-Score-Calculator/blob/EudyContreras-readme/LICENSE) file for details
+This project is licensed under the MIT License - see the [Licence](https://github.com/EudyContreras/Bowling-Score-Calculator/blob/readme-branch/LICENSE) file for details
