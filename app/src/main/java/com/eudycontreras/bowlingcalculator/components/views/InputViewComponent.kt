@@ -21,13 +21,19 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.*
 import com.github.ybq.android.spinkit.SpinKitView
 import kotlinx.android.synthetic.main.activity_main.*
 
-
-
+/**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
+ * @since January 2019
+ */
 
 class InputViewComponent(
     private val context: MainActivity,
     val controller: InputViewController
-): ViewComponent, BackPressedListener {
+): ViewComponent(), BackPressedListener {
 
     private val doneIcon: Drawable = context.drawable(R.drawable.ic_done)
     private val saveIcon: Drawable = context.drawable(R.drawable.ic_save_score)
@@ -94,7 +100,7 @@ class InputViewComponent(
             saveNewName(nameInput?.text.toString())
         }
 
-        nameInput?.AddChangeListener(
+        nameInput?.addTextChangeListener (
             onChange = {
                 if (controller.revealed) {
                     handler.removeCallbacksAndMessages(null)

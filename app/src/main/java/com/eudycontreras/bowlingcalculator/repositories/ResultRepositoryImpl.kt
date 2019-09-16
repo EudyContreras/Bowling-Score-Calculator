@@ -11,10 +11,13 @@ import com.eudycontreras.bowlingcalculator.persistance.entities.ResultEntity
 import com.eudycontreras.bowlingcalculator.utilities.extensions.switchMap
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
-
 class ResultRepositoryImpl(
     private val manager: PersistenceManager,
     private val resultDao: ResultsDao

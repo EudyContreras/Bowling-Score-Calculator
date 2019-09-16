@@ -9,10 +9,13 @@ import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.components.controllers.ActionViewController
 import kotlinx.android.synthetic.main.dialog_load_result.view.*
 
-
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
 
 class FragmentLoadResult: DialogFragment() {

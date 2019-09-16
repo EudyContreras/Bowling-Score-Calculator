@@ -2,11 +2,14 @@ package com.eudycontreras.bowlingcalculator.utilities.properties
 
 import com.eudycontreras.bowlingcalculator.utilities.AndroidColor
 
-
 /**
- * Created by eudycontreras.
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
+ * @since January 2019
  */
-
 abstract class Color {
 
     protected var mTempColor: Int = -1

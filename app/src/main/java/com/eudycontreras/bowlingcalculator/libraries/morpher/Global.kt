@@ -2,6 +2,18 @@ package com.eudycontreras.bowlingcalculator.libraries.morpher
 
 import androidx.core.math.MathUtils
 
+/**
+ * Copyright (C) 2019 Motion Morpher Project
+ *
+ **Note:** Unlicensed private property of the author and creator
+ * unauthorized use of this class outside of the Motion Morpher project
+ * or other projects to which the author has explicitly added this library
+ * may result on legal prosecution.
+ *
+ * @Project Motion Morpher
+ * @author Eudy Contreras.
+ * @since March 2019
+ */
 
 fun interpolate(from: Int, to: Int, fraction: Float): Float {
     return from + (to - from) * fraction

@@ -1,5 +1,6 @@
 package com.eudycontreras.bowlingcalculator.calculator.controllers
 
+import androidx.lifecycle.Observer
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
 import com.eudycontreras.bowlingcalculator.calculator.elements.Frame
@@ -8,6 +9,7 @@ import com.eudycontreras.bowlingcalculator.calculator.listeners.BowlerActionList
 import com.eudycontreras.bowlingcalculator.calculator.listeners.ScoreStateListener
 import com.eudycontreras.bowlingcalculator.components.controllers.*
 import com.eudycontreras.bowlingcalculator.components.views.EmptyStateViewComponent
+import com.eudycontreras.bowlingcalculator.persistance.PersistenceManager
 import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_PIN_COUNT
 import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_START_INDEX
 import com.eudycontreras.bowlingcalculator.utilities.MAX_POSSIBLE_SCORE_GAME
@@ -17,8 +19,12 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.getPossibleScore
 import com.eudycontreras.bowlingcalculator.utilities.runAfterMain
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
 
 class ScoreController(
@@ -41,7 +47,7 @@ class ScoreController(
     val bowler: Bowler
         get() = bowlers[activeTab]
 
-    fun initCalculator(bowlers: List<Bowler>, activeTab: Int) {
+    private fun initCalculator(bowlers: List<Bowler>, activeTab: Int) {
         this.bowlers = ArrayList(bowlers)
         this.activeTab = activeTab
 
@@ -65,6 +71,30 @@ class ScoreController(
             statsController.updateMaxPossibleScore(bowler.getPossibleScore())
             statsController.setCurrentFrame(current.index + 1)
         }
+    }
+
+    fun onStorageEmpty() {
+        val state = EmptyStateViewComponent.EmptyState.Main(activity) {
+            tabsController.onTabRequested(fromEmptyState = true, view = it)
+        }
+        emptyStateController.setState(state)
+        emptyStateController.revealState()
+    }
+
+    fun onStorageFull(persistenceManager: PersistenceManager) {
+        val bowlers = persistenceManager.getBowlers()
+        val activeTab = persistenceManager.getActiveTab()
+
+        bowlers.observe(activity, Observer {
+            if (it.isEmpty()) {
+                onStorageEmpty()
+                return@Observer
+            }
+
+            loaderController.hideLoader()
+            initCalculator(it, activeTab)
+            tabsController.addTabs(it, activeTab, false)
+        })
     }
 
     override fun throwBall(pinKnockedCount: Int) {
@@ -136,7 +166,7 @@ class ScoreController(
                 runAfterMain(delay = 250) {
                     emptyStateController.setState(EmptyStateViewComponent.EmptyState.Main(activity) {
                         tabsController.hideDialogIcon(false)
-                        tabsController.onTabRequested(manual = true, fromEmptyState = true, view = it)
+                        //tabsController.onTabRequested(fromEmptyState = true, view = it)
                     })
                     emptyStateController.revealState()
                 }

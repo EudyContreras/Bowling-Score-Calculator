@@ -1,10 +1,13 @@
 package com.eudycontreras.bowlingcalculator.utilities
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
-
 const val NO_ID = -1L
 
 const val ZERO = 0

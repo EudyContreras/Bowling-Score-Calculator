@@ -27,7 +27,7 @@
                     android:visibility="visible"
                     android:layout_marginEnd="@dimen/margin_large"
                     android:layout_gravity="end|center"
-                    android:background="@drawable/img_bowling_logo_alt"
+                    android:background="@drawable/img_logo"
                     android:layout_width="32dp"
                     android:layout_height="32dp"/>
             <TextView

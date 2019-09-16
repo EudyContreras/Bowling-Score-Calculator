@@ -17,15 +17,15 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.attach
 import com.eudycontreras.bowlingcalculator.utilities.extensions.detach
 import com.eudycontreras.bowlingcalculator.utilities.extensions.dp
 import kotlinx.android.synthetic.main.item_tab_view.view.*
-import kotlinx.android.synthetic.main.item_tab_view_add.view.*
 import java.lang.ref.WeakReference
 
-
-
-
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
 
 class TabViewAdapter(
@@ -151,7 +151,6 @@ class TabViewAdapter(
     inner class TabViewHolderAdd(view: View) : TabViewHolder(view) {
 
         private var model: TabViewModel? = null
-        private var icon: View = view.addIcon
 
         init {
             resetValues()
@@ -163,7 +162,7 @@ class TabViewAdapter(
                 model?.let {
                     currentIndex = layoutPosition
                     viewComponent.controller.hideDialogIcon()
-                    viewComponent.controller.onTabRequested(true, view = itemView)
+                    viewComponent.controller.onTabRequested(view = itemView)
                 }
             }
         }
@@ -213,9 +212,6 @@ class TabViewAdapter(
         }
 
         override fun registerListeners(){
-          /*  tabItem.isLongClickable = true
-            tabItem.isClickable = true
-*/
             this.tabItem.addTouchAnimation(
                 clickTarget = null,
                 depth = (-8).dp,

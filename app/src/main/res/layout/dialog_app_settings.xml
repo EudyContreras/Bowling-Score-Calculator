@@ -50,30 +50,16 @@
 
         <com.eudycontreras.bowlingcalculator.customviews.SquareFrameLayout
                 android:layout_width="0dp"
-                android:layout_margin="@dimen/margin_large"
+                android:layout_marginStart="@dimen/margin_medium"
+                android:layout_marginEnd="@dimen/margin_medium"
+                android:layout_marginTop="@dimen/margin_large"
+                android:layout_marginBottom="@dimen/margin_large"
                 android:background="@drawable/shape_circle"
                 android:backgroundTint="@color/colorPrimaryDarker"
                 android:layout_height="wrap_content"
                 android:layout_weight="1">
             <com.eudycontreras.bowlingcalculator.customviews.SquareView
                     android:id="@+id/theme0"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/margin_small"
-                    android:backgroundTint="@color/theme1"
-                    android:background="@drawable/shape_circle"
-                    android:layout_weight="1" />
-        </com.eudycontreras.bowlingcalculator.customviews.SquareFrameLayout>
-
-        <com.eudycontreras.bowlingcalculator.customviews.SquareFrameLayout
-                android:layout_width="0dp"
-                android:layout_margin="@dimen/margin_large"
-                android:background="@drawable/shape_circle"
-                android:backgroundTint="@color/colorPrimaryDarker"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
-            <com.eudycontreras.bowlingcalculator.customviews.SquareView
-                    android:id="@+id/theme1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/margin_small"
@@ -84,7 +70,30 @@
 
         <com.eudycontreras.bowlingcalculator.customviews.SquareFrameLayout
                 android:layout_width="0dp"
-                android:layout_margin="@dimen/margin_large"
+                android:layout_marginStart="@dimen/margin_medium"
+                android:layout_marginEnd="@dimen/margin_medium"
+                android:layout_marginTop="@dimen/margin_large"
+                android:layout_marginBottom="@dimen/margin_large"
+                android:background="@drawable/shape_circle"
+                android:backgroundTint="@color/colorPrimaryDarker"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+            <com.eudycontreras.bowlingcalculator.customviews.SquareView
+                    android:id="@+id/theme1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/margin_small"
+                    android:backgroundTint="@color/theme1"
+                    android:background="@drawable/shape_circle"
+                    android:layout_weight="1" />
+        </com.eudycontreras.bowlingcalculator.customviews.SquareFrameLayout>
+
+        <com.eudycontreras.bowlingcalculator.customviews.SquareFrameLayout
+                android:layout_width="0dp"
+                android:layout_marginStart="@dimen/margin_medium"
+                android:layout_marginEnd="@dimen/margin_medium"
+                android:layout_marginTop="@dimen/margin_large"
+                android:layout_marginBottom="@dimen/margin_large"
                 android:background="@drawable/shape_circle"
                 android:backgroundTint="@color/colorPrimaryDarker"
                 android:layout_height="wrap_content"
@@ -100,7 +109,10 @@
         </com.eudycontreras.bowlingcalculator.customviews.SquareFrameLayout>
         <com.eudycontreras.bowlingcalculator.customviews.SquareFrameLayout
                 android:layout_width="0dp"
-                android:layout_margin="@dimen/margin_large"
+                android:layout_marginStart="@dimen/margin_medium"
+                android:layout_marginEnd="@dimen/margin_medium"
+                android:layout_marginTop="@dimen/margin_large"
+                android:layout_marginBottom="@dimen/margin_large"
                 android:background="@drawable/shape_circle"
                 android:backgroundTint="@color/colorPrimaryDarker"
                 android:layout_height="wrap_content"
@@ -116,7 +128,10 @@
         </com.eudycontreras.bowlingcalculator.customviews.SquareFrameLayout>
         <com.eudycontreras.bowlingcalculator.customviews.SquareFrameLayout
                 android:layout_width="0dp"
-                android:layout_margin="@dimen/margin_large"
+                android:layout_marginStart="@dimen/margin_medium"
+                android:layout_marginEnd="@dimen/margin_medium"
+                android:layout_marginTop="@dimen/margin_large"
+                android:layout_marginBottom="@dimen/margin_large"
                 android:background="@drawable/shape_circle"
                 android:backgroundTint="@color/colorPrimaryDarker"
                 android:layout_height="wrap_content"
@@ -127,6 +142,26 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/margin_small"
                     android:backgroundTint="@color/theme4"
+                    android:background="@drawable/shape_circle"
+                    android:layout_weight="1" />
+        </com.eudycontreras.bowlingcalculator.customviews.SquareFrameLayout>
+
+        <com.eudycontreras.bowlingcalculator.customviews.SquareFrameLayout
+                android:layout_width="0dp"
+                android:layout_marginStart="@dimen/margin_medium"
+                android:layout_marginEnd="@dimen/margin_medium"
+                android:layout_marginTop="@dimen/margin_large"
+                android:layout_marginBottom="@dimen/margin_large"
+                android:background="@drawable/shape_circle"
+                android:backgroundTint="@color/colorPrimaryDarker"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+            <com.eudycontreras.bowlingcalculator.customviews.SquareView
+                    android:id="@+id/theme5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/margin_small"
+                    android:backgroundTint="@color/theme5"
                     android:background="@drawable/shape_circle"
                     android:layout_weight="1" />
         </com.eudycontreras.bowlingcalculator.customviews.SquareFrameLayout>

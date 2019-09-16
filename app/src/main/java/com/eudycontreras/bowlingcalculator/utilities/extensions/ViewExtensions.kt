@@ -11,10 +11,13 @@ import android.view.animation.Interpolator
 import android.widget.EditText
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
-
 fun View.detach() {
     this.visibility = View.GONE
 }
@@ -66,7 +69,7 @@ fun View.setSize(width: Float, height: Float) {
     this.requestLayout()
 }
 
-fun EditText.AddChangeListener(
+fun EditText.addTextChangeListener(
     onAfterChange: ((String) -> Unit)? = null,
     onBeforeChange: ((String) -> Unit)? = null,
     onChange: ((String) -> Unit)? = null
@@ -93,18 +96,6 @@ fun View.addTouchAnimation(
     gestureDetector: GestureDetector? = null
 ) {
 
-    /*val releaseListener = AnimationListener(
-        onEnd = {
-            if (!directFeedback) {
-                if (clickTarget != null) {
-                    clickTarget.performClick()
-                } else {
-                    this.performClick()
-                }
-            }
-        }
-    )
-*/
     val lastDepth = if (originalDepth == -1F) this.translationZ else originalDepth
 
     this.setOnTouchListener { _, motionEvent ->
@@ -124,7 +115,6 @@ fun View.addTouchAnimation(
                 this.animate()
                     .setStartDelay(0)
                     .setInterpolator(interpolatorRelease)
-                    //.setListener(releaseListener)
                     .setListener(null)
                     .translationZ(lastDepth)
                     .scaleY(1f)

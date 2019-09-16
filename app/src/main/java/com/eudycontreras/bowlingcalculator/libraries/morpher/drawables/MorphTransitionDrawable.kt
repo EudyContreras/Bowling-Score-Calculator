@@ -14,6 +14,18 @@ import com.eudycontreras.bowlingcalculator.libraries.morpher.extensions.dp
 import com.eudycontreras.bowlingcalculator.utilities.mapRange
 
 
+/**
+ * Copyright (C) 2019 Motion Morpher Project
+ *
+ **Note:** Unlicensed private property of the author and creator
+ * unauthorized use of this class outside of the Motion Morpher project
+ * or other projects to which the author has explicitly added this library
+ * may result on legal prosecution.
+ *
+ * @Project Motion Morpher
+ * @author Eudy Contreras.
+ * @since March 2019
+ */
 class MorphTransitionDrawable(vararg drawables: Drawable?) : TransitionDrawable(drawables) {
 
     private var mFromAlpha: Int = 0

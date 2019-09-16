@@ -9,7 +9,6 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.children
-import androidx.lifecycle.ViewModel
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.components.controllers.ActionViewController
@@ -21,14 +20,18 @@ import com.eudycontreras.bowlingcalculator.utilities.toString
 import kotlinx.android.synthetic.main.activity_main.*
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
 
 class ActionsViewComponent(
-    private val context: MainActivity,
+    context: MainActivity,
     private val controller: ActionViewController
-) : ViewComponent, ViewModel() {
+) : ViewComponent() {
 
     private var remainingPins: Int = DEFAULT_PIN_COUNT
 

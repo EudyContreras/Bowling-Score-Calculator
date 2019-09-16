@@ -9,10 +9,13 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.Roll
 import com.eudycontreras.bowlingcalculator.utilities.gson
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
-
 data class Ternary<T>(val target: T, val result: Boolean)
 
 fun List<Roll>.sum() = map { it.totalKnockdown }.sum()

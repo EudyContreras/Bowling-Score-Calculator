@@ -12,10 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
-import androidx.lifecycle.Observer
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.components.controllers.*
-import com.eudycontreras.bowlingcalculator.components.views.EmptyStateViewComponent
 import com.eudycontreras.bowlingcalculator.libraries.morpher.Morpher
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.FrameLayout
 import com.eudycontreras.bowlingcalculator.listeners.AnimationListener
@@ -35,9 +33,11 @@ import kotlinx.android.synthetic.main.activity_toolbar.view.*
 
 /**
  * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
  *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
 
 class MainActivity : PaletteListener, AppCompatActivity() {
@@ -61,8 +61,8 @@ class MainActivity : PaletteListener, AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(com.eudycontreras.bowlingcalculator.R.layout.activity_main)
-
         setSupportActionBar(toolbar as Toolbar)
 
         registerListeners()
@@ -77,6 +77,8 @@ class MainActivity : PaletteListener, AppCompatActivity() {
         morphTransitioner.morphFromInterpolator = FastOutSlowInInterpolator()
 
         morphTransitioner.useArcTranslator = true
+
+        onNewPalette(Palette.of(app.persistenceManager.getActiveThemeColor()))
     }
 
     private fun initControllers() {
@@ -109,7 +111,6 @@ class MainActivity : PaletteListener, AppCompatActivity() {
 
         toolbar.toolbarMenu.setOnClickListener {
             morphTransitioner.startView = toolbar.toolbarMenu
-
             paletteController.show(Morpher.DEFAULT_DURATION)
         }
     }
@@ -138,11 +139,11 @@ class MainActivity : PaletteListener, AppCompatActivity() {
             created = true
             if (app.persistenceManager.hasBowlers()) {
                 runAfterMain(DEFAULT_GRACE_PERIOD / 2) {
-                    onStorageFull()
+                    scoreController.onStorageFull(app.persistenceManager)
                 }
             } else {
                 runAfterMain(DEFAULT_GRACE_PERIOD) {
-                    onStorageEmpty()
+                    scoreController.onStorageEmpty()
                 }
             }
         }
@@ -154,30 +155,6 @@ class MainActivity : PaletteListener, AppCompatActivity() {
 
     fun removeBackPressListeners(listener: BackPressedListener) {
         backNavigationListeners.remove(listener)
-    }
-
-    private fun onStorageEmpty() {
-        val state = EmptyStateViewComponent.EmptyState.Main(this) {
-            tabsController.onTabRequested(manual = true, fromEmptyState = true, view = it)
-        }
-        scoreController.emptyStateController.setState(state)
-        scoreController.emptyStateController.revealState()
-    }
-
-    private fun onStorageFull() {
-        val bowlers = app.persistenceManager.getBowlers()
-        val activeTab = app.persistenceManager.getActiveTab()
-
-        bowlers.observe(this, Observer {
-            if (it.isEmpty()) {
-                onStorageEmpty()
-                return@Observer
-            }
-
-            loaderController.hideLoader()
-            scoreController.initCalculator(it, activeTab)
-            tabsController.addTabs(it, activeTab, false)
-        })
     }
 
     override fun onDestroy() {
@@ -246,6 +223,7 @@ class MainActivity : PaletteListener, AppCompatActivity() {
 
     override fun onNewPalette(palette: Palette) {
         emptyStateController.onNewPalette(palette)
+        loaderController.onNewPalette(palette)
         tabsController.onNewPalette(palette)
 
         throwAction.backgroundTintList = ColorStateList.valueOf(palette.colorPrimary)

@@ -18,14 +18,19 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.*
 import com.eudycontreras.bowlingcalculator.utilities.properties.Palette
 
 /**
- * Created by eudycontreras.
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
+ * @since January 2019
  */
 
 class EmptyStateViewComponent(
-    private val context: MainActivity,
+    context: MainActivity,
     val parent: View,
     val controller: EmptyStateViewController
-) : ViewComponent, PaletteListener{
+) : ViewComponent(), PaletteListener{
 
     private val iconContainer: View = parent.findViewById(R.id.emptyStateIconContainer)
     private val shape: View = parent.findViewById(R.id.emptyStateShape)
@@ -201,7 +206,7 @@ class EmptyStateViewComponent(
         abstract val showActionButton: Boolean
 
         class Main(context: Activity, override val action: ((View) -> Unit)? = null) : EmptyState() {
-            override val icon: Drawable = context.drawable(R.drawable.img_bowling_logo_alt)
+            override val icon: Drawable = context.drawable(R.drawable.img_logo)
             override val iconColor: Int? = null
             override val actionColor: Int = context.color(R.color.colorAccentLight)
             override val shapeColor: Int = context.color(R.color.colorPrimary)

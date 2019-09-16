@@ -22,10 +22,19 @@ import com.eudycontreras.bowlingcalculator.utilities.properties.Palette
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.dialog_create_bowlers.view.*
 
+/**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
+ * @since January 2019
+ */
+
 class CreateViewComponent(
     private val context: MainActivity,
     val controller: TabsViewController
-) : ViewComponent, PaletteListener {
+) : ViewComponent(), PaletteListener {
 
     val parentView: ConstraintLayout = context.dialog as ConstraintLayout
 

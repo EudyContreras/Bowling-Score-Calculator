@@ -18,7 +18,7 @@ import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLa
 import com.eudycontreras.bowlingcalculator.libraries.morpher.extensions.*
 import com.eudycontreras.bowlingcalculator.libraries.morpher.helpers.CurvedTranslationHelper
 import com.eudycontreras.bowlingcalculator.libraries.morpher.listeners.MorphAnimationListener
-import com.eudycontreras.bowlingcalculator.libraries.morpher.properties.Coordintates
+import com.eudycontreras.bowlingcalculator.libraries.morpher.properties.Coordinates
 import com.eudycontreras.bowlingcalculator.libraries.morpher.properties.CornerRadii
 import com.eudycontreras.bowlingcalculator.libraries.morpher.utilities.ColorUtility
 import com.eudycontreras.bowlingcalculator.utilities.extensions.dp
@@ -26,7 +26,18 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.toStateList
 import kotlin.math.abs
 import kotlin.math.roundToLong
 
-
+/**
+ * Copyright (C) 2019 Motion Morpher Project
+ *
+ **Note:** Unlicensed private property of the author and creator
+ * unauthorized use of this class outside of the Motion Morpher project
+ * or other projects to which the author has explicitly added this library
+ * may result on legal prosecution.
+ *
+ * @Project Motion Morpher
+ * @author Eudy Contreras.
+ * @since March 2019
+ */
 class Morpher(private val context: Context) {
 
     private var remainingDuration: Long = 0L
@@ -205,7 +216,7 @@ class Morpher(private val context: Context) {
         curveTranslator.setStartPoint(startingState.getDeltaCoordinates())
         curveTranslator.setEndPoint(endingState.getDeltaCoordinates())
 
-        curveTranslator.setControlPoint(Coordintates(endingState.translationX, startingState.translationY))
+        curveTranslator.setControlPoint(Coordinates(endingState.translationX, startingState.translationY))
 
         mappings.forEach {
 
@@ -306,7 +317,7 @@ class Morpher(private val context: Context) {
         curveTranslator.setStartPoint(endingState.getDeltaCoordinates())
         curveTranslator.setEndPoint(startingState.getDeltaCoordinates())
 
-        curveTranslator.setControlPoint(Coordintates(endingState.translationX, startingState.translationY))
+        curveTranslator.setControlPoint(Coordinates(endingState.translationX, startingState.translationY))
 
         mappings.forEach {
             when {
@@ -756,7 +767,7 @@ class Morpher(private val context: Context) {
 
         const val DEFAULT_DURATION: Long = 350L
 
-        const val DEFAULT_CHILDREN_REVEAL_OFFSET: Float = 0.60f
+        const val DEFAULT_CHILDREN_REVEAL_OFFSET: Float = 0.40f
         const val DEFAULT_CHILDREN_CONCEAL_OFFSET: Float = 0.0f
 
         const val DEFAULT_REVEAL_DURATION_MULTIPLIER: Float = 0.2f
@@ -805,7 +816,7 @@ class Morpher(private val context: Context) {
         val hasGradientBackground: Boolean,
         val tag: String
     ) {
-        fun getDeltaCoordinates() = Coordintates(translationX, translationY)
+        fun getDeltaCoordinates() = Coordinates(translationX, translationY)
 
         override fun toString() = tag
     }
@@ -861,7 +872,7 @@ class Morpher(private val context: Context) {
                     scaleX = 0.8f,
                     scaleY = 0.8f,
                     translationY = -(8.dp)
-                    )
+                )
             }
             fun defaultInPropsEnd(): AnimationProperties {
                 return AnimationProperties(

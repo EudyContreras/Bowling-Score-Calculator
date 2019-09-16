@@ -15,14 +15,18 @@ import com.eudycontreras.bowlingcalculator.utilities.SCROLLER_MILLI_PER_INCH
 import kotlinx.android.synthetic.main.activity_main.*
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
 
 class FramesViewComponent(
     private val context: MainActivity,
     val controller: FramesViewController
-) : ViewComponent {
+) : ViewComponent() {
 
     private lateinit var frameAdapter: FrameViewAdapter
 

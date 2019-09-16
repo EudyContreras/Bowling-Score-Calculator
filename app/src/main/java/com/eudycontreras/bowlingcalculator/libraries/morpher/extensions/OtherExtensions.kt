@@ -1,29 +1,28 @@
 package com.eudycontreras.bowlingcalculator.libraries.morpher.extensions
 
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.TransitionDrawable
+import android.graphics.drawable.VectorDrawable
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.eudycontreras.bowlingcalculator.libraries.morpher.drawables.MorphTransitionDrawable
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
 import com.eudycontreras.bowlingcalculator.libraries.morpher.properties.CornerRadii
-import com.eudycontreras.bowlingcalculator.libraries.morpher.utilities.MorphingUtility
 
 /**
- * <h1>Class description!</h1>
+ * Copyright (C) 2019 Motion Morpher Project
  *
- *
- *
- * **Note:** Unlicensed private property of the author and creator
- * unauthorized use of this class outside of the Soul Vibe project
+ **Note:** Unlicensed private property of the author and creator
+ * unauthorized use of this class outside of the Motion Morpher project
+ * or other projects to which the author has explicitly added this library
  * may result on legal prosecution.
  *
- *
- * Created by <B>Eudy Contreras</B>
- *
- * @author  Eudy Contreras
- * @version 1.0
- * @since   2018-03-31
+ * @Project Motion Morpher
+ * @author Eudy Contreras.
+ * @since March 2019
  */
-
 fun FloatArray.apply(other: FloatArray): FloatArray {
     if (this.size == other.size) {
         for (index in 0 until other.size) {
@@ -55,7 +54,23 @@ fun <T> Sequence<T>.toArrayList(): ArrayList<T> {
 }
 
 fun Drawable.toBitmap(): Bitmap {
-    return MorphingUtility.getBitmapFromDrawable(this)
+    return if (this is BitmapDrawable) {
+        this.bitmap
+    } else if (this is VectorDrawableCompat || this is VectorDrawable) {
+        val bitmap = Bitmap.createBitmap(this.intrinsicWidth, this.intrinsicHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        this.setBounds(0, 0, canvas.width, canvas.height)
+        this.draw(canvas)
+        bitmap
+    } else if (this is TransitionDrawable){
+        val bitmap = Bitmap.createBitmap(this.getDrawable(0).intrinsicWidth, this.getDrawable(0).intrinsicHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        this.setBounds(0, 0, canvas.width, canvas.height)
+        this.draw(canvas)
+        bitmap
+    } else {
+        throw IllegalArgumentException("unsupported drawable type")
+    }
 }
 
 fun MorphLayout.getBackgroundType(): MorphTransitionDrawable.DrawableType {

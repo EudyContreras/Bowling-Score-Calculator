@@ -17,10 +17,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
-
 class PersistenceManager(
     application: Application
 ) {
@@ -158,4 +161,11 @@ class PersistenceManager(
     }
 
     fun getActiveTab(): Int = storage.activeTab
+
+    fun getActiveThemeColor(): Int = storage.activeTheme
+
+    @Synchronized fun updateThemeColor(color: Int): Int {
+        storage.activeTheme = color
+        return color
+    }
 }

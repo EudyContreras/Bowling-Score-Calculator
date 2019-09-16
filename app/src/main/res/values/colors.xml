@@ -36,10 +36,11 @@
 
     <color name="colorActionButton">#212121</color>
 
-    <color name="theme0">#006064</color>
-    <color name="theme1">#D56502</color>
-    <color name="theme2">#800505</color>
-    <color name="theme3">#2E147C</color>
-    <color name="theme4">#5B0D7A</color>
+    <color name="theme0">#11616D</color>
+    <color name="theme1">#CA6B17</color>
+    <color name="theme2">#8B1B1B</color>
+    <color name="theme3">#1F4766</color>
+    <color name="theme4">#175E4D</color>
+    <color name="theme5">#85264F</color>
 
 </resources>

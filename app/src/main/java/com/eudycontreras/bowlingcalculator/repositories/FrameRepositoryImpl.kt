@@ -8,10 +8,13 @@ import com.eudycontreras.bowlingcalculator.persistance.dao.FramesDao
 import com.eudycontreras.bowlingcalculator.persistance.entities.FrameEntity
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
-
 class FrameRepositoryImpl(
     private val manager: PersistenceManager,
     private val frameDao: FramesDao

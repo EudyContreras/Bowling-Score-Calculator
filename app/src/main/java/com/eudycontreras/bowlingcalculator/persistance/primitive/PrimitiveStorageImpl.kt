@@ -9,8 +9,12 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
 
 class PrimitiveStorageImpl(context: Context) :
@@ -25,6 +29,9 @@ class PrimitiveStorageImpl(context: Context) :
 
         private const val ACTIVE_TAB_INDEX = "active_tab_index"
         private const val ACTIVE_TAB_INDEX_DEFAULT = 0
+
+        private const val ACTIVE_THEME_COLOR = "active_theme_color"
+        private const val ACTIVE_THEME_COLOR_DEFAULT = -16752540
 
         private const val BOWLER_IDS = "bowler_ids"
         private val BOWLER_IDS_DEFAULT = null
@@ -59,6 +66,13 @@ class PrimitiveStorageImpl(context: Context) :
             ACTIVE_TAB_INDEX_DEFAULT
         )
         set(value) = sharedPreferences.edit { putInt(ACTIVE_TAB_INDEX, value) }
+
+    override var activeTheme: Int
+        get() = sharedPreferences.getInt(
+            ACTIVE_THEME_COLOR,
+            ACTIVE_THEME_COLOR_DEFAULT
+        )
+        set(value) = sharedPreferences.edit { putInt(ACTIVE_THEME_COLOR, value) }
 
     override var currentBowlerIds: LongArray
         get() = if (sharedPreferences.getString(BOWLER_IDS, BOWLER_IDS_DEFAULT) == null) {

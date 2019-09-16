@@ -12,16 +12,20 @@ import android.view.animation.DecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import androidx.fragment.app.DialogFragment
 import com.eudycontreras.bowlingcalculator.R
-import com.eudycontreras.bowlingcalculator.components.views.ViewComponent
 import com.eudycontreras.bowlingcalculator.utilities.extensions.addTouchAnimation
 import com.eudycontreras.bowlingcalculator.utilities.extensions.dimensions
 
+
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
 
-abstract class DialogFragment: DialogFragment(), ViewComponent {
+abstract class DialogFragment: DialogFragment() {
 
     companion object {
         val STYLE_NORMAL = 0
@@ -47,7 +51,7 @@ abstract class DialogFragment: DialogFragment(), ViewComponent {
         return dialog
     }
 
-    override fun assignInteraction(view: View?) {
+    fun assignInteraction(view: View?) {
         view?.addTouchAnimation(
             clickTarget = null,
             scale = 0.95f,
@@ -55,4 +59,7 @@ abstract class DialogFragment: DialogFragment(), ViewComponent {
             interpolatorRelease = OvershootInterpolator()
         )
     }
+
+    abstract fun setDefaultValues()
+    abstract fun registerListeners()
 }

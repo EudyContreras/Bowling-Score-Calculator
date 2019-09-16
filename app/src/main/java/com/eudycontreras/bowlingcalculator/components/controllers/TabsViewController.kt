@@ -16,8 +16,12 @@ import com.eudycontreras.bowlingcalculator.utilities.properties.Palette
 import kotlinx.android.synthetic.main.dialog_create_bowlers.view.*
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
 
 class TabsViewController(
@@ -33,8 +37,7 @@ class TabsViewController(
         val onDismiss = {
             if (!context.app.persistenceManager.hasBowlers()) {
                 val state = EmptyStateViewComponent.EmptyState.Main(context) {
-                    hideDialogIcon(false)
-                    onTabRequested(true, view = it)
+                    onTabRequested(view = it)
                 }
                 scoreController.emptyStateController.setState(state)
                 scoreController.emptyStateController.revealState()
@@ -49,13 +52,14 @@ class TabsViewController(
         createComponent.parentView.windowIcon.alpha = if (hide) 0f else 1f
     }
 
-    fun onTabRequested(manual: Boolean, fromEmptyState: Boolean = false, listener: BowlerListener = null, view: View? = null) {
-        if (manual) {
-            if (view != null) {
-                context.morphTransitioner.startView = view as MorphLayout
-                context.showOverlay()
-                createComponent.show(fromEmptyState = fromEmptyState)
+    fun onTabRequested(fromEmptyState: Boolean = false, view: View? = null) {
+        view?.let {
+            if (fromEmptyState) {
+                hideDialogIcon(false)
             }
+            context.morphTransitioner.startView = it as MorphLayout
+            context.showOverlay()
+            createComponent.show(fromEmptyState = fromEmptyState)
         }
     }
 
@@ -65,10 +69,6 @@ class TabsViewController(
 
     fun onTabSelection(current: Int, manual: Boolean = false) {
         scoreController.selectBowler(current, manual)
-    }
-
-    fun selectTab(index: Int) {
-        viewComponent.selectTab(index)
     }
 
     fun addTabs(bowlers: List<Bowler>, currentIndex: Int? = null, manual: Boolean) {
