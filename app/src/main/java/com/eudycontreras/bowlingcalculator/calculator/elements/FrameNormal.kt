@@ -5,8 +5,12 @@ import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_PIN_COUNT
 import com.eudycontreras.bowlingcalculator.utilities.NO_ID
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
 
 data class FrameNormal(override var index: Int) : Frame() {

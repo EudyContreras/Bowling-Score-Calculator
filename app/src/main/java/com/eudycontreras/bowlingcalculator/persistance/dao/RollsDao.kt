@@ -4,8 +4,12 @@ import androidx.room.*
 import com.eudycontreras.bowlingcalculator.persistance.entities.RollEntity
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
 
 @Dao
@@ -35,13 +39,13 @@ abstract class RollsDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     abstract suspend fun update(roll: List<RollEntity>): Int
 
-    @Query(value = "SELECT * FROM rolls WHERE bowlerId = :id")
+    @Query("SELECT * FROM rolls WHERE bowlerId = :id")
     abstract suspend fun findByBowlerId(id: Long): List<RollEntity>
 
-    @Query(value = "SELECT * FROM rolls WHERE bowlerId = :bowlerId AND frameIndex = :frameIndex")
+    @Query("SELECT * FROM rolls WHERE bowlerId = :bowlerId AND frameIndex = :frameIndex")
     abstract suspend fun findByBowlerIdAndIndex(bowlerId: Long, frameIndex: Int): List<RollEntity>
 
-    @Query(value = "SELECT * FROM rolls WHERE bowlerId = :bowlerId AND frameIndex = :frameIndex")
+    @Query("SELECT * FROM rolls WHERE bowlerId = :bowlerId AND frameIndex = :frameIndex")
     abstract suspend fun getByBowlerIdAndIndex(bowlerId: Long, frameIndex: Int): List<RollEntity>
 
     @Query("DELETE FROM rolls WHERE bowlerId = :bowlerId AND frameIndex = :frameIndex")

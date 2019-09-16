@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#212121</color>
-    <color name="colorPrimaryDark">#101010</color>
+    <color name="colorPrimaryDarker">#191919</color>
+    <color name="colorPrimaryDark">#131313</color>
     <color name="colorPrimaryLight">#282828</color>
     <color name="colorPrimaryVeryLight">#373737</color>
     <color name="colorPrimaryLightest">#3C3C3C</color>
+
+    <color name="overlay">#95000000</color>
 
     <color name="colorAccent">#006064</color>
     <color name="colorAccentLight">#028085</color>
@@ -14,6 +17,9 @@
 
     <color name="white">#FFF</color>
     <color name="gray">#D6D6D6</color>
+
+    <color name="empty">#ADADAD</color>
+    <color name="emptyShape">#C8C8C8</color>
 
     <color name="shadow">#40000000</color>
     <color name="shadowDark">#A0000000</color>
@@ -29,5 +35,12 @@
     <color name="frameMarkInactive">#DEDEDE</color>
 
     <color name="colorActionButton">#212121</color>
+
+    <color name="theme0">#11616D</color>
+    <color name="theme1">#CA6B17</color>
+    <color name="theme2">#8B1B1B</color>
+    <color name="theme3">#1F4766</color>
+    <color name="theme4">#175E4D</color>
+    <color name="theme5">#85264F</color>
 
 </resources>

@@ -1,7 +1,12 @@
 package com.eudycontreras.bowlingcalculator.utilities.properties
 
 /**
- * Created by eudycontreras.
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
+ * @since January 2019
  */
 data class Margin(
     val start: Float = 0f,

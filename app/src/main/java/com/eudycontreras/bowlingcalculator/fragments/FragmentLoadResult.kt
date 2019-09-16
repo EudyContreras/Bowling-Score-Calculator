@@ -9,10 +9,13 @@ import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.components.controllers.ActionViewController
 import kotlinx.android.synthetic.main.dialog_load_result.view.*
 
-
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
 
 class FragmentLoadResult: DialogFragment() {
@@ -31,7 +34,7 @@ class FragmentLoadResult: DialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         loadDialog = inflater.inflate(R.layout.dialog_load_result, container) as ConstraintLayout
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.FullScreenDialogStyle)
+        setStyle(STYLE_NORMAL, R.style.FullScreenDialogStyle)
         setDefaultValues()
         registerListeners()
 

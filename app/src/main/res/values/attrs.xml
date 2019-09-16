@@ -1,12 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Project custom view attributes -->
     <declare-styleable name="BubbleView">
         <attr name="bubble_pointer_length" format="dimension"/>
         <attr name="bubble_pointer_width" format="dimension"/>
         <attr name="bubble_corner_radius" format="dimension"/>
         <attr name="bubble_elevation" format="dimension"/>
     </declare-styleable>
-    <declare-styleable name="RoundedCornerLayout">
-        <attr name="rcl_corner_radius" format="dimension"/>
+
+    <declare-styleable name="ConstraintLayout">
+        <attr name="cl_shapeType" format="enum">
+            <enum name="CIRCULAR" value="0"/>
+            <enum name="RECTANGULAR" value="1"/>
+        </attr>
+        <attr name="cl_radius" format="dimension"/>
+        <attr name="cl_topLeftCornerRadius" format="dimension" />
+        <attr name="cl_topRightCornerRadius" format="dimension" />
+        <attr name="cl_bottomLeftCornerRadius" format="dimension" />
+        <attr name="cl_bottomRightCornerRadius" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="FrameLayout">
+        <attr name="fl_shapeType" format="enum">
+            <enum name="CIRCULAR" value="0"/>
+            <enum name="RECTANGULAR" value="1"/>
+        </attr>
+        <attr name="fl_radius" format="dimension"/>
+        <attr name="fl_topLeftCornerRadius" format="dimension" />
+        <attr name="fl_topRightCornerRadius" format="dimension" />
+        <attr name="fl_bottomLeftCornerRadius" format="dimension" />
+        <attr name="fl_bottomRightCornerRadius" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="LinearLayout">
+        <attr name="ll_shapeType" format="enum">
+            <enum name="CIRCULAR" value="0"/>
+            <enum name="RECTANGULAR" value="1"/>
+        </attr>
+        <attr name="ll_radius" format="dimension"/>
+        <attr name="ll_topLeftCornerRadius" format="dimension" />
+        <attr name="ll_topRightCornerRadius" format="dimension" />
+        <attr name="ll_bottomLeftCornerRadius" format="dimension" />
+        <attr name="ll_bottomRightCornerRadius" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="ViewLayout">
+        <attr name="vl_shapeType" format="enum">
+            <enum name="CIRCULAR" value="0"/>
+            <enum name="RECTANGULAR" value="1"/>
+        </attr>
+        <attr name="vl_radius" format="dimension"/>
+        <attr name="vl_topLeftCornerRadius" format="dimension" />
+        <attr name="vl_topRightCornerRadius" format="dimension" />
+        <attr name="vl_bottomLeftCornerRadius" format="dimension" />
+        <attr name="vl_bottomRightCornerRadius" format="dimension" />
     </declare-styleable>
 </resources>

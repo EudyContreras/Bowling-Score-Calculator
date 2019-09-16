@@ -6,7 +6,6 @@ import android.view.animation.DecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
@@ -20,12 +19,13 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.dp
 import kotlinx.android.synthetic.main.item_tab_view.view.*
 import java.lang.ref.WeakReference
 
-
-
-
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
 
 class TabViewAdapter(
@@ -142,7 +142,7 @@ class TabViewAdapter(
         return items[position].bowlerId
     }
 
-    abstract class TabViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
+    abstract class TabViewHolder(view: View) : RecyclerView.ViewHolder(view){
         abstract fun resetValues()
         abstract fun registerListeners()
         abstract fun performBinding(model: TabViewModel)
@@ -158,27 +158,19 @@ class TabViewAdapter(
         }
 
         override fun registerListeners() {
-            itemView.setOnClickListener(this)
+            itemView.setOnClickListener {
+                model?.let {
+                    currentIndex = layoutPosition
+                    viewComponent.controller.hideDialogIcon()
+                    viewComponent.controller.onTabRequested(view = itemView)
+                }
+            }
         }
 
         override fun resetValues() { }
 
         override fun performBinding(model: TabViewModel) {
             this.model = model
-            this.itemView.addTouchAnimation(
-                clickTarget = null,
-                scale = 0.90f,
-                depth = (-8).dp,
-                interpolatorPress = DecelerateInterpolator(),
-                interpolatorRelease = OvershootInterpolator()
-            )
-        }
-
-        override fun onClick(view: View?) {
-            model?.let {
-                currentIndex = layoutPosition
-                viewComponent.controller.onTabRequested(true)
-            }
         }
     }
 
@@ -195,16 +187,31 @@ class TabViewAdapter(
 
         private val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
             override fun onLongPress(e: MotionEvent) {
-                Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
                 viewComponent.controller.requestRename(model)
             }
-        })
 
+            override fun onSingleTapUp(e: MotionEvent?): Boolean {
+                if (currentIndex == layoutPosition) {
+                    return false
+                }
+                currentIndex = layoutPosition
+                viewComponent.controller.onTabSelection(layoutPosition, true)
+                lastTab?.let { reference ->
+                    if (!reference.isEnqueued) {
+                        (reference.get() as TabViewHolderNormal?)?.deactivateTab()
+                    }
+                }
+                activateTab()
+                return super.onSingleTapUp(e)
+            }
+        })
 
         init {
             resetValues()
             registerListeners()
+        }
 
+        override fun registerListeners(){
             this.tabItem.addTouchAnimation(
                 clickTarget = null,
                 depth = (-8).dp,
@@ -212,31 +219,10 @@ class TabViewAdapter(
                 interpolatorRelease = OvershootInterpolator(),
                 gestureDetector = gestureDetector
             )
-        }
 
-        override fun registerListeners(){
-            tabItem.isLongClickable = true
-            tabItem.setOnClickListener(this)
-
-            tabAction.setOnClickListener {
-                if (!removed) {
-                    removeTab()
-                }
+            this.tabAction.setOnClickListener {
+                removeTab()
             }
-        }
-
-        override fun onClick(view: View?) {
-            if (currentIndex == layoutPosition) {
-                return
-            }
-            currentIndex = layoutPosition
-            viewComponent.controller.onTabSelection(layoutPosition, true)
-            lastTab?.let { reference ->
-                if (!reference.isEnqueued) {
-                    (reference.get() as TabViewHolderNormal?)?.deactivateTab()
-                }
-            }
-            activateTab()
         }
 
         override fun resetValues() {
@@ -290,7 +276,7 @@ class TabViewAdapter(
         }
 
         private fun removeTab() {
-            val lastTabIndex = currentIndex
+            val lastTabIndex = layoutPosition
             removed = true
             currentIndex = if (layoutPosition == (itemCount - 2) && layoutPosition != 0) {
                 layoutPosition - 1

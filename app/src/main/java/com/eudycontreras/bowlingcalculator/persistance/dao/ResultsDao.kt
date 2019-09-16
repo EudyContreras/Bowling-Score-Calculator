@@ -5,8 +5,12 @@ import androidx.room.*
 import com.eudycontreras.bowlingcalculator.persistance.entities.ResultEntity
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
 
 @Dao
@@ -27,13 +31,13 @@ abstract class ResultsDao {
     @Query("SELECT EXISTS(SELECT 1 FROM results WHERE id = :resultId  LIMIT 1)")
     abstract suspend fun exists(resultId: Long): Boolean
 
-    @Query(value = "SELECT * FROM results WHERE id = :id LIMIT 1")
+    @Query("SELECT * FROM results WHERE id = :id LIMIT 1")
     abstract fun findById(id: Long): LiveData<ResultEntity>
 
-    @Query(value = "SELECT * FROM results ORDER BY name ASC")
+    @Query("SELECT * FROM results ORDER BY name ASC")
     abstract fun findAllOrderByName(): LiveData<List<ResultEntity>>
 
-    @Query(value = "SELECT * FROM results ORDER BY date DESC")
+    @Query("SELECT * FROM results ORDER BY date DESC")
     abstract fun findAllOrderByDate(): LiveData<List<ResultEntity>>
 
     @Query("DELETE FROM results WHERE id = :id")

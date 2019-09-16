@@ -66,7 +66,6 @@
             android:layout_marginStart="@dimen/margin_medium"
             android:layout_marginEnd="@dimen/margin_large"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
         <FrameLayout
@@ -87,7 +86,7 @@
     </FrameLayout>
 
     <LinearLayout
-            android:visibility="visible"
+            android:visibility="invisible"
             android:id="@+id/actionLoadSaveResult"
             android:layout_width="110dp"
             android:layout_height="match_parent"
@@ -110,9 +109,10 @@
                 android:layout_weight="1"
                 android:layout_marginEnd="3dp"
                 android:background="@drawable/shape_button_left"
-                android:backgroundTint="@color/colorAccent"
+                android:backgroundTint="@color/colorAccentDark"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:clickable="false"
                 android:elevation="1dp"
                 android:translationZ="3dp">
             <View
@@ -120,6 +120,7 @@
                     android:layout_gravity="center"
                     android:layout_width="@dimen/actionIcon_small"
                     android:layout_height="@dimen/actionIcon_small"
+                    android:backgroundTint="@color/colorAccentDark"
                     android:background="@drawable/ic_load_result"/>
         </FrameLayout>
 
@@ -128,16 +129,18 @@
                 android:layout_weight="1"
                 android:layout_marginStart="3dp"
                 android:background="@drawable/shape_button_right"
-                android:backgroundTint="@color/colorAccent"
+                android:backgroundTint="@color/colorAccentDark"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:elevation="1dp"
+                android:clickable="false"
                 android:translationZ="3dp">
             <View
                     android:id="@+id/actionSaveResultIcon"
                     android:layout_gravity="center"
                     android:layout_width="@dimen/actionIcon_small"
                     android:layout_height="@dimen/actionIcon_small"
+                    android:backgroundTint="@color/colorAccentDark"
                     android:background="@drawable/ic_save_result"/>
         </FrameLayout>
 

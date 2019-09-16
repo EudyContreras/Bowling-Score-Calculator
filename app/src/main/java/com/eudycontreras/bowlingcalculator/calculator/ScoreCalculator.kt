@@ -49,7 +49,7 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.sum
  *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
- * @since June 21 2019
+ * @since January 21 2019
  *
  *********************************************************************/
 

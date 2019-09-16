@@ -7,9 +7,13 @@ import android.graphics.Shader
 import android.view.MotionEvent
 
 /**
- * Created by eudycontreras.
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
+ * @since January 2019
  */
-
 abstract class Shape {
 
     val corners: CornerRadii by lazy { CornerRadii() }

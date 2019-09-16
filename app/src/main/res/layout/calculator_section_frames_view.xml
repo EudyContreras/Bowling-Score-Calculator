@@ -9,7 +9,6 @@
         android:clipToPadding="false"
         android:paddingTop="@dimen/padding_medium"
         android:paddingBottom="@dimen/padding_medium"
-        android:elevation="2dp"
         android:clickable="false"
         android:focusable="false"
         app:layout_constraintBottom_toBottomOf="parent"

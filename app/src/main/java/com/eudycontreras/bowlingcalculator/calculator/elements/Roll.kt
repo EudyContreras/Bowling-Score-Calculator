@@ -4,6 +4,9 @@ import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_PIN_COUNT
 
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * A bowling roll made by the bowler. The result of
  * the roll is partially determined by the bowler's skill
  *
@@ -12,7 +15,9 @@ import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_PIN_COUNT
  *
  * @Project BowlingCalculator
  * @author Eudy Contreras
+ * @since January 2019
  */
+
 data class Roll(
     var bowlerId: Long,
     var totalKnockdown: Int = 0,

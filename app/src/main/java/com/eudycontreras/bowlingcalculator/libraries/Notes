@@ -1,0 +1,12 @@
+TODO PRIORITY 1:
+
+    Morph icons
+    Optimize layout transition
+    Cull children for lighter transition
+    Deal with children of the starting view (Fade them)
+    Deal with BitmapDrawable transitions (Images)
+    Deal with VectorDrawable transitions (Icons, etc)
+    Allow backgrounds of MorphLayouts to have ripples
+
+LIMITATIONS:
+

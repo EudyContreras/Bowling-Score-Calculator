@@ -12,8 +12,12 @@ import kotlinx.android.synthetic.main.dialog_save_result.*
 import kotlinx.android.synthetic.main.dialog_save_result.view.*
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
 
 class FragmentSaveResult: DialogFragment() {
@@ -32,7 +36,7 @@ class FragmentSaveResult: DialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         saveDialog = inflater.inflate(R.layout.dialog_save_result, container) as ConstraintLayout
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.FullScreenDialogStyle)
+        setStyle(STYLE_NORMAL, R.style.FullScreenDialogStyle)
         setDefaultValues()
         registerListeners()
 

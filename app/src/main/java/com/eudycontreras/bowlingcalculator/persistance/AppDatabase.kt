@@ -11,6 +11,9 @@ import com.eudycontreras.bowlingcalculator.persistance.entities.*
 import com.eudycontreras.bowlingcalculator.utilities.DB_VERSION
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * App database, defining the different DAOs
  *
  * Exports the schema of each version to $projectDir/schemas/
@@ -18,7 +21,9 @@ import com.eudycontreras.bowlingcalculator.utilities.DB_VERSION
  *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
 */
+
 private const val DATABASE_NAME = "bowling_calculator.db"
 
 @Database(

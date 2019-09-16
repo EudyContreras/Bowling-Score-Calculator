@@ -13,14 +13,18 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
 
 class TabsViewComponent(
     private val context: MainActivity,
     val controller: TabsViewController
-) : ViewComponent {
+) : ViewComponent() {
 
     private lateinit var tabAdapter: TabViewAdapter
 
@@ -61,7 +65,6 @@ class TabsViewComponent(
 
         tabRecycler?.let {
             val itemAnimator = DefaultItemAnimator()
-            itemAnimator.removeDuration = 40
             it.itemAnimator = itemAnimator
             it.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
             it.adapter = tabAdapter

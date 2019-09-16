@@ -30,6 +30,7 @@
 
     <include
             layout="@layout/item_frame_view_mark"
+            android:tag="markOne"
             android:id="@+id/firstRoundMark"
             android:layout_width="@dimen/mark"
             android:layout_height="@dimen/mark"
@@ -40,6 +41,7 @@
 
     <include
             layout="@layout/item_frame_view_mark"
+            android:tag="markTwo"
             android:id="@+id/secondRoundMark"
             android:layout_width="@dimen/mark"
             android:layout_height="@dimen/mark"
@@ -50,6 +52,7 @@
 
     <include
             layout="@layout/item_frame_view_mark"
+            android:tag="markThree"
             android:id="@+id/extraRoundMark"
             android:layout_width="@dimen/mark"
             android:layout_height="@dimen/mark"
@@ -62,6 +65,7 @@
 
     <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/frameScore"
+            android:tag="score"
             android:layout_width="90dp"
             android:layout_height="@dimen/mark"
             android:layout_gravity="center"

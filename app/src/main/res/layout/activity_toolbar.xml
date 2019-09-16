@@ -27,7 +27,7 @@
                     android:visibility="visible"
                     android:layout_marginEnd="@dimen/margin_large"
                     android:layout_gravity="end|center"
-                    android:background="@drawable/img_bowling_logo_alt"
+                    android:background="@drawable/img_logo"
                     android:layout_width="32dp"
                     android:layout_height="32dp"/>
             <TextView
@@ -44,7 +44,7 @@
 
         <FrameLayout
                 android:visibility="gone"
-                app:layout_constraintEnd_toStartOf="@+id/toolbarMenuBorder"
+                app:layout_constraintEnd_toStartOf="@+id/toolbarMenuContainer"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/shape_circle"
@@ -72,32 +72,39 @@
         </FrameLayout>
 
         <FrameLayout
-                android:id="@+id/toolbarMenuBorder"
+                android:id="@+id/toolbarMenuContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/shape_circle"
-                android:backgroundTint="@color/colorAccentDark"
+                android:backgroundTint="@color/shadow"
                 android:layout_marginEnd="@dimen/margin_large"
-                android:layout_gravity="end|center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-            <FrameLayout
+                android:layout_gravity="end|center">
+            <com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.FrameLayout
                     android:id="@+id/toolbarMenu"
+                    android:tag="settings"
                     android:layout_gravity="center"
                     android:layout_margin="4dp"
                     android:backgroundTint="@color/colorAccent"
-                    android:background="@drawable/shape_circle"
                     android:elevation="1dp"
                     android:translationZ="6dp"
                     android:layout_width="32dp"
-                    android:layout_height="32dp">
-                <View
+                    android:layout_height="32dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:fl_shapeType="CIRCULAR">
+                <com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.ViewLayout
+                        android:tag="settingsIcon"
                         android:layout_gravity="center"
+                        android:backgroundTint="@color/white"
                         android:background="@drawable/ic_menu"
                         android:layout_width="24dp"
                         android:layout_height="24dp"/>
-            </FrameLayout>
+            </com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.FrameLayout>
+
         </FrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

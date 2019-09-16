@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:orientation="vertical"
-        android:background="@drawable/shape_tab"
         android:backgroundTint="@color/colorPrimaryLight"
-        android:clipToPadding="false"
         android:clipChildren="false"
+        android:clipToPadding="false"
+        android:paddingEnd="@dimen/padding_large"
+        android:paddingStart="@dimen/padding_large"
         android:layout_marginEnd="2dp"
         android:layout_marginStart="2dp"
         android:layout_marginTop="2dp"
-        android:paddingEnd="@dimen/padding_large"
-        android:paddingStart="@dimen/padding_large"
         android:layout_width="wrap_content"
-        android:layout_height="40dp">
+        android:layout_height="40dp"
+        app:cl_topLeftCornerRadius="12dp"
+        app:cl_topRightCornerRadius="12dp">
 
-    <FrameLayout
-            android:layout_marginStart="@dimen/margin_large"
+    <com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.FrameLayout
+            android:id="@+id/addIcon"
+            android:tag="addBowler"
+            android:layout_marginStart="@dimen/margin"
             android:layout_marginEnd="@dimen/margin"
             android:layout_gravity="end|center"
             android:layout_width="24dp"
@@ -26,15 +27,20 @@
             android:backgroundTint="@color/white"
             android:elevation="1dp"
             android:translationZ="6dp"
+            app:fl_shapeType="CIRCULAR"
+            app:fl_radius="24dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/tabItemLabel">
-        <View
+            app:layout_constraintBottom_toBottomOf="parent">
+        <com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.ViewLayout
+                android:tag="addBowlerIcon"
+                android:rotation="-180"
                 android:layout_gravity="center"
                 android:background="@drawable/ic_add"
                 android:backgroundTint="@color/colorPrimaryLight"
                 android:layout_width="20dp"
                 android:layout_height="20dp"/>
-    </FrameLayout>
+    </com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.FrameLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.ConstraintLayout>

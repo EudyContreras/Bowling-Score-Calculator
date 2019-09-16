@@ -9,8 +9,12 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.clamp
 import com.eudycontreras.bowlingcalculator.utilities.extensions.doWhen
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
 
 data class Bowler(

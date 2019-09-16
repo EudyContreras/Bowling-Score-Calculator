@@ -9,13 +9,5 @@ TODO PRIORITY 2:
     Add the reveal dialog lib and use it
     Add game completed indicator
     Add extra toolbar action to show information about the current result
-    Allow renaming of added bowlers with long press or editor list
 
-TODO Rename Bowler
-
-    Long press tab,
-    Animate slide down the name input already showing the current name of the bowler
-    Changes on the input should reflect on the tab. The tab should resize based on the input
-    When saving animate the icon from a saving icon to a done icon and slide the input away
-    The input should disappear after 3 seconds of inactivity if the user does not save
 

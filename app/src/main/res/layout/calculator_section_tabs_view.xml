@@ -10,6 +10,8 @@
         android:background="@color/colorPrimary"
         android:orientation="horizontal"
         android:paddingTop="2dp"
+        android:paddingStart="2dp"
+        android:paddingEnd="2dp"
         tools:listitem="@layout/item_tab_view"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
 </androidx.recyclerview.widget.RecyclerView>

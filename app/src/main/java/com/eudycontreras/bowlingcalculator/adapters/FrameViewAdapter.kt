@@ -32,8 +32,12 @@ import kotlinx.android.synthetic.main.item_frame_view_mark.view.*
 
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
 
 class FrameViewAdapter(

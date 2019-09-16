@@ -6,14 +6,25 @@ import android.view.animation.OvershootInterpolator
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.components.controllers.LoaderViewController
+import com.eudycontreras.bowlingcalculator.listeners.PaletteListener
 import com.eudycontreras.bowlingcalculator.utilities.extensions.color
 import com.eudycontreras.bowlingcalculator.utilities.extensions.dp
+import com.eudycontreras.bowlingcalculator.utilities.properties.Palette
 import kotlinx.android.synthetic.main.activity_main.*
+
+/**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
+ * @since January 2019
+ */
 
 class LoaderViewComponent(
     private val context: MainActivity,
     val controller: LoaderViewController
-) : ViewComponent {
+) : ViewComponent(), PaletteListener {
 
     private val loader = context.progressLoader
 
@@ -29,7 +40,7 @@ class LoaderViewComponent(
         loader.scaleY = 0.5f
         loader.alpha = 0f
         loader.translationZ = 0f
-        loader.indeterminateDrawable.setColorFilter(context.color(R.color.colorAccentLight), android.graphics.PorterDuff.Mode.SRC_ATOP)
+        loader.indeterminateDrawable.setColorFilter(context.color(R.color.theme0), android.graphics.PorterDuff.Mode.SRC_ATOP)
     }
 
     override fun registerListeners() { }
@@ -56,5 +67,10 @@ class LoaderViewComponent(
             .setInterpolator(OvershootInterpolator())
             .setDuration(showDuration)
             .start()
+    }
+
+    override fun onNewPalette(palette: Palette) {
+        val color = palette.colorPrimaryLight
+        loader.indeterminateDrawable.setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_ATOP)
     }
 }

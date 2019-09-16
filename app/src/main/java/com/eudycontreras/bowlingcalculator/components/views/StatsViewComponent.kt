@@ -13,14 +13,18 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
 
 class StatsViewComponent(
     context: MainActivity,
     private val controller: StatsViewController
-) : ViewComponent {
+) : ViewComponent() {
 
     private val parentView: View? = context.statsArea
 

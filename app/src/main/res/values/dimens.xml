@@ -1,5 +1,5 @@
 <resources>
-    <!-- Default screen margins, per the Android Design guidelines. -->
+    <!-- Main screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
@@ -32,6 +32,8 @@
     <dimen name="spacing_extra_extra_large">32dp</dimen>
 
     <dimen name="state_icon_size_default">110dp</dimen>
+    <dimen name="state_icon_size_small">90dp</dimen>
+    <dimen name="state_icon_size_medium">130dp</dimen>
     <dimen name="state_icon_size_large">160dp</dimen>
     <dimen name="state_icon_title_spacing">32dp</dimen>
     <dimen name="state_body_button_spacing">56dp</dimen>

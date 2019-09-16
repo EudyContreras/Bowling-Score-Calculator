@@ -4,11 +4,14 @@ import androidx.annotation.ColorInt
 import com.eudycontreras.bowlingcalculator.utilities.AndroidColor
 import kotlin.math.roundToInt
 
-
 /**
- * Created by eudycontreras.
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
+ * @Project BowlingCalculator
+ * @author Eudy Contreras.
+ * @since January 2019
  */
-
 data class MutableColor(
     private var alpha: Int = 255,
     private var red: Int = 0,
@@ -169,6 +172,14 @@ data class MutableColor(
 
         this.colorChanged = true
         return this
+    }
+
+    fun brigher(amount: Int): Color {
+        return MutableColor(alpha, clamp(red + amount), clamp(green + amount), clamp(blue + amount))
+    }
+
+    fun darker(amount: Int): Color {
+        return MutableColor(alpha, clamp(red - amount), clamp(green - amount), clamp(blue - amount))
     }
 
     override fun toColor(): Int {

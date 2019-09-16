@@ -16,7 +16,7 @@
     <com.eudycontreras.bowlingcalculator.customviews.SquareFrameLayout
             android:id="@+id/throwInput"
             android:background="@drawable/shape_circle"
-            android:backgroundTint="@color/colorPrimary"
+            android:backgroundTint="@color/colorPrimaryLight"
             android:elevation="1dp"
             android:translationZ="4dp"
             android:layout_width="match_parent"

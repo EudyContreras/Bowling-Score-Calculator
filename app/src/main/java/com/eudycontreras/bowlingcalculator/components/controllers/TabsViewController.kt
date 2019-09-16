@@ -1,44 +1,66 @@
 package com.eudycontreras.bowlingcalculator.components.controllers
 
+import android.view.View
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.adapters.TabViewAdapter
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.calculator.elements.Bowler
-import com.eudycontreras.bowlingcalculator.components.views.SkeletonViewComponent
+import com.eudycontreras.bowlingcalculator.components.views.CreateViewComponent
+import com.eudycontreras.bowlingcalculator.components.views.EmptyStateViewComponent
 import com.eudycontreras.bowlingcalculator.components.views.TabsViewComponent
-import com.eudycontreras.bowlingcalculator.fragments.FragmentCreateBowler
+import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.MorphLayout
+import com.eudycontreras.bowlingcalculator.listeners.PaletteListener
 import com.eudycontreras.bowlingcalculator.utilities.BowlerListener
 import com.eudycontreras.bowlingcalculator.utilities.extensions.app
+import com.eudycontreras.bowlingcalculator.utilities.properties.Palette
+import kotlinx.android.synthetic.main.dialog_create_bowlers.view.*
 
 /**
+ * Copyright (C) 2019 Bowling Score Calculator Project
+ * Licensed under the MIT license.
+ *
  * @Project BowlingCalculator
  * @author Eudy Contreras.
+ * @since January 2019
  */
 
 class TabsViewController(
-    private val context: MainActivity,
+    val context: MainActivity,
     private val scoreController: ScoreController
-) {
+): PaletteListener {
 
     private var viewComponent: TabsViewComponent = TabsViewComponent(context, this)
+    private var createComponent: CreateViewComponent = CreateViewComponent(context, this)
 
     init {
         scoreController.tabsController = this
-    }
-
-
-    fun onTabRequested(manual: Boolean, listener: BowlerListener = null) {
         val onDismiss = {
             if (!context.app.persistenceManager.hasBowlers()) {
-                scoreController.skeletonController.setState(SkeletonViewComponent.EmptyState.Default(context) {
-                    onTabRequested(true)
-                })
-                scoreController.skeletonController.revealState()
+                val state = EmptyStateViewComponent.EmptyState.Main(context) {
+                    onTabRequested(view = it)
+                }
+                scoreController.emptyStateController.setState(state)
+                scoreController.emptyStateController.revealState()
             } else {
-                scoreController.skeletonController.concealState()
+                scoreController.emptyStateController.concealState()
             }
         }
-        context.openDialog(FragmentCreateBowler.instance(this, manual, listener, onDismiss))
+        createComponent.setOptions(true, null, onDismiss)
+    }
+
+    fun hideDialogIcon(hide: Boolean = true) {
+        createComponent.parentView.windowIcon.alpha = if (hide) 0f else 1f
+    }
+
+    fun onTabRequested(fromEmptyState: Boolean = false, view: View? = null) {
+        view?.let {
+            if (fromEmptyState) {
+                hideDialogIcon(false)
+            }
+            context.morphTransitioner.startView = it as MorphLayout
+            context.showOverlay()
+            createComponent.show(fromEmptyState = fromEmptyState)
+        }
     }
 
     fun requestTabRemoval(lastIndex: Int, index: Int, onEnd: (()-> Unit)? = null) {
@@ -47,10 +69,6 @@ class TabsViewController(
 
     fun onTabSelection(current: Int, manual: Boolean = false) {
         scoreController.selectBowler(current, manual)
-    }
-
-    fun selectTab(index: Int) {
-        viewComponent.selectTab(index)
     }
 
     fun addTabs(bowlers: List<Bowler>, currentIndex: Int? = null, manual: Boolean) {
@@ -79,4 +97,8 @@ class TabsViewController(
     fun hasTabs(): Boolean = viewComponent.hasTabs()
 
     fun getActive(): Int = viewComponent.getCurrent()
+
+    override fun onNewPalette(palette: Palette) {
+        createComponent.onNewPalette(palette)
+    }
 }
