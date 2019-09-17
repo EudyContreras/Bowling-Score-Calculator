@@ -5,7 +5,7 @@
 [![API](https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=21s)
 [![License: ISC](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/ISC)
 
-A bowling score calculator application written in Kotlins. The score calculator provides powerful functionality and it allows for a swift and dynamic calculation of score for each of the frames of a bowling game. The app allows to track the score of multiples players at once.
+A bowling score calculator application written in Kotlin. This score calculator provides powerful functionality and it allows for a swift and dynamic calculation of score for each of the frames of a bowling game. The app also allows you to track the score of multiples players at once.
 
 ![Bowling calculator themes][BowlingCalculatorImage]
 
@@ -26,7 +26,7 @@ The score calculator works by implementing the rules of score calculation descri
 * Well designed (short and precise) functions
 * Well designed classes
 * Use of Android architectural components
-* Use Dao and shared preferences for persistance
+* Use of Dao and shared preferences for persistance
 
 ### Application
 * Fast and clean UI.
