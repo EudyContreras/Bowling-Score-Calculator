@@ -28,7 +28,7 @@ import com.eudycontreras.bowlingcalculator.utilities.extensions.dimensions
 abstract class DialogFragment: DialogFragment() {
 
     companion object {
-        val STYLE_NORMAL = 0
+        const val STYLE_NORMAL = 0
     }
 
     override fun onResume() {

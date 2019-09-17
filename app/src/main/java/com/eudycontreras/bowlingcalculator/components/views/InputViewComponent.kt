@@ -68,6 +68,8 @@ class InputViewComponent(
 
     override fun setDefaultValues() {
         saveLoader?.hide()
+        nameInput?.isEnabled = false
+        saveNameAction?.isEnabled = false
         context.addBackPressListeners(this)
 
         parentView?.doOnLayout {
@@ -139,10 +141,6 @@ class InputViewComponent(
         }
     }
 
-    fun animateSave(duration: Long) {
-
-    }
-
     private fun saveNewName(newName: String) {
         if (newName.contentEquals(renameInfo.oldName)) {
             return
@@ -197,6 +195,8 @@ class InputViewComponent(
 
     private fun revealInputContainer(duration: Long, endAction: Action) {
         parentView?.let {
+            nameInput?.isEnabled = true
+            saveNameAction?.isEnabled = true
             nameInput?.requestFocus()
             context.showInput()
 
@@ -218,6 +218,9 @@ class InputViewComponent(
 
     private fun concealInputContainer(duration: Long, endAction: Action) {
         parentView?.let {
+            nameInput?.isEnabled = false
+            saveNameAction?.isEnabled = false
+
             nameInput?.clearFocus()
             context.hideInput()
 
