@@ -7,9 +7,8 @@
 
 A bowling score calculator application written in Kotlin. This score calculator provides powerful functionality and it allows for a swift and dynamic calculation of score for each of the frames of a bowling game. The app also allows you to track the score of multiples players at once.
 
-![Bowling calculator themes][BowlingCalculatorImage]
-
-[BowlingCalculatorImage]: https://github.com/EudyContreras/Bowling-Score-Calculator/blob/readme-branch/images/bowling_calculator.png
+![app_demo_2](https://github.com/EudyContreras/Bowling-Score-Calculator/blob/master/app_demo_2.gif)
+![app_demo_3](https://github.com/EudyContreras/Bowling-Score-Calculator/blob/master/app_demo_3.gif)
 
 
 ## How does it work?
@@ -43,6 +42,11 @@ The score calculator works by implementing the rules of score calculation descri
 * Easily add, remove and rename bowlers.
 * Bulk add multiple bowlers.
 * Morphable dialogs.
+
+![Bowling calculator themes][BowlingCalculatorImage]
+
+[BowlingCalculatorImage]: https://github.com/EudyContreras/Bowling-Score-Calculator/blob/readme-branch/images/bowling_calculator.png
+
 
 ## How does the algorithm for calulating the score looks like?
 
