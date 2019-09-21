@@ -34,8 +34,8 @@ class PersistenceManager(
     private val ioScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 
     val bowlerRepo = BowlerRepositoryImpl(this, appDatabase.bowler)
-    val frameRepo = FrameRepositoryImpl(this, appDatabase.frame)
     val resultRepo = ResultRepositoryImpl(this, appDatabase.result)
+    val frameRepo = FrameRepositoryImpl(this, appDatabase.frame)
     val rollRepo = RollRepositoryImpl(this, appDatabase.roll)
 
     fun updateBowler(bowler: Bowler, onEnd: (() -> Unit)? = null) = ioScope.launch {

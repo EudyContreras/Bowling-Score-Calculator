@@ -7,7 +7,9 @@ import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.components.controllers.PaletteViewController
 import com.eudycontreras.bowlingcalculator.libraries.morpher.Morpher
 import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.ConstraintLayout
+import com.eudycontreras.bowlingcalculator.listeners.PaletteListener
 import com.eudycontreras.bowlingcalculator.utilities.extensions.addTouchAnimation
+import com.eudycontreras.bowlingcalculator.utilities.properties.Palette
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.dialog_app_settings.view.*
 
@@ -23,7 +25,7 @@ import kotlinx.android.synthetic.main.dialog_app_settings.view.*
 class ThemeSelectViewComponent(
     private val context: MainActivity,
     val controller: PaletteViewController
-) : ViewComponent() {
+) : PaletteListener, ViewComponent() {
 
     private val parentView: ConstraintLayout = context.settings as ConstraintLayout
 
@@ -83,5 +85,9 @@ class ThemeSelectViewComponent(
         context.morphTransitioner.morphFrom(duration, onEnd = {
 
         })
+    }
+
+    override fun onNewPalette(palette: Palette) {
+
     }
 }

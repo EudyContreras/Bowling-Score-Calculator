@@ -6,7 +6,9 @@ import com.eudycontreras.bowlingcalculator.calculator.elements.Result
 import com.eudycontreras.bowlingcalculator.components.views.ActionsViewComponent
 import com.eudycontreras.bowlingcalculator.fragments.FragmentLoadResult
 import com.eudycontreras.bowlingcalculator.fragments.FragmentSaveResult
+import com.eudycontreras.bowlingcalculator.listeners.PaletteListener
 import com.eudycontreras.bowlingcalculator.utilities.extensions.app
+import com.eudycontreras.bowlingcalculator.utilities.properties.Palette
 import java.util.*
 
 
@@ -22,7 +24,7 @@ import java.util.*
 class ActionViewController(
     private val context: MainActivity,
     private val scoreController: ScoreController
-) {
+): PaletteListener {
 
     private var viewComponent: ActionsViewComponent = ActionsViewComponent(context, this)
 
@@ -61,5 +63,9 @@ class ActionViewController(
     fun saveCurrentResult(name: String, listener: (name: String) -> Unit) {
         val result = Result(name, Date())
         context.app.persistenceManager.saveResult(result, listener)
+    }
+
+    override fun onNewPalette(palette: Palette) {
+        viewComponent.onNewPalette(palette)
     }
 }

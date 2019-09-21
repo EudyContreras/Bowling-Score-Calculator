@@ -7,7 +7,6 @@ import com.eudycontreras.bowlingcalculator.calculator.listeners.ScoreStateListen
 import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_FRAME_CHANCES
 import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_FRAME_COUNT
 import com.eudycontreras.bowlingcalculator.utilities.MAX_POSSIBLE_SCORE_GAME
-import com.eudycontreras.bowlingcalculator.utilities.ZERO
 import com.eudycontreras.bowlingcalculator.utilities.extensions.clone
 import com.eudycontreras.bowlingcalculator.utilities.extensions.next
 import com.eudycontreras.bowlingcalculator.utilities.extensions.previous
@@ -72,8 +71,8 @@ sealed class ScoreCalculator {
             val frames = bowler.frames
 
             frames.forEach {
-                it.bonusPoints = ZERO
-                it.pointsFromPrevious = ZERO
+                it.bonusPoints = 0
+                it.pointsFromPrevious = 0
             }
 
             for ((index, frame) in frames.withIndex()) {
@@ -82,7 +81,7 @@ sealed class ScoreCalculator {
 
                 handleFrameCalculation(index, frames)
 
-                if (index > ZERO) {
+                if (index > 0) {
                     frame.pointsFromPrevious = frames[index.previous()].getTotal(true)
                 }
             }

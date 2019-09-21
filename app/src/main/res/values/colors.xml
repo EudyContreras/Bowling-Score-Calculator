@@ -4,13 +4,13 @@
     <color name="colorPrimaryDarker">#191919</color>
     <color name="colorPrimaryDark">#131313</color>
     <color name="colorPrimaryLight">#282828</color>
-    <color name="colorPrimaryVeryLight">#373737</color>
+    <color name="colorPrimaryVeryLight">#313131</color>
     <color name="colorPrimaryLightest">#3C3C3C</color>
 
     <color name="overlay">#55000000</color>
 
     <color name="colorAccent">#006064</color>
-    <color name="colorAccentLight">#028085</color>
+    <color name="colorAccentLight">#016B6F</color>
     <color name="colorAccentDark">#004346</color>
 
     <color name="red">#AC0404</color>
@@ -36,11 +36,19 @@
 
     <color name="colorActionButton">#212121</color>
 
-    <color name="theme0">#11656D</color>
-    <color name="theme1">#CA6B17</color>
-    <color name="theme2">#8B1B1B</color>
-    <color name="theme3">#194D6F</color>
-    <color name="theme4">#175E4D</color>
-    <color name="theme5">#85264F</color>
+    <color name="theme0">#0C6A6D</color>
+    <color name="theme1">#B46118</color>
+    <color name="theme2">#017781</color>
+    <color name="theme3">#862020</color>
+    <color name="theme4">#1C8160</color> <!--<color name="theme4">#353535</color>-->
+    <color name="theme5">#9C3762</color>
 
+    <array name="themes">
+        <item>#0C6A6D</item>
+        <item>#B46118</item>
+        <item>#017781</item>
+        <item>#8F2626</item>
+        <item>#17815F</item>
+        <item>#9C3762</item>
+    </array>
 </resources>

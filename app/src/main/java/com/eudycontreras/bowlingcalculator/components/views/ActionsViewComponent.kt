@@ -12,9 +12,11 @@ import androidx.core.view.children
 import com.eudycontreras.bowlingcalculator.R
 import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.components.controllers.ActionViewController
+import com.eudycontreras.bowlingcalculator.listeners.PaletteListener
 import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_PIN_COUNT
 import com.eudycontreras.bowlingcalculator.utilities.extensions.addTouchAnimation
 import com.eudycontreras.bowlingcalculator.utilities.extensions.clamp
+import com.eudycontreras.bowlingcalculator.utilities.properties.Palette
 import com.eudycontreras.bowlingcalculator.utilities.runSequential
 import com.eudycontreras.bowlingcalculator.utilities.toString
 import kotlinx.android.synthetic.main.activity_main.*
@@ -31,7 +33,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 class ActionsViewComponent(
     context: MainActivity,
     private val controller: ActionViewController
-) : ViewComponent() {
+) : PaletteListener, ViewComponent() {
 
     private var remainingPins: Int = DEFAULT_PIN_COUNT
 
@@ -43,8 +45,10 @@ class ActionsViewComponent(
     private val throwAction: LinearLayout? = context.findViewById(R.id.throwAction)
 
     private val strikeAction: View? = parentView?.findViewById(R.id.actionStrike)
+    private val strikeActionIcon: View? = parentView?.findViewById(R.id.actionStrikeIcon)
     private val resetAction: View? = parentView?.findViewById(R.id.actionClearScore)
     private val loadSaveAction: View? = parentView?.findViewById(R.id.actionLoadSaveResult)
+    private val spareAction: View? = parentView?.findViewById(R.id.actionSpare)
 
     private val loadAction: View? = loadSaveAction?.findViewById(R.id.actionLoadResult)
     private val saveAction: View? = loadSaveAction?.findViewById(R.id.actionSaveResult)
@@ -214,5 +218,11 @@ class ActionsViewComponent(
             .scaleY(1f)
             .setDuration(duration)
             .start()
+    }
+
+    override fun onNewPalette(palette: Palette) {
+        //resetAction?.backgroundTintList = palette.colorPrimary.toStateList()
+        //strikeActionIcon?.backgroundTintList = palette.colorPrimary.toStateList()
+        //spareAction?.backgroundTintList = palette.colorPrimary.toStateList()
     }
 }

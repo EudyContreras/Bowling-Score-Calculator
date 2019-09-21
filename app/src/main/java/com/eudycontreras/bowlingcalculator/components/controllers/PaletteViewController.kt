@@ -4,6 +4,7 @@ import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.components.views.ThemeSelectViewComponent
 import com.eudycontreras.bowlingcalculator.libraries.morpher.Morpher
+import com.eudycontreras.bowlingcalculator.listeners.PaletteListener
 import com.eudycontreras.bowlingcalculator.utilities.extensions.app
 import com.eudycontreras.bowlingcalculator.utilities.properties.Palette
 
@@ -19,7 +20,7 @@ import com.eudycontreras.bowlingcalculator.utilities.properties.Palette
 class PaletteViewController(
     val context: MainActivity,
     scoreController: ScoreController
-) {
+): PaletteListener {
 
     private var viewComponent: ThemeSelectViewComponent = ThemeSelectViewComponent(context, this)
 
@@ -41,5 +42,9 @@ class PaletteViewController(
         context.morphTransitioner.startingState.color = color
         context.app.persistenceManager.updateThemeColor(color)
         dismiss(Morpher.DEFAULT_DURATION)
+    }
+
+    override fun onNewPalette(palette: Palette) {
+        viewComponent.onNewPalette(palette)
     }
 }

@@ -15,7 +15,6 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.eudycontreras.bowlingcalculator.calculator.controllers.ScoreController
 import com.eudycontreras.bowlingcalculator.components.controllers.*
 import com.eudycontreras.bowlingcalculator.libraries.morpher.Morpher
-import com.eudycontreras.bowlingcalculator.libraries.morpher.effectViews.morphLayouts.FrameLayout
 import com.eudycontreras.bowlingcalculator.listeners.AnimationListener
 import com.eudycontreras.bowlingcalculator.listeners.BackPressedListener
 import com.eudycontreras.bowlingcalculator.listeners.PaletteListener
@@ -222,15 +221,17 @@ class MainActivity : PaletteListener, AppCompatActivity() {
     }
 
     override fun onNewPalette(palette: Palette) {
+        paletteController.onNewPalette(palette)
         emptyStateController.onNewPalette(palette)
         loaderController.onNewPalette(palette)
         tabsController.onNewPalette(palette)
+        actionController.onNewPalette(palette)
 
         throwAction.backgroundTintList = ColorStateList.valueOf(palette.colorPrimary)
-        actionArea.backgroundTintList = ColorStateList.valueOf(palette.colorPrimary)
-        toolbar.backgroundTintList = ColorStateList.valueOf(palette.colorPrimary)
+        actionArea.backgroundTintList = ColorStateList.valueOf(palette.colorPrimaryLight)
+        //toolbar.backgroundTintList = ColorStateList.valueOf(palette.colorPrimary)
 
-        (toolbar.toolbarMenu as FrameLayout).setBackgroundColor(palette.colorPrimary)
+        //(toolbar.toolbarMenu as FrameLayout).setBackgroundColor(palette.colorPrimary)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val window = window

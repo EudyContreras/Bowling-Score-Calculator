@@ -7,7 +7,6 @@ import com.eudycontreras.bowlingcalculator.activities.MainActivity
 import com.eudycontreras.bowlingcalculator.components.controllers.StatsViewController
 import com.eudycontreras.bowlingcalculator.utilities.DEFAULT_START_INDEX
 import com.eudycontreras.bowlingcalculator.utilities.MAX_POSSIBLE_SCORE_GAME
-import com.eudycontreras.bowlingcalculator.utilities.ZERO
 import com.eudycontreras.bowlingcalculator.utilities.toString
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -38,7 +37,7 @@ class StatsViewComponent(
     }
 
     override fun setDefaultValues() {
-        totalScoreStat?.text = ZERO.toString()
+        totalScoreStat?.text = "0"
         maxPossibleStat?.text = MAX_POSSIBLE_SCORE_GAME.toString()
 
         parentView?.visibility = if (controller.showStats) {

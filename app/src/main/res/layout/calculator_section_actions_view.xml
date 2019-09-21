@@ -9,7 +9,7 @@
         android:layout_height="60dp" >
 
     <FrameLayout
-            android:padding="2dp"
+            android:padding="@dimen/padding_small"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:layout_width="110dp"
@@ -28,9 +28,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/shape_button"
-                android:backgroundTint="@color/colorActionButton"
-                android:elevation="0dp"
-                android:translationZ="3dp">
+                android:backgroundTint="@color/colorPrimaryLight"
+                android:elevation="1dp"
+                android:translationZ="4dp">
             <View
                     android:id="@+id/actionClearScoreIcon"
                     android:layout_width="@dimen/actionIcon"
@@ -56,6 +56,39 @@
 
     </FrameLayout>
     <FrameLayout
+            android:visibility="invisible"
+            android:clipToPadding="false"
+            android:clipChildren="false"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:padding="@dimen/padding_small"
+            android:background="@drawable/shape_circle"
+            android:backgroundTint="@color/shadow"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_large"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/strikeWrapper">
+        <FrameLayout
+                android:visibility="visible"
+                android:id="@+id/actionSpare"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="@drawable/shape_circle"
+                android:backgroundTint="@color/colorPrimaryLight"
+                android:elevation="1dp"
+                android:translationZ="4dp">
+            <View
+                    android:background="@drawable/ic_result_spare"
+                    android:backgroundTint="@color/frameMarkInactive"
+                    android:layout_margin="@dimen/margin_small"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+        </FrameLayout>
+    </FrameLayout>
+    <FrameLayout
+            android:id="@+id/strikeWrapper"
             android:clipToPadding="false"
             android:clipChildren="false"
             android:layout_width="55dp"
@@ -75,11 +108,13 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:background="@drawable/shape_circle"
-                android:backgroundTint="@color/colorActionButton"
+                android:backgroundTint="@color/frameMarkInactive"
                 android:elevation="1dp"
-                android:translationZ="8dp">
+                android:translationZ="4dp">
             <View
-                    android:background="@drawable/img_ball"
+                    android:id="@+id/actionStrikeIcon"
+                    android:background="@drawable/img_bowling_ball"
+                    android:backgroundTint="@color/colorPrimaryLight"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
         </FrameLayout>

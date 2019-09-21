@@ -26,7 +26,7 @@ class Palette(
             return Palette(
                 color,
                 colorObj.darker(21).toColor(),
-                colorObj.brigher(21).toColor()
+                colorObj.brigher(16).toColor()
             )
         }
     }

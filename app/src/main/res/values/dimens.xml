@@ -13,12 +13,13 @@
     <dimen name="margin_dialog">24dp</dimen>
 
     <dimen name="padding">12dp</dimen>
+    <dimen name="padding_extra_small">2dp</dimen>
     <dimen name="padding_small">4dp</dimen>
     <dimen name="padding_medium">8dp</dimen>
     <dimen name="padding_large">12dp</dimen>
     <dimen name="padding_extra_large">16dp</dimen>
 
-    <dimen name="actionIcon">25dp</dimen>
+    <dimen name="actionIcon">22dp</dimen>
     <dimen name="actionIcon_small">20dp</dimen>
 
     <dimen name="mark">40dp</dimen>
