@@ -99,6 +99,7 @@ class ScoreController(
             return
 
         bowler.performRoll(pinKnockedCount, listener = this)
+
         activity.app.persistenceManager.updateBowler(bowler)
     }
 
